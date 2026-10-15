@@ -134,7 +134,7 @@
   @media(max-width:1080px){.fx-tablist .fx-tab:not(.on){display:none;}}
 
   /* --- body grid --- */
-  .fx-body{display:grid;grid-template-columns:52px 264px 1fr 264px;height:720px;background:#fff;}
+  .fx-body{display:grid;grid-template-columns:52px 264px 1fr 264px;height:min(720px,calc(100vh - 150px));min-height:520px;background:#fff;}
   .fx-body > *{min-height:0;min-width:0;}
   @media(max-width:1080px){.fx-body{grid-template-columns:52px 1fr;height:620px;} .fx-right{display:none;}}
 
@@ -232,8 +232,8 @@
   .fx-rtop .cv{font-size:8px;color:var(--muted-2);}
   .fx-rtop .sp{flex:1;}
   .fx-rtop .play{color:#3d3d3d;font-size:12px;}
-  .fx-share{background:var(--blue);color:#fff;border:0;font:inherit;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;}
-  .fx-share:hover{background:var(--blue-hover);}
+  .fx-share{background:#e6e6e6;color:#a3a3a3;border:0;font:inherit;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:not-allowed;}
+  .fx-share:hover{background:#e6e6e6;}
   .fx-help{cursor:pointer;}
   .fx-help:hover{color:var(--fg-2);}
   .fx-rtabs{display:flex;align-items:center;gap:14px;padding:0 12px 9px;font-size:11.5px;color:var(--muted-2);border-bottom:1px solid var(--line);}
@@ -416,6 +416,8 @@
   .route .rteam{font-size:11px;font-weight:600;background:#fff;border:1px solid var(--line-2);padding:4px 9px;border-radius:6px;color:var(--fg);}
 
   .insp-actions{display:flex;flex-direction:column;gap:8px;margin-top:15px;}
+  /* keep the primary action visible: pinned to the bottom of the scrolling inspector */
+  .insp-body .insp-actions.insp-sticky{position:sticky;bottom:-20px;z-index:2;margin:15px -15px -20px;padding:12px 15px 16px;background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 16px -10px rgba(0,0,0,.12);}
   .insp-actions .btn{justify-content:center;font-size:13px;}
 
   .submitted{text-align:center;padding:22px 8px;}
@@ -521,7 +523,7 @@
   .nf-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
   /* inline mode (when embedded in another site) */
   .nf.nf-inline{position:relative;max-width:440px;margin-top:16px;box-shadow:none;padding:24px 22px 20px;}
-  .nf.nf-inline .nf-x{display:none;}
+  .nf.nf-inline[hidden]{display:none;}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);background:#1e1e1e;color:#fff;font-weight:600;font-size:13px;padding:12px 20px;border-radius:9px;box-shadow:0 20px 50px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .3s;z-index:100;display:flex;align-items:center;gap:9px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .ti{width:18px;height:18px;border-radius:5px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;}
@@ -968,7 +970,7 @@
             <span class="fx-av"></span><span class="cv">▾</span>
             <span class="sp"></span>
             <span class="play" data-chrome="Present mode is Figma's own — this whole page is the presentation.">▷</span><span class="cv">▾</span>
-            <button class="fx-share" data-chrome="Share is Figma's own. This prototype is already public — the URL is the share.">Share</button>
+            <button class="fx-share" disabled aria-disabled="true" title="Share is Figma's own — not part of this demo.">Share</button>
           </div>
           <div class="fx-rtabs"><b>Cadence</b><span data-chrome="In this file Cadence replaces the Design panel — the Brief, Generate and Review steps below are the inspector.">Design</span><span data-chrome="In this file Cadence replaces the Design panel — the Brief, Generate and Review steps below are the inspector.">Prototype</span><span class="zoom">100%</span></div>
           <div class="insp-tabs" id="inspTabs"></div>
@@ -2052,7 +2054,7 @@ function renderInspector(L){
     body.innerHTML=`<div class="insp-h">Brief <span class="auto">✦ parsed</span></div>
       <div class="insp-sub">What it is, who it's for, where it goes, how often, and which visual.</div>
       <div id="pickList"></div>
-      <div class="insp-actions"><button class="btn btn-primary" id="genBtn">✦ Generate the ${L.bundle.length}-asset bundle</button></div>`;
+      <div class="insp-actions insp-sticky"><button class="btn btn-primary" id="genBtn">✦ Generate the ${L.bundle.length}-asset bundle</button></div>`;
     const pl=body.querySelector("#pickList");
     const picks=picksFor(L);
     clearTimers();
@@ -2598,16 +2600,17 @@ renderQueue(); render(); renderLogicSection();
   function focusFirst(){ (document.getElementById("nfThanks").hidden?email:document.getElementById("nfThanksTitle")).focus({preventScroll:true}); }
   function open(e){ last=e&&e.currentTarget;
     if(framed&&last){ /* embedded: show the form right under the button so it's always visible */
-      card.classList.add("nf-inline"); card.removeAttribute("aria-modal"); card.setAttribute("role","region");
+      card.classList.add("nf-inline"); card.hidden=false; card.removeAttribute("aria-modal"); card.setAttribute("role","region");
       var host=last.parentNode; host.parentNode.insertBefore(card,host.nextSibling);
       window.scrollTo({top:Math.max(0,card.getBoundingClientRect().top+window.scrollY-((document.querySelector("nav")||{}).offsetHeight||0)-16),behavior:"smooth"}); setTimeout(focusFirst,400); return; }
     back.classList.add("on"); back.setAttribute("aria-hidden","false");
     setTimeout(function(){ (document.getElementById("nfThanks").hidden?email:document.getElementById("nfThanksTitle")).focus(); },30); }
-  function close(){ back.classList.remove("on"); back.setAttribute("aria-hidden","true"); if(last) last.focus(); }
+  function close(){ if(card.classList.contains("nf-inline")){ card.hidden=true; if(last) last.focus({preventScroll:true}); return; }
+    back.classList.remove("on"); back.setAttribute("aria-hidden","true"); if(last) last.focus(); }
   document.querySelectorAll("[data-notify]").forEach(function(b){ b.addEventListener("click",open); });
   document.getElementById("nfClose").addEventListener("click",close);
   back.addEventListener("click",function(e){ if(e.target===back) close(); });
-  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&back.classList.contains("on")) close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&(back.classList.contains("on")||(card.classList.contains("nf-inline")&&!card.hidden))) close(); });
   f.addEventListener("submit",function(e){
     e.preventDefault(); err.textContent="";
     var v=email.value.trim();
