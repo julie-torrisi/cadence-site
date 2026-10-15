@@ -499,6 +499,26 @@
   .fby{font-size:13px;color:var(--d-muted);}
   .fby b{color:var(--d-text);font-weight:600;}
 
+
+  /* ---------- Launch sign-up ---------- */
+  .nf-back{position:fixed;inset:0;z-index:200;background:rgba(5,6,8,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px;}
+  .nf-back.on{display:flex;}
+  .nf{position:relative;width:100%;max-width:440px;background:var(--d-panel);border:1px solid var(--d-line);border-radius:16px;padding:30px 28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.5);color:var(--d-text);}
+  .nf h3:focus{outline:none;}
+  .nf h3{padding-right:28px;margin:0 0 8px;font-size:22px;line-height:1.25;letter-spacing:-.01em;}
+  .nf p{margin:0;color:var(--d-muted);font-size:14px;line-height:1.55;}
+  .nf-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:8px;border:0;background:transparent;color:var(--d-muted);font-size:20px;cursor:pointer;}
+  .nf-x:hover{background:rgba(255,255,255,.06);color:var(--d-text);}
+  .nf form{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+  .nf label{font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--d-muted);}
+  .nf input[type=email]{font:inherit;font-size:15px;color:var(--d-text);background:var(--d-bg);border:1px solid var(--d-line);border-radius:9px;padding:12px 14px;outline:none;}
+  .nf input[type=email]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(13,153,255,.25);}
+  .nf .btn{justify-content:center;width:100%;}
+  .nf-fine{font-size:12.5px !important;margin-top:4px !important;}
+  .nf-err{color:#ff8a7a !important;font-size:13px !important;min-height:1em;}
+  .nf-follow{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+  .nf-follow .btn{flex:1 1 140px;text-decoration:none;}
+  .nf-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);background:#1e1e1e;color:#fff;font-weight:600;font-size:13px;padding:12px 20px;border-radius:9px;box-shadow:0 20px 50px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .3s;z-index:100;display:flex;align-items:center;gap:9px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .ti{width:18px;height:18px;border-radius:5px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;}
@@ -837,7 +857,7 @@
     <h1>A third-party AI agent, built to teach Figma <span class="soft">your design system.</span></h1>
     <p class="lede">Describe any message your product needs to send, from a feature launch to an error to a policy change. Cadence designs it for iOS, Android and web from your own components, then tells you if it's ready or who needs to see it first.</p>
     <p class="lede-2">Your rules are the input. So the fastest way to ship is also the on-brand way.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px"><a class="btn btn-primary" href="https://www.julietorrisi.com/about-jf3b8" target="_blank" rel="noopener">Get notified at launch</a><a class="btn btn-ghost" href="#studio">Try the concept</a></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px"><button type="button" class="btn btn-primary" data-notify>Get notified at launch</button><a class="btn btn-ghost" href="#studio">Try the concept</a></div>
     <div class="hero-meta">
       <div><div class="k">Input</div><div class="v">Any message + your design system</div></div>
       <div><div class="k">Output</div><div class="v">Layered, editable frames for iOS, Android and web</div></div>
@@ -1096,7 +1116,7 @@
       <p>Take the rules a company already has, make them machine-readable, let an agent resolve them into finished work. That generalises to every place a brand has to hold across many teams — which is what every enterprise design-system team is trying to solve.</p>
       <p class="big" style="margin-top:38px">Agents from different makers <span class="u">will share one product.</span></p>
       <p>Figma, Jira, Slack. Who built it, what it can see, and when it hands off should never be a mystery.</p>
-      <p style="margin-top:22px"><a class="btn btn-primary" href="https://www.julietorrisi.com/about-jf3b8" target="_blank" rel="noopener">Get notified at launch</a></p>
+      <p style="margin-top:22px"><button type="button" class="btn btn-primary" data-notify>Get notified at launch</button></p>
       <p class="src">Extends Julie's product-communications concept — <a href="https://www.julietorrisi.com/home/design-ai" target="_blank" rel="noopener">julietorrisi.com/design-ai</a></p>
     </div>
   </div>
@@ -1109,6 +1129,31 @@
   </div>
 </footer>
 
+<div class="nf-back" id="nfBack" aria-hidden="true">
+  <div class="nf" role="dialog" aria-modal="true" aria-labelledby="nfTitle">
+    <button type="button" class="nf-x" id="nfClose" aria-label="Close">×</button>
+    <div id="nfForm">
+      <h3 id="nfTitle">Get notified when Cadence launches</h3>
+      <p>One email when the plugin is live on Figma Community. After that, only big launches.</p>
+      <form id="nfF" novalidate>
+        <label for="nfEmail">Email</label>
+        <input type="email" id="nfEmail" name="email" placeholder="you@company.com" autocomplete="email" required>
+        <input type="text" name="_honey" class="nf-hp" tabindex="-1" autocomplete="off">
+        <p class="nf-err" id="nfErr" role="alert"></p>
+        <button type="submit" class="btn btn-primary" id="nfSubmit">Notify me</button>
+        <p class="nf-fine">Big launches only. I'll never sell or share your email.</p>
+      </form>
+    </div>
+    <div id="nfThanks" hidden>
+      <h3 tabindex="-1" id="nfThanksTitle">You're on the list. Thank you!</h3>
+      <p>I'll email you when Cadence is live, and only for big launches after that. Until then, follow along as I build.</p>
+      <div class="nf-follow">
+        <a class="btn btn-ghost" id="nfFigma" href="https://www.figma.com/@julietorrisi" target="_blank" rel="noopener">Follow on Figma</a>
+        <a class="btn btn-ghost" href="https://github.com/julie-torrisi" target="_blank" rel="noopener">Follow on GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"><span class="ti">✓</span><span id="toastMsg">Done</span></div>
 
 <script>
@@ -2538,6 +2583,35 @@ document.querySelectorAll("[data-jump]").forEach(b=>b.addEventListener("click",(
 
 /* ================= INIT ================= */
 renderQueue(); render(); renderLogicSection();
+</script>
+<script>
+/* ---------- Launch sign-up (Formsubmit → Julie's inbox) ---------- */
+(function(){
+  var ENDPOINT="https://formsubmit.co/ajax/julietorrisi@gmail.com";
+  var back=document.getElementById("nfBack"), f=document.getElementById("nfF"),
+      email=document.getElementById("nfEmail"), err=document.getElementById("nfErr"),
+      sub=document.getElementById("nfSubmit"), last=null;
+  function open(e){ last=e&&e.currentTarget; back.classList.add("on"); back.setAttribute("aria-hidden","false");
+    setTimeout(function(){ (document.getElementById("nfThanks").hidden?email:document.getElementById("nfThanksTitle")).focus(); },30); }
+  function close(){ back.classList.remove("on"); back.setAttribute("aria-hidden","true"); if(last) last.focus(); }
+  document.querySelectorAll("[data-notify]").forEach(function(b){ b.addEventListener("click",open); });
+  document.getElementById("nfClose").addEventListener("click",close);
+  back.addEventListener("click",function(e){ if(e.target===back) close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&back.classList.contains("on")) close(); });
+  f.addEventListener("submit",function(e){
+    e.preventDefault(); err.textContent="";
+    var v=email.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ err.textContent="Please enter a valid email address."; email.focus(); return; }
+    if(f._honey.value){ return; }
+    sub.disabled=true; sub.textContent="Sending…";
+    fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify({email:v,_subject:"New Cadence launch sign-up",_template:"table",_captcha:"false",source:location.href})})
+    .then(function(r){ return r.json().then(function(j){ if(!r.ok||String(j.success)==="false") throw new Error(j.message||"failed"); }); })
+    .then(function(){ document.getElementById("nfForm").hidden=true; document.getElementById("nfThanks").hidden=false; document.getElementById("nfThanksTitle").focus(); })
+    .catch(function(){ err.textContent="Something went wrong. Please try again in a moment."; })
+    .finally(function(){ sub.disabled=false; sub.textContent="Notify me"; });
+  });
+})();
 </script>
 </body>
 </html>
