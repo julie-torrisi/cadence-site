@@ -417,7 +417,7 @@
 
   .insp-actions{display:flex;flex-direction:column;gap:8px;margin-top:15px;}
   /* keep the primary action visible: pinned to the bottom of the scrolling inspector */
-  .insp-body .insp-actions.insp-sticky{position:sticky;bottom:-20px;z-index:2;margin:15px -15px -20px;padding:12px 15px 16px;background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 16px -10px rgba(0,0,0,.12);}
+  .insp-body .insp-actions.insp-sticky{position:sticky;top:-15px;z-index:2;margin:0 -15px 14px;padding:10px 15px 12px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 10px 16px -12px rgba(0,0,0,.14);}
   .insp-actions .btn{justify-content:center;font-size:13px;}
 
   .submitted{text-align:center;padding:22px 8px;}
@@ -2053,8 +2053,8 @@ function renderInspector(L){
   if(stage===1){
     body.innerHTML=`<div class="insp-h">Brief <span class="auto">✦ parsed</span></div>
       <div class="insp-sub">What it is, who it's for, where it goes, how often, and which visual.</div>
-      <div id="pickList"></div>
-      <div class="insp-actions insp-sticky"><button class="btn btn-primary" id="genBtn">✦ Generate the ${L.bundle.length}-asset bundle</button></div>`;
+      <div class="insp-actions insp-sticky"><button class="btn btn-primary" id="genBtn">✦ Generate the ${L.bundle.length}-asset bundle</button></div>
+      <div id="pickList"></div>`;
     const pl=body.querySelector("#pickList");
     const picks=picksFor(L);
     clearTimers();
