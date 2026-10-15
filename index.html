@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Cadence — AI Launch-Comms Copilot (in Figma)",
+  "schemaVersion": 1,
+  "description": "Interactive portfolio prototype: an AI copilot that turns a one-line feature-launch brief into the complete bundle of promotional designs across every Figma surface — all built from the design system, with a visual asset system that resolves exactly which asset goes where (icon 12/16/24, hi-fi and 3D 40/60/132, illustration billboard 16:7 or 16:9 and immersive 9:16, motion at 132 or larger, or content-led with no asset at all) and a comms ecosystem layer (11 comms types, disruption tiers, surface ladder, frequency capping) — then submits the whole bundle for review with a governance verdict and routing. Every launch is re-voiced for five disciplines — designer, engineer, PM, content designer and marketer — from one asset system. Shown inside a faithful rebuild of Figma's live product shell, built on Figma's open-source SDS tokens, with Cadence living in the bottom-toolbar tools and plugins selector next to Weave, Make and Buzz. Includes a 'Rules' panel and a full logic section so the system behind every decision is inspectable.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — A third-party AI agent that teaches Figma your design system</title>
+<meta name="description" content="Cadence is a third-party AI agent for Figma, launching soon. Describe any message your product sends its users and get on-brand designs for iOS, Android and web from your own design system.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ------------------------------------------------------------------
+       Figma SDS — Simple Design System primitives (github.com/figma/sds).
+       Published token values, not approximations. Every surface in the
+       studio below resolves to one of these.
+       ------------------------------------------------------------------ */
+    --sds-color-gray-100:#f5f5f5; --sds-color-gray-200:#e6e6e6; --sds-color-gray-300:#d9d9d9;
+    --sds-color-gray-400:#b3b3b3; --sds-color-gray-500:#757575; --sds-color-gray-600:#444444;
+    --sds-color-gray-700:#383838; --sds-color-gray-800:#2c2c2c; --sds-color-gray-900:#1e1e1e;
+    --sds-color-gray-1000:#111111;
+    --sds-color-slate-100:#f3f3f3; --sds-color-slate-200:#e3e3e3; --sds-color-slate-300:#cdcdcd;
+    --sds-color-slate-400:#b2b2b2; --sds-color-slate-500:#949494; --sds-color-slate-600:#767676;
+    --sds-color-white-1000:#ffffff;
+    --sds-color-red-100:#fee9e7; --sds-color-red-500:#ec221f; --sds-color-red-600:#c00f0c; --sds-color-red-700:#900b09;
+    --sds-color-green-100:#ebffee; --sds-color-green-500:#14ae5c; --sds-color-green-700:#008043; --sds-color-green-800:#02542d;
+    --sds-color-yellow-100:#fffbeb; --sds-color-yellow-400:#e8b931; --sds-color-yellow-700:#975102; --sds-color-yellow-900:#522504;
+    --sds-color-pink-500:#ea3fb8;
+    /* semantic aliases, SDS naming */
+    --sds-color-background-default-default:var(--sds-color-white-1000);
+    --sds-color-text-default-default:var(--sds-color-gray-900);
+    --sds-color-border-default-default:var(--sds-color-gray-300);
+    --sds-color-background-positive-default:var(--sds-color-green-500);
+    --sds-color-background-danger-default:var(--sds-color-red-500);
+    --sds-color-background-warning-default:var(--sds-color-yellow-400);
+    /* SDS size + type scale */
+    --sds-size-space-100:.25rem; --sds-size-space-200:.5rem; --sds-size-space-400:1rem;
+    --sds-size-space-600:1.5rem; --sds-size-space-800:2rem;
+    --sds-size-radius-100:.25rem; --sds-size-radius-200:.5rem; --sds-size-radius-400:1rem;
+    --sds-size-radius-full:624.9375rem;
+    --sds-size-stroke-border:.0625rem; --sds-size-stroke-focus-ring:.125rem;
+    --sds-typography-scale-01:.75rem;
+    --sds-typography-weight-regular:400; --sds-typography-weight-semibold:600; --sds-typography-weight-bold:700;
+
+    /* Figma-flavoured light UI, resolved from SDS primitives */
+    --fg:var(--sds-color-gray-900); --fg-2:#333638; --muted:#6b7178; --muted-2:#9a9ea3;
+    --canvas:var(--sds-color-gray-100); --panel:var(--sds-color-white-1000); --panel-2:#fbfbfb; --panel-3:#f0f0f1;
+    --line:var(--sds-color-gray-200); --line-2:#dcdcde; --line-3:#ebebeb;
+    --blue:#0d99ff; --blue-hover:#0a85e0; --violet:#9747ff; --green:var(--sds-color-green-500); --amber:#f2a900; --red:#f24822; --yellow:#ffeb00; --upsell:var(--sds-color-green-500);
+    --sel:#0d99ff;
+    --radius:8px;
+    --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    /* dark shell for hero + infra */
+    --d-bg:#0b0c0e; --d-panel:#141618; --d-line:rgba(255,255,255,.09); --d-text:#f3f4f6; --d-muted:#8b9099;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;color:var(--d-text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.55;background:var(--d-bg);font-size:15px;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--blue);color:#fff;}
+  .mono{font-family:var(--mono);font-size:.9em;}
+  .wrap{max-width:1220px;margin:0 auto;padding:0 26px;}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;padding:13px 26px;background:rgba(11,12,14,.72);backdrop-filter:blur(12px);border-bottom:1px solid var(--d-line);}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .fmark{width:16px;height:24px;position:relative;}
+  .fmark span{position:absolute;width:8px;height:8px;border-radius:50%;}
+  .fmark .a{top:0;left:0;background:#f24e1e;border-radius:8px 8px 0 0;width:8px;height:8px;}
+  .logo-name{font-weight:700;font-size:15px;letter-spacing:-.01em;}
+  .logo-sub{font-size:12.5px;color:var(--muted-2);padding-left:11px;margin-left:2px;border-left:1px solid var(--d-line);}
+  .nav-spacer{flex:1;}
+  .nav-links{display:flex;gap:20px;font-size:13.5px;color:var(--d-muted);font-weight:500;}
+  .nav-links button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+  .nav-links button:hover{color:var(--d-text);}
+  .tag{font-size:11px;color:var(--d-muted);border:1px solid var(--d-line);padding:4px 10px;border-radius:6px;font-weight:600;}
+  @media(max-width:860px){.nav-links,.logo-sub{display:none;}}
+
+  /* HERO */
+  .hero{position:relative;overflow:hidden;padding:84px 0 56px;border-bottom:1px solid var(--d-line);}
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;opacity:.6;background:radial-gradient(700px 340px at 76% -6%,rgba(13,153,255,.18),transparent 62%),radial-gradient(560px 320px at 4% 6%,rgba(151,71,255,.12),transparent 60%);}
+  .hero .wrap{position:relative;z-index:1;}
+  .eyebrow{color:var(--d-muted);font-weight:600;font-size:13px;margin-bottom:18px;display:inline-flex;align-items:center;gap:9px;}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(13,153,255,.16);}
+  .hero h1{font-size:clamp(30px,5vw,54px);line-height:1.04;margin:0 0 20px;font-weight:800;letter-spacing:-.03em;max-width:18ch;}
+  .hero h1 .soft{color:var(--d-muted);}
+  .hero p.lede{font-size:clamp(16px,2vw,19px);color:var(--d-muted);max-width:64ch;margin:0 0 28px;line-height:1.6;}
+  .hero p.lede b{color:var(--d-text);font-weight:600;}
+  .hero-cta{display:flex;gap:11px;flex-wrap:wrap;}
+  .btn{border:none;cursor:pointer;font-family:var(--font);font-weight:600;font-size:14px;padding:11px 18px;border-radius:8px;display:inline-flex;align-items:center;gap:8px;transition:transform .08s,background .15s,border-color .15s,opacity .15s;}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:var(--blue-hover);}
+  .btn-ghost{background:transparent;color:var(--d-text);border:1px solid var(--d-line);}
+  .btn-ghost:hover{background:rgba(255,255,255,.05);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .hero-meta{display:flex;gap:32px;margin-top:42px;flex-wrap:wrap;}
+  .hero-meta .k{font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted-2);font-weight:600;margin-bottom:5px;}
+  .hero-meta .v{font-size:14px;color:var(--d-text);font-weight:500;}
+
+  section{padding:56px 0;}
+  .section-head{margin-bottom:30px;max-width:80ch;}
+  .section-head .eyebrow{margin-bottom:11px;}
+  .section-head h2{font-size:clamp(23px,3.2vw,33px);margin:0 0 11px;font-weight:800;letter-spacing:-.025em;}
+  .section-head p{color:var(--d-muted);margin:0;font-size:16px;line-height:1.6;}
+  .divider{height:1px;background:var(--d-line);border:0;margin:0;}
+
+  /* ============ FIGMA-NATIVE APP SHELL ============ */
+  .studio{border-radius:12px;overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.06);background:#fff;color:var(--fg);}
+
+  /* --- window tab strip --- */
+  .fx-tabs{display:flex;align-items:center;gap:0;height:38px;background:#e8e8e8;padding:0 8px 0 12px;border-bottom:1px solid #d9d9d9;}
+  .fx-lights{display:flex;gap:7px;margin-right:12px;flex-shrink:0;}
+  .fx-lights i{width:11px;height:11px;border-radius:50%;display:block;}
+  .fx-lights i:nth-child(1){background:#ff5f57;} .fx-lights i:nth-child(2){background:#febc2e;} .fx-lights i:nth-child(3){background:#28c840;}
+  .fx-icobtn{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#5b5b5b;flex-shrink:0;cursor:default;}
+  .fx-tablist{display:flex;align-items:stretch;flex:1;min-width:0;overflow:hidden;margin-left:4px;}
+  .fx-tab{cursor:default;user-select:none;display:flex;align-items:center;gap:6px;font-size:11.5px;color:#4a4a4a;padding:0 10px;height:38px;border-right:1px solid #dcdcdc;max-width:112px;min-width:0;white-space:nowrap;overflow:hidden;flex-shrink:1;}
+  .fx-tab span{overflow:hidden;text-overflow:ellipsis;}
+  .fx-tab svg{flex-shrink:0;opacity:.62;}
+  .fx-tab.on{background:#fff;color:var(--fg);font-weight:500;border-right-color:transparent;border-radius:7px 7px 0 0;max-width:190px;flex-shrink:0;}
+  .fx-tab.on svg{opacity:1;}
+  .fx-tab .x{margin-left:2px;color:var(--muted-2);font-size:11px;}
+  @media(max-width:1080px){.fx-tablist .fx-tab:not(.on){display:none;}}
+
+  /* --- body grid --- */
+  .fx-body{display:grid;grid-template-columns:52px 264px 1fr 264px;height:720px;background:#fff;}
+  .fx-body > *{min-height:0;min-width:0;}
+  @media(max-width:1080px){.fx-body{grid-template-columns:52px 1fr;height:620px;} .fx-right{display:none;}}
+
+  /* --- left icon rail --- */
+  .fx-rail{border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px;background:#fff;}
+  .fx-rlogo{width:22px;height:22px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+  .fx-ritem{width:44px;padding:6px 0 4px;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:8.5px;font-weight:500;color:var(--muted);cursor:pointer;border-radius:7px;}
+  .fx-ritem .ic{width:26px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#3d3d3d;}
+  .fx-ritem:hover .ic{background:rgba(0,0,0,.05);}
+  .fx-ritem.on .ic{background:#e5f4ff;color:var(--blue);}
+  .fx-ritem.on{color:var(--fg);}
+  .fx-rdiv{width:18px;height:1px;background:var(--line-2);margin:7px 0;}
+
+  /* --- left panel --- */
+  .fx-left{border-right:1px solid var(--line);display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+  .fx-file{display:flex;align-items:center;gap:6px;padding:11px 12px 1px;font-size:13.5px;font-weight:600;letter-spacing:-.01em;}
+  .fx-file .cv{color:var(--muted-2);font-size:9px;}
+  .fx-file .fx-collapse{margin-left:auto;color:var(--muted-2);cursor:default;}
+  .fx-file .cv{cursor:default;}
+  .fx-sub{padding:0 12px 12px;font-size:11.5px;color:var(--muted-2);}
+  .fx-sec{display:flex;align-items:center;gap:8px;padding:8px 12px 6px;font-size:11.5px;font-weight:600;color:var(--fg-2);border-top:1px solid var(--line-3);}
+  .fx-sec .cnt{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--muted-2);background:var(--panel-3);border-radius:4px;padding:1px 5px;}
+  .fx-sec .sp{flex:1;}
+  .fx-sec .a{color:var(--muted-2);font-size:12px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:4px;}
+  .fx-sec .a{cursor:pointer;}
+  .fx-sec .a:hover{background:var(--panel-3);color:var(--fg-2);}
+  .fl-list{padding:0 8px 8px;overflow-y:auto;max-height:290px;}
+
+  /* launch rows, styled like Figma page/layer rows */
+  .lcard{display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;border-radius:5px;cursor:pointer;}
+  .lcard:hover{background:#f5f5f5;}
+  .lcard.active{background:#e5f4ff;}
+  .lc-top{display:flex;align-items:center;gap:7px;flex:1;min-width:0;}
+  .lc-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+  .lc-feat{font-size:11.5px;font-weight:500;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fg);}
+  .lcard.active .lc-feat{color:#0a6fbd;}
+  .lc-team{display:none;}
+  .lc-badge{flex-shrink:0;font-size:8.5px;font-weight:700;font-family:var(--mono);padding:1px 5px;border-radius:4px;letter-spacing:.01em;}
+  .b-ready{background:rgba(20,174,92,.14);color:#0f8a49;}
+  .b-review{background:rgba(242,169,0,.16);color:#a8760a;}
+  .b-fix{background:rgba(229,67,47,.13);color:#c0341f;}
+  .b-idle{background:transparent;color:#c4c7ca;}
+  .b-sub{background:rgba(13,153,255,.13);color:#0a7fd6;}
+
+  /* layers list — the bundle, as layers */
+  .fx-layers{padding:0 8px 14px;overflow-y:auto;flex:1;}
+  .lay{display:flex;align-items:center;gap:7px;height:24px;padding:0 8px 0 16px;border-radius:5px;font-size:11.5px;color:var(--fg-2);}
+  .lay{cursor:pointer;}
+  .lay:hover{background:#f5f5f5;}
+  .lay.flash{background:#e5f4ff;}
+  .lay .g{color:#9747ff;font-size:10px;width:11px;flex-shrink:0;}
+  .lay .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lay .s{font-family:var(--mono);font-size:8.5px;color:var(--muted-2);flex-shrink:0;}
+  .fx-empty{padding:10px 16px;font-size:11px;color:var(--muted-2);line-height:1.5;}
+
+  /* --- canvas --- */
+  .fx-canvas{background:#f5f5f5;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+  .fig-canvas-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,.045) 1px,transparent 1.4px);background-size:24px 24px;}
+  .copilot-bar{position:absolute;z-index:6;top:14px;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 40px));background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:11px;box-shadow:0 6px 24px rgba(0,0,0,.11);display:flex;align-items:center;gap:9px;padding:8px 10px;}
+  .cb-spark{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+  .cb-text{flex:1;font-size:12.5px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cb-text .ph{color:var(--muted-2);}
+  .cb-kbd{cursor:default;user-select:none;font-size:9.5px;font-family:var(--mono);color:var(--muted);border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;background:var(--panel-2);flex-shrink:0;}
+  .cb-conn{font-size:9.5px;font-weight:600;color:#0f8a49;background:rgba(20,174,92,.1);border:1px solid rgba(20,174,92,.26);border-radius:5px;padding:2px 7px;white-space:nowrap;flex-shrink:0;}
+  @media(max-width:760px){.cb-conn,.cb-kbd{display:none;}}
+
+  /* --- floating bottom toolbar --- */
+  .fx-toolbar{position:absolute;z-index:8;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:13px;box-shadow:0 8px 28px rgba(0,0,0,.16);padding:5px 6px;}
+  .fx-t{border:0;background:none;font:inherit;height:32px;min-width:32px;padding:0 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:3px;color:#333;cursor:pointer;}
+  .fx-t:hover{background:#f0f0f0;}
+  .fx-t.on{background:var(--blue);color:#fff;}
+  .fx-t .cv{font-size:7px;color:currentColor;opacity:.55;}
+  .fx-t.tool-on{background:#e5f4ff;color:var(--blue);}
+  .fx-tdiv{width:1px;height:20px;background:var(--line-2);margin:0 5px;}
+  .fx-help{position:absolute;right:14px;bottom:14px;z-index:7;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid rgba(0,0,0,.07);box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);}
+
+  /* --- actions / tools menu (where Cadence lives) --- */
+  .fx-actions{position:absolute;z-index:9;bottom:60px;left:50%;transform:translateX(-50%) translateY(6px);width:min(324px,calc(100% - 32px));background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:11px;box-shadow:0 14px 40px rgba(0,0,0,.2);padding:6px;opacity:0;pointer-events:none;transition:opacity .14s,transform .14s;}
+  .fx-actions.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+  .fx-ah{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted-2);padding:7px 9px 5px;}
+  .fx-arow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;font-size:12.5px;color:var(--fg-2);cursor:pointer;}
+  .fx-arow:hover{background:#f5f5f5;}
+  .fx-arow .ai{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0;}
+  .fx-arow .an{flex:1;min-width:0;}
+  .fx-arow .an b{display:block;font-weight:600;color:var(--fg);}
+  .fx-arow .an i{font-style:normal;font-size:10.5px;color:var(--muted-2);}
+  .fx-arow.on{background:#e5f4ff;}
+  .fx-arow .chk{color:var(--blue);font-size:11px;}
+  .fx-adiv{height:1px;background:var(--line-3);margin:5px 4px;}
+
+  /* --- right panel --- */
+  .fx-right{border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;background:#fff;}
+  .fx-rtop{display:flex;align-items:center;gap:6px;padding:9px 10px;}
+  .fx-av{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#9747ff,#0d99ff);flex-shrink:0;}
+  .fx-rtop .cv{font-size:8px;color:var(--muted-2);}
+  .fx-rtop .sp{flex:1;}
+  .fx-rtop .play{color:#3d3d3d;font-size:12px;}
+  .fx-share{background:var(--blue);color:#fff;border:0;font:inherit;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;}
+  .fx-share:hover{background:var(--blue-hover);}
+  .fx-help{cursor:pointer;}
+  .fx-help:hover{color:var(--fg-2);}
+  .fx-rtabs{display:flex;align-items:center;gap:14px;padding:0 12px 9px;font-size:11.5px;color:var(--muted-2);border-bottom:1px solid var(--line);}
+  .fx-rtabs b{color:var(--fg);font-weight:600;}
+  .fx-rtabs .zoom{margin-left:auto;font-size:11px;color:var(--muted);cursor:default;}
+  .fx-rtabs span[data-chrome]{cursor:pointer;}
+  .fx-rtabs span[data-chrome]:hover{color:var(--fg-2);}
+  .insp-tabs{display:flex;border-bottom:1px solid var(--line);}
+  .canvas-scroll{position:relative;z-index:1;flex:1;overflow-y:auto;padding:64px 18px 78px;}
+  .stage-banner{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);margin:0 2px 12px;}
+  .stage-banner .sb-ico{width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;}
+  .stage-banner b{color:var(--fg);font-weight:600;}
+
+  /* brief note */
+  .brief-note{background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:14px 16px;max-width:560px;position:relative;z-index:1;}
+  .bn-from{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-bottom:9px;}
+  .bn-av{width:20px;height:20px;border-radius:50%;background:linear-gradient(140deg,#0d99ff,#9747ff);}
+  .bn-body{font-size:14px;color:var(--fg-2);line-height:1.55;}
+  .bn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+  .bn-chip{font-size:11.5px;font-weight:500;background:#eaf5ff;border:1px solid #bfe0ff;color:#0a6fbf;padding:4px 9px;border-radius:6px;display:inline-flex;gap:6px;align-items:center;}
+  .bn-chip .k{color:#4a9fd6;font-weight:600;}
+  .bn-need{margin-top:16px;font-size:12px;color:var(--muted);}
+  .bn-need b{color:var(--fg);}
+
+  /* bundle gallery */
+  .bundle-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 2px 12px;flex-wrap:wrap;}
+  .bundle-meta .bm-t{font-size:13px;font-weight:600;color:var(--fg);}
+  .bundle-meta .bm-s{font-size:11.5px;color:var(--muted);}
+  .agents-strip{display:flex;gap:14px;flex-wrap:wrap;}
+  .agents-strip .ag{font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+  .agents-strip .agd{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+  .disc-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 2px 12px;}
+  .disc-lbl{font-size:11px;color:var(--muted-2);font-weight:600;margin-right:2px;}
+  .disc-btn{font-size:11px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line-2);border-radius:7px;padding:5px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .disc-btn:hover{border-color:var(--muted-2);color:var(--fg);}
+  .disc-btn.active{background:#1e1e1e;color:#fff;border-color:#1e1e1e;}
+  .disc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .disc-note{font-size:10.5px;color:var(--muted-2);margin-left:4px;}
+  .seats{margin-top:14px;border-top:1px solid var(--line-3);padding-top:12px;}
+  .seats-h{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:8px;line-height:1.4;}
+  .seats-row{display:flex;flex-wrap:wrap;gap:7px;}
+  .seats-row .seat{font-size:11px;color:var(--fg-2);background:var(--panel-2);border:1px solid var(--line-2);border-radius:6px;padding:4px 9px;display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:1320px){.gallery{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:1080px){.gallery{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:640px){.gallery{grid-template-columns:1fr;}}
+  .asset{background:#fff;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .35s,transform .35s;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .asset.show{opacity:1;transform:none;}
+  .asset-canvas{height:118px;position:relative;overflow:hidden;background:#f3f3f4;border-bottom:1px solid var(--line-3);}
+  .asset-foot{padding:8px 10px;display:flex;align-items:center;gap:7px;}
+  .asset-foot .af-label{font-size:11.5px;font-weight:600;color:var(--fg-2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .asset-foot .af-spec{font-size:9.5px;color:var(--muted-2);font-family:var(--mono);}
+  .af-status{font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:5px;flex-shrink:0;}
+  .st-ok{background:rgba(20,174,92,.14);color:#0f8a49;}
+  .st-review{background:rgba(242,169,0,.16);color:#a8760a;}
+  .st-fix{background:rgba(229,67,47,.14);color:#c0341f;}
+  .st-gen{background:var(--panel-3);color:var(--muted-2);}
+
+  /* mini surface renders (inside asset-canvas) */
+  .srf{position:absolute;inset:0;font-size:9px;color:#1e1e1e;}
+  .srf-app{position:absolute;inset:0;background:#fff;}
+  .srf-topbar{height:16px;background:#2c2c2c;display:flex;align-items:center;padding:0 6px;gap:4px;}
+  .srf-topbar .d{width:4px;height:4px;border-radius:50%;background:#666;}
+  .srf-banner{position:absolute;left:0;right:0;top:16px;padding:7px 8px;display:flex;align-items:center;gap:6px;color:#fff;}
+  .srf-banner.info{background:#eef4ff !important;color:#1e1e1e;border-bottom:1px solid #dbe6fb;}
+  .srf-banner.up{background:#14ae5c !important;color:#fff;}
+  .srf-banner.warn{background:#ffeb00 !important;color:#1e1e1e;}
+  .srf-banner .bx.cta{margin-left:auto;font-size:7.5px;font-weight:700;border:1px solid currentColor;border-radius:4px;padding:2px 6px;opacity:1;}
+  .srf-banner .bi{width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:9px;}
+  .srf-banner .bt{font-size:8.5px;font-weight:700;line-height:1.2;}
+  .srf-banner .bx{margin-left:auto;font-size:9px;opacity:.8;}
+  .srf-modal{position:absolute;inset:0;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;}
+  .srf-modal .mbox{width:78%;background:#fff;border-radius:7px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.25);}
+  .srf-modal .mhero{height:44px;}
+  .srf-modal .mbody{padding:7px 8px;}
+  .srf-modal .mh{font-size:9px;font-weight:800;color:#1e1e1e;}
+  .srf-modal .ms{font-size:7.5px;color:#6b7178;margin-top:2px;}
+  .srf-modal .mc{margin-top:6px;font-size:7.5px;font-weight:700;color:#fff;border-radius:4px;padding:4px 0;text-align:center;}
+  .srf-card{position:absolute;inset:0;padding:9px;display:flex;flex-direction:column;}
+  .srf-card .cthumb{flex:1;border-radius:6px;position:relative;overflow:hidden;}
+  .srf-card .cmeta{display:flex;align-items:center;gap:5px;margin-top:7px;}
+  .srf-card .cav{width:13px;height:13px;border-radius:50%;background:#ddd;}
+  .srf-card .ct{font-size:8px;font-weight:700;color:#1e1e1e;}
+  .srf-card .cs{font-size:7px;color:#9a9ea3;}
+  .srf-email{position:absolute;inset:0;background:#fff;padding:0;}
+  .srf-email .ehead{height:40px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:800;}
+  .srf-email .ebody{padding:8px;}
+  .srf-email .esub{font-size:8.5px;font-weight:700;color:#1e1e1e;}
+  .srf-email .etxt{font-size:7px;color:#6b7178;margin-top:3px;line-height:1.4;}
+  .srf-email .ebtn{margin-top:6px;display:inline-block;font-size:7.5px;font-weight:700;color:#fff;border-radius:4px;padding:4px 9px;}
+  .srf-social{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:10px;}
+  .srf-social .sk{font-size:6.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;}
+  .srf-social .sh{font-size:13px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:4px 0;}
+  .srf-social .ss{font-size:7px;opacity:.9;}
+  .srf-coach{position:absolute;inset:0;background:#f5f5f5;}
+  .srf-coach .cpanel{position:absolute;right:0;top:0;bottom:0;width:38%;background:#fff;border-left:1px solid #e6e6e6;padding:6px;}
+  .srf-coach .crow{height:7px;background:#eee;border-radius:2px;margin-bottom:5px;}
+  .srf-coach .chi{background:#eaf5ff;border:1px solid #bfe0ff;}
+  .srf-coach .tip{position:absolute;right:42%;top:26%;background:#1e1e1e;color:#fff;border-radius:5px;padding:5px 7px;width:44%;}
+  .srf-coach .tip .tt{font-size:7.5px;font-weight:700;}
+  .srf-coach .tip .tb{font-size:6.5px;opacity:.85;margin-top:2px;}
+  .srf-coach .tip::after{content:"";position:absolute;right:-4px;top:12px;border:4px solid transparent;border-left-color:#1e1e1e;}
+  .srf-account{position:absolute;inset:0;background:rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;}
+  .srf-account .abox{width:80%;background:#fff;border-radius:7px;padding:9px;text-align:center;border-top:3px solid #f2a900;}
+  .srf-account .ah{font-size:9px;font-weight:800;color:#1e1e1e;}
+  .srf-account .ab{font-size:7px;color:#6b7178;margin-top:3px;line-height:1.4;}
+  .srf-nudge{position:absolute;inset:0;background:#f5f5f5;padding:9px;}
+  .srf-nudge .ncard{background:#fff;border:1px solid #e6e6e6;border-radius:6px;padding:8px;display:flex;gap:7px;align-items:center;}
+  .srf-nudge .nico{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;flex-shrink:0;}
+  .srf-nudge .nt{font-size:8px;font-weight:700;color:#1e1e1e;}
+  .srf-nudge .ns{font-size:7px;color:#6b7178;margin-top:2px;}
+  .srf-nudge .nb{margin-top:5px;font-size:7px;font-weight:700;color:#fff;border-radius:4px;padding:3px 8px;display:inline-block;}
+  .srf-release{position:absolute;inset:0;background:#fff;padding:9px;}
+  .srf-release .rh{font-size:9px;font-weight:800;color:#1e1e1e;margin-bottom:6px;}
+  .srf-release .rrow{display:flex;gap:6px;margin-bottom:6px;}
+  .srf-release .rtag{width:22px;height:12px;border-radius:3px;flex-shrink:0;}
+  .srf-release .rl{flex:1;}
+  .srf-release .rl .a{height:5px;background:#eee;border-radius:2px;margin-bottom:3px;width:80%;}
+  .srf-release .rl .b{height:4px;background:#f2f2f2;border-radius:2px;width:60%;}
+  .asset-flag{position:absolute;top:0;left:0;right:0;z-index:3;font-size:8px;font-weight:700;text-align:center;padding:3px;color:#fff;}
+  .asset-flag.fix{background:rgba(229,67,47,.94);}
+  .asset-flag.review{background:rgba(242,169,0,.95);color:#3a2a00;}
+
+  /* RIGHT — inspector body */
+  .insp-tab{flex:1;text-align:center;font-size:11px;font-weight:600;color:var(--muted-2);padding:11px 0;cursor:pointer;border-bottom:2px solid transparent;position:relative;}
+  .insp-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+  .insp-tab[aria-disabled="true"]{opacity:.45;cursor:not-allowed;}
+  .insp-tab .tn{display:inline-flex;width:15px;height:15px;border-radius:50%;background:var(--panel-3);color:var(--muted);font-size:9px;align-items:center;justify-content:center;margin-right:5px;font-weight:700;}
+  .insp-tab.active .tn{background:var(--blue);color:#fff;}
+  .insp-tab.done .tn{background:rgba(20,174,92,.16);color:var(--green);}
+  .insp-body{padding:15px 15px 20px;overflow-y:auto;flex:1;}
+  .insp-h{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;display:flex;align-items:center;gap:7px;}
+  .insp-h .auto{margin-left:auto;font-size:10px;font-weight:600;color:var(--violet);border:1px solid rgba(151,71,255,.3);background:rgba(151,71,255,.06);padding:2px 7px;border-radius:5px;text-transform:none;letter-spacing:0;}
+  .insp-sub{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 14px;}
+
+  .pick{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);opacity:0;transform:translateY(5px);transition:opacity .3s,transform .3s;}
+  .pick.show{opacity:1;transform:none;}
+  .pick:last-child{border-bottom:0;}
+  .pk-ico{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:rgba(20,174,92,.13);color:var(--green);margin-top:1px;}
+  .pick.flag .pk-ico{background:rgba(242,169,0,.15);color:#a8760a;}
+  .pk-body{flex:1;min-width:0;}
+  .pk-head{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .pk-head .pk-k{margin-right:auto;}
+  .pk-k{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-2);font-weight:700;}
+  .pk-dim{font-size:9px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:4px;text-transform:uppercase;}
+  .dim-who{background:rgba(151,71,255,.13);color:#7c3fd6;}
+  .dim-where{background:rgba(13,153,255,.13);color:#0a7fd6;}
+  .dim-often{background:rgba(242,169,0,.15);color:#a8760a;}
+  .pk-v{font-size:13px;font-weight:600;color:var(--fg);margin-top:3px;}
+  .pk-why{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.45;}
+
+  .checks{list-style:none;margin:0;padding:0;}
+  .check{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);opacity:0;transform:translateY(5px);transition:opacity .3s,transform .3s;}
+  .check.show{opacity:1;transform:none;}
+  .check:last-child{border-bottom:0;}
+  .cico{width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin-top:1px;}
+  .cico.pass{background:rgba(20,174,92,.14);color:var(--green);}
+  .cico.warn{background:rgba(242,169,0,.16);color:#a8760a;}
+  .cico.fail{background:rgba(229,67,47,.14);color:var(--red);}
+  .cl{font-size:12.5px;font-weight:600;color:var(--fg);}
+  .cd{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45;}
+
+  .verdict{border-radius:9px;padding:15px;margin-top:4px;border:1px solid var(--line-2);opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;}
+  .verdict.show{opacity:1;transform:none;}
+  .verdict.ready{background:#eefaf2;border-color:#b6e6c9;}
+  .verdict.review{background:#fff8e8;border-color:#f5dfa0;}
+  .verdict.fix{background:#fdefec;border-color:#f6c3b8;}
+  .vlabel{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:-.01em;}
+  .verdict.ready .vlabel{color:#0f8a49;}
+  .verdict.review .vlabel{color:#a8760a;}
+  .verdict.fix .vlabel{color:#c0341f;}
+  .vreason{font-size:12px;color:var(--fg-2);margin-top:8px;line-height:1.5;}
+  .vroll{display:flex;gap:6px;margin-top:11px;}
+  .vroll .rc{flex:1;text-align:center;background:#fff;border:1px solid var(--line-2);border-radius:7px;padding:8px 4px;}
+  .vroll .rc .n{font-size:16px;font-weight:800;letter-spacing:-.02em;}
+  .vroll .rc .l{font-size:9px;color:var(--muted);margin-top:2px;}
+  .rc.ok .n{color:var(--green);} .rc.rev .n{color:#a8760a;} .rc.fx .n{color:var(--red);}
+  .route{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .route .rlbl{font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:.03em;}
+  .route .rteam{font-size:11px;font-weight:600;background:#fff;border:1px solid var(--line-2);padding:4px 9px;border-radius:6px;color:var(--fg);}
+
+  .insp-actions{display:flex;flex-direction:column;gap:8px;margin-top:15px;}
+  .insp-actions .btn{justify-content:center;font-size:13px;}
+
+  .submitted{text-align:center;padding:22px 8px;}
+  .sub-ico{width:46px;height:46px;border-radius:12px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .submitted.ready .sub-ico{background:rgba(20,174,92,.14);color:var(--green);}
+  .submitted.review .sub-ico{background:rgba(13,153,255,.14);color:var(--blue);}
+  .submitted.fix .sub-ico{background:rgba(229,67,47,.14);color:var(--red);}
+  .submitted h4{margin:0 0 7px;font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;}
+  .submitted p{margin:0 auto;font-size:12px;color:var(--muted);max-width:34ch;line-height:1.5;}
+  .sub-meta{margin-top:13px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+  .sub-meta .m{font-size:10.5px;background:var(--panel-2);border:1px solid var(--line-2);padding:3px 8px;border-radius:6px;color:var(--muted);}
+
+  /* ============ UNDER THE HOOD DRAWER ============ */
+  .hood{background:var(--d-bg);border-top:1px solid #000;color:var(--d-text);max-height:0;overflow:hidden;transition:max-height .4s ease;}
+  .hood.open{max-height:420px;}
+  .hood-inner{padding:16px 18px 20px;}
+  .hood-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--d-muted);text-transform:uppercase;margin-bottom:14px;}
+  .hood-title .pill{font-family:var(--mono);font-size:10px;font-weight:600;color:#6fd08c;background:rgba(20,174,92,.1);border:1px solid rgba(20,174,92,.25);padding:2px 7px;border-radius:5px;text-transform:none;letter-spacing:0;}
+  .hood-grid{display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:14px;}
+  @media(max-width:1080px){.hood-grid{grid-template-columns:1fr;}}
+  .hbox{background:var(--d-panel);border:1px solid var(--d-line);border-radius:9px;padding:12px 13px;}
+  .hbox h5{margin:0 0 10px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--d-muted);display:flex;align-items:center;gap:7px;}
+  .hbox h5 .tot{margin-left:auto;font-family:var(--mono);font-size:10px;color:#6fd08c;font-weight:600;}
+  /* routing */
+  .route-graph{display:flex;flex-direction:column;gap:7px;}
+  .rnode{display:flex;align-items:center;gap:9px;font-size:11px;}
+  .rnode .rstage{width:56px;color:var(--d-muted);font-size:10px;flex-shrink:0;}
+  .rnode .rmodel{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--d-line);border-radius:6px;padding:5px 8px;font-family:var(--mono);font-size:10.5px;display:flex;align-items:center;gap:7px;}
+  .rnode .rdot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .rnode .rmodel .rlat{margin-left:auto;color:var(--d-muted);}
+  /* telemetry rows */
+  .telem{display:flex;flex-direction:column;gap:9px;}
+  .trow{display:flex;align-items:center;gap:8px;font-size:11px;}
+  .trow .tlab{width:74px;color:var(--d-muted);font-size:10.5px;flex-shrink:0;}
+  .trow .tbar{flex:1;height:5px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}
+  .trow .tbar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--violet));width:0;transition:width .8s ease;}
+  .trow .tval{font-family:var(--mono);font-size:10px;color:var(--d-text);width:52px;text-align:right;flex-shrink:0;}
+  /* retrieval */
+  .retr{display:flex;flex-direction:column;gap:6px;}
+  .rr{display:flex;align-items:center;gap:8px;font-size:10.5px;}
+  .rr .rk{width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--d-muted);flex-shrink:0;}
+  .rr .rn{flex:1;color:var(--d-text);font-family:var(--mono);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rr .rs{font-family:var(--mono);font-size:9.5px;color:#6fd08c;flex-shrink:0;}
+  .rr .rsrc{font-size:9px;color:var(--d-muted);flex-shrink:0;}
+  /* pipeline */
+  .pipe{margin-top:13px;background:var(--d-panel);border:1px solid var(--d-line);border-radius:9px;padding:11px 13px;}
+  .pipe h5{margin:0 0 10px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--d-muted);display:flex;align-items:center;gap:8px;}
+  .pipe .hook{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--d-muted);}
+  .pipe-steps{display:flex;align-items:center;gap:0;flex-wrap:wrap;}
+  .pstep2{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--d-muted);}
+  .pstep2 .pd{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--d-line);display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .3s;}
+  .pstep2.on{color:var(--d-text);}
+  .pstep2.on .pd{background:var(--green);border-color:var(--green);color:#04120a;}
+  .pstep2.active .pd{border-color:var(--blue);color:var(--blue);animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .pline2{width:26px;height:1.5px;background:var(--d-line);margin:0 7px;}
+  .pline2.on{background:var(--green);}
+  .hood-empty{font-size:12px;color:var(--d-muted);text-align:center;padding:20px;}
+
+  /* HOW / THESIS */
+  .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:760px){.flow{grid-template-columns:1fr;}}
+  .fnode{background:var(--d-panel);border:1px solid var(--d-line);border-radius:11px;padding:18px;position:relative;}
+  .fnode .fs{position:absolute;top:15px;right:16px;font-family:var(--mono);font-size:11px;color:var(--muted-2);}
+  .fnode .fi{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid var(--d-line);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .fnode .fi svg{width:18px;height:18px;stroke:#cfd3d9;}
+  .fnode h5{margin:0 0 6px;font-size:14px;font-weight:700;letter-spacing:-.01em;}
+  .fnode p{margin:0;font-size:12.5px;color:var(--d-muted);line-height:1.5;}
+
+  .thesis{background:var(--d-panel);border:1px solid var(--d-line);border-radius:14px;padding:30px 26px;}
+  .thesis .big{font-size:clamp(19px,2.6vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.3;margin:0 0 12px;max-width:30ch;}
+  .thesis .big .u{background:linear-gradient(transparent 62%,rgba(13,153,255,.28) 0);}
+  .thesis p{font-size:14px;color:var(--d-muted);line-height:1.6;margin:0;max-width:76ch;}
+  .thesis p b{color:var(--d-text);font-weight:600;}
+  .thesis .src{margin-top:16px;font-size:13px;color:var(--d-muted);}
+  .thesis .src a{color:var(--d-text);border-bottom:1px solid var(--d-line);}
+
+  footer{border-top:1px solid var(--d-line);padding:30px 0 60px;margin-top:20px;}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;}
+  .fnote{font-size:12px;color:var(--muted-2);max-width:64ch;line-height:1.5;}
+  .fby{font-size:13px;color:var(--d-muted);}
+  .fby b{color:var(--d-text);font-weight:600;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);background:#1e1e1e;color:#fff;font-weight:600;font-size:13px;padding:12px 20px;border-radius:9px;box-shadow:0 20px 50px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .3s;z-index:100;display:flex;align-items:center;gap:9px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .ti{width:18px;height:18px;border-radius:5px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+  /* ============ VISUAL ASSET SYSTEM ============ */
+  .asset.flash{box-shadow:0 0 0 2px var(--blue);}
+  .asset-spec{display:flex;align-items:center;gap:7px;padding:0 10px 9px;}
+  .as-chip{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;letter-spacing:.01em;color:var(--c,#6b7178);background:color-mix(in srgb,var(--c,#6b7178) 10%,#fff);border:1px solid color-mix(in srgb,var(--c,#6b7178) 26%,#fff);padding:2.5px 6px;border-radius:5px;font-family:var(--mono);white-space:nowrap;}
+  .as-chip b{font-size:10px;line-height:1;}
+  .as-chip.muted{background:#f6f6f7;border-color:var(--line-2);color:var(--muted-2);}
+  .as-surf{font-size:9.5px;color:var(--muted-2);flex:1;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .v-illo,.v-motion,.v-hifi,.v-icon{position:relative;width:100%;}
+  .v-dp{position:absolute;right:3px;bottom:2px;font-family:var(--mono);font-size:6.5px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.02em;}
+  .v-dp.dark{color:var(--muted-2);}
+  .v-motion{display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .v-motion .v-play{color:#fff;font-size:13px;opacity:.9;}
+  .v-sweep{position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.34) 50%,transparent 80%);transform:translateX(-100%);animation:vsweep 2.4s ease-in-out infinite;}
+  @keyframes vsweep{0%{transform:translateX(-100%)}55%{transform:translateX(100%)}100%{transform:translateX(100%)}}
+  @media (prefers-reduced-motion: reduce){.v-sweep{animation:none;opacity:.25;}}
+  .v-hifi{display:flex;align-items:center;justify-content:center;background:#f4f4f5;min-height:40px;}
+  .v-hifi .v-blob{border-radius:50%;box-shadow:0 3px 9px rgba(0,0,0,.22);}
+  .v-icon{display:flex;align-items:center;justify-content:center;background:#f7f7f8;min-height:26px;}
+  .v-icon .v-ico{border-radius:3px;display:block;}
+  .srf-email .ehead.plain{background:#fff;color:#1e1e1e;border-bottom:1px solid var(--line-3);height:26px;font-size:8px;}
+  .srf-card .cthumb.plain{background:#f2f2f3;flex:1;border-radius:6px;}
+  .srf-nudge .nico.ico{border-radius:4px;}
+  .srf-nudge .nico.mot{position:relative;overflow:hidden;}
+  .srf-account .aico{display:block;border-radius:4px;margin-bottom:5px;}
+
+  /* ============ DISCIPLINE VOICE ============ */
+  .disc-btn .disc-n{font-family:var(--mono);font-size:9px;color:var(--muted-2);font-weight:700;}
+  .disc-btn.active .disc-n{color:rgba(255,255,255,.6);}
+  .disc-btn.dim{opacity:.38;}
+  .disc-btn.blast{border-style:dashed;color:var(--muted-2);}
+  .disc-btn.blast.active{background:#6b7178;border-color:#6b7178;color:#fff;border-style:solid;}
+  .disc-sep{width:1px;height:16px;background:var(--line-2);margin:0 3px;}
+  .seat-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin:0 0 9px;background:var(--panel-3);}
+  .seat-bar i{display:block;height:100%;}
+  .seats-row .seat b{font-weight:700;color:var(--fg-2);margin-left:5px;font-family:var(--mono);font-size:10px;}
+  .pk-seatbar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin:7px 0 6px;background:var(--panel-3);}
+  .pk-seatbar i{display:block;height:100%;}
+  .pk-seats{display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:7px;}
+  .pk-seats span{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+  .pk-seats i{width:6px;height:6px;border-radius:50%;display:block;}
+  .pk-seats b{font-family:var(--mono);font-size:9.5px;color:var(--fg-2);}
+
+  /* voice matrix in the logic section */
+
+  /* pick row extras */
+  .pk-tag{font-size:8.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+    color:var(--tc,#fff);background:var(--tb,#6b7178);}
+  .pk-src{display:block;margin-top:5px;font-size:9.5px;font-family:var(--mono);color:var(--muted-2);letter-spacing:.01em;}
+  .dim-what{background:#f0e6ff;color:#7b2fd6;}
+  .dim-vis{background:#e5f4ff;color:#0a76c4;}
+  .pk-rules{margin:2px 0 0;display:flex;}
+  .rules-btn{font-size:11px;font-weight:600;color:var(--blue);border:1px solid var(--line-2);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .rules-btn:hover{background:#f4faff;border-color:var(--blue);}
+
+  /* in-studio rules panel */
+  .rules-panel{position:absolute;inset:0;z-index:14;background:rgba(245,245,245,.97);backdrop-filter:blur(3px);overflow:auto;padding:16px 18px 80px;display:none;}
+  .rules-panel.open{display:block;}
+  .rp-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+  .rp-head h4{margin:0;font-size:14px;color:var(--fg);letter-spacing:-.01em;}
+  .rp-head p{margin:3px 0 0;font-size:11.5px;color:var(--muted);max-width:62ch;line-height:1.5;}
+  .rp-close{margin-left:auto;border:1px solid var(--line-2);background:#fff;border-radius:6px;width:24px;height:24px;cursor:pointer;color:var(--muted);flex-shrink:0;}
+  .rp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-bottom:14px;}
+  .rp-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 11px;}
+  .rp-card.on{border-color:var(--blue);box-shadow:0 0 0 2px rgba(13,153,255,.12);}
+  .rp-k{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--fg);}
+  .rp-k .g{font-size:12px;}
+  .rp-scale{font-family:var(--mono);font-size:9.5px;color:var(--muted-2);margin:4px 0 5px;}
+  .rp-rule{font-size:11px;color:var(--muted);line-height:1.5;}
+  .rp-used{margin-top:6px;font-size:9.5px;font-weight:700;color:var(--blue);font-family:var(--mono);}
+  .rp-sub{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted-2);margin:0 0 7px;}
+  .rp-ladder{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:12px;}
+  .rung{display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;color:var(--muted);}
+  .rung .rn{width:15px;height:15px;border-radius:4px;background:var(--panel-3);color:var(--muted);font-size:8.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .rung.on{color:var(--fg);font-weight:600;}
+  .rung.on .rn{background:var(--blue);color:#fff;}
+  .rung .rroom{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--muted-2);}
+  .rp-types{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;}
+  .rtype{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:11px;color:var(--muted);}
+  .rtype.on{border-color:var(--fg);color:var(--fg);font-weight:600;}
+  .rtype .rd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .rtype .rl{margin-left:auto;font-size:8.5px;font-weight:800;font-family:var(--mono);}
+
+  /* ============ INPUT COMPOSER (stage 1) ============ */
+  .composer{background:#fff;border:1px solid var(--line-2);border-radius:12px;max-width:640px;position:relative;z-index:1;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .cmp-who{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 14px 10px;border-bottom:1px solid var(--line-3);}
+  .cmp-lbl{font-size:11px;font-weight:600;color:var(--muted-2);margin-right:2px;}
+  .cmp-chip{border:1px solid var(--line-2);background:#fff;border-radius:7px;padding:4px 9px;font:inherit;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+  .cmp-chip:hover{border-color:var(--muted-2);color:var(--fg);}
+  .cmp-chip.on{background:var(--sds-color-gray-900);border-color:var(--sds-color-gray-900);color:#fff;}
+  .cmp-chip .d{width:6px;height:6px;border-radius:50%;}
+  .cmp-intent{padding:13px 15px 12px;font-size:14px;line-height:1.55;color:var(--fg-2);border-bottom:1px solid var(--line-3);}
+  .cmp-intent .q{color:var(--muted-2);}
+  .cmp-modes{display:flex;gap:2px;padding:8px 10px 0;flex-wrap:wrap;}
+  .cmp-mode{border:0;background:none;font:inherit;font-size:11px;font-weight:600;color:var(--muted-2);padding:6px 9px;border-radius:6px 6px 0 0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border-bottom:2px solid transparent;}
+  .cmp-mode:hover{background:var(--panel-3);color:var(--fg-2);}
+  .cmp-mode.on{color:var(--blue);border-bottom-color:var(--blue);}
+  .cmp-mode .g{font-family:var(--mono);font-size:10px;}
+  .cmp-body{padding:12px 15px 14px;border-top:1px solid var(--line-3);margin-top:-1px;}
+  .cmp-hint{font-size:10.5px;color:var(--muted-2);margin-bottom:9px;font-family:var(--mono);}
+
+  .in-frames{display:flex;gap:9px;flex-wrap:wrap;}
+  .in-frame{width:104px;}
+  .in-frame .th{height:62px;border-radius:5px;border:1px solid var(--line-2);position:relative;overflow:hidden;}
+  .in-frame .th i{position:absolute;left:7px;right:7px;background:rgba(255,255,255,.75);border-radius:2px;height:4px;}
+  .in-frame .nm{font-size:9.5px;color:var(--muted);margin-top:5px;line-height:1.35;}
+  .in-frame .nm b{color:var(--fg-2);font-weight:600;}
+  .in-code{background:var(--sds-color-gray-900);color:#e6e6e6;border-radius:8px;padding:11px 13px;font-family:var(--mono);font-size:10.5px;line-height:1.65;overflow-x:auto;white-space:pre;}
+  .in-code .k{color:#c792ea;} .in-code .s{color:#8ee6a0;} .in-code .c{color:#7d848c;} .in-code .f{color:#82c8ff;}
+  .in-copy{background:var(--panel-2);border:1px solid var(--line-3);border-left:3px solid var(--sds-color-red-500);border-radius:0 8px 8px 0;padding:11px 14px;font-size:13px;line-height:1.65;color:var(--fg-2);white-space:pre-wrap;}
+  .in-proto{display:flex;align-items:center;gap:0;flex-wrap:wrap;}
+  .in-step{width:88px;}
+  .in-step .sc{height:56px;border-radius:5px;border:1px solid var(--line-2);background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted-2);}
+  .in-step .sn{font-size:9.5px;color:var(--muted);margin-top:5px;text-align:center;line-height:1.3;}
+  .in-arrow{width:26px;height:1.5px;background:var(--blue);position:relative;margin:0 2px 18px;flex-shrink:0;}
+  .in-arrow::after{content:"";position:absolute;right:-1px;top:-3px;border-left:6px solid var(--blue);border-top:4px solid transparent;border-bottom:4px solid transparent;}
+  .in-proto-h{font-size:11px;font-weight:600;color:var(--fg-2);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+  .in-proto-h .pl{font-size:9.5px;font-weight:700;color:var(--blue);background:rgba(13,153,255,.1);border-radius:4px;padding:2px 6px;font-family:var(--mono);}
+  .in-msg{background:var(--panel-2);border:1px solid var(--line-3);border-radius:8px;padding:12px 14px;}
+  .in-msg .from{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-bottom:8px;}
+  .in-msg .av{width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#9747ff,#0d99ff);}
+  .in-msg .body{font-size:13.5px;color:var(--fg-2);line-height:1.6;}
+
+  .in-form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+  .ff{display:flex;flex-direction:column;gap:4px;}
+  .ff label{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-2);}
+  .ff select,.ff .fake{appearance:none;font:inherit;font-size:12px;color:var(--fg);background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4l3 3 3-3' fill='none' stroke='%236b7178' stroke-width='1.3'/></svg>") no-repeat right 8px center;
+    border:1px solid var(--line-2);border-radius:6px;padding:6px 26px 6px 9px;cursor:pointer;width:100%;}
+  .ff select:hover,.ff .fake:hover{border-color:var(--muted-2);}
+  .ff select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(13,153,255,.18);}
+  .ff .fake{color:var(--fg-2);background-image:none;padding-right:9px;cursor:default;background-color:var(--panel-2);border-style:dashed;}
+  .ff .fake::after{content:"";}
+  .ff-ro{font-size:9px;font-weight:700;color:var(--muted-2);font-family:var(--mono);margin-left:6px;}
+  .form-note{grid-column:1/-1;font-size:10.5px;color:var(--muted-2);margin-top:2px;}
+  .form-note b{color:var(--blue);}
+
+  .cmp-norm{border-top:1px solid var(--line-3);padding:11px 15px 13px;background:var(--panel-2);border-radius:0 0 12px 12px;}
+  .cmp-norm .nlbl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--violet);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .cmp-norm .nchips{display:flex;flex-wrap:wrap;gap:6px;}
+  .nchip{display:inline-flex;align-items:center;gap:6px;font-size:11px;background:#fff;border:1px solid var(--line-2);border-radius:6px;padding:4px 9px;color:var(--fg-2);}
+  .nchip .k{font-size:8.5px;font-weight:800;letter-spacing:.05em;color:var(--muted-2);font-family:var(--mono);}
+  .cmp-foot{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;}
+  .cmp-foot b{color:var(--fg);}
+
+  /* ============ BETA · LIVE FEED ============ */
+  .live-panel{position:absolute;inset:0;z-index:13;background:#fff;overflow:auto;padding:0 0 80px;display:none;}
+  .live-panel.open{display:block;}
+  .lv-head{position:sticky;top:0;z-index:2;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 20px 12px;}
+  .lv-title{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;letter-spacing:-.01em;}
+  .lv-dot{width:7px;height:7px;border-radius:50%;background:var(--sds-color-green-500);box-shadow:0 0 0 0 rgba(20,174,92,.5);animation:lvpulse 2s infinite;}
+  @keyframes lvpulse{0%{box-shadow:0 0 0 0 rgba(20,174,92,.45)}70%{box-shadow:0 0 0 7px rgba(20,174,92,0)}100%{box-shadow:0 0 0 0 rgba(20,174,92,0)}}
+  @media (prefers-reduced-motion: reduce){.lv-dot{animation:none;}}
+  .lv-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .lv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:9px;padding:14px 20px 4px;}
+  .lv-stat{border:1px solid var(--line);border-radius:9px;padding:10px 12px;}
+  .lv-stat .n{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15;}
+  .lv-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.35;}
+  .lv-stat .d{font-size:9.5px;font-family:var(--mono);color:var(--sds-color-green-700);margin-top:4px;}
+  .lv-sec{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted-2);padding:18px 20px 8px;}
+  .lv-list{padding:0 20px;}
+  .lv-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;background:#fff;}
+  .lv-row.fresh{border-color:rgba(20,174,92,.45);background:var(--sds-color-green-100);}
+  .lv-av{width:24px;height:24px;border-radius:6px;flex-shrink:0;}
+  .lv-main{flex:1;min-width:0;}
+  .lv-ft{font-size:12.5px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lv-meta{font-size:10.5px;color:var(--muted-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lv-spec{display:flex;gap:4px;flex-shrink:0;}
+  .lv-spec i{width:6px;height:6px;border-radius:2px;display:block;}
+  .lv-st{font-size:9.5px;font-weight:700;font-family:var(--mono);padding:2px 6px;border-radius:4px;flex-shrink:0;}
+  .lv-time{font-size:9.5px;color:var(--muted-2);font-family:var(--mono);flex-shrink:0;width:44px;text-align:right;}
+  @media(max-width:900px){.lv-spec,.lv-time{display:none;}}
+  .lv-note{margin:16px 20px 0;font-size:11.5px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line-3);padding-top:13px;}
+  .lv-note b{color:var(--fg);}
+
+  /* --- destination picker --- */
+  .dest{border:1px solid var(--line-2);border-radius:10px;padding:12px 13px;margin-bottom:2px;}
+  .dest-h{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .dest-grade{font-size:8.5px;font-weight:800;letter-spacing:.05em;padding:2px 6px;border-radius:4px;margin-left:auto;font-family:var(--mono);}
+  .dest-why{font-size:11.5px;color:var(--muted);line-height:1.55;margin-bottom:11px;}
+  .dest-why b{color:var(--fg-2);font-weight:600;}
+  .dest-opt{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border:1px solid var(--line-2);border-radius:8px;margin-bottom:6px;cursor:pointer;}
+  .dest-opt:hover{border-color:var(--muted-2);}
+  .dest-opt.on{border-color:var(--blue);background:#f4faff;}
+  .dest-opt input{margin-top:2px;accent-color:var(--blue);flex-shrink:0;}
+  .do-body{flex:1;min-width:0;}
+  .do-t{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11.5px;font-weight:700;color:var(--fg);letter-spacing:.01em;}
+  .do-rec{font-size:8.5px;font-weight:800;color:var(--violet);background:rgba(151,71,255,.1);border:1px solid rgba(151,71,255,.24);border-radius:4px;padding:1px 5px;letter-spacing:.03em;}
+  .do-n{display:block;font-size:10.5px;color:var(--muted-2);margin-top:2px;}
+  .do-metric{margin-top:7px;width:100%;font:inherit;font-size:11px;color:var(--fg);background:#fff;border:1px solid var(--line-2);border-radius:6px;padding:5px 8px;}
+  .do-metric:disabled{opacity:.45;}
+  .dest-route{font-size:10.5px;color:var(--muted-2);line-height:1.5;margin-top:8px;}
+  .dest-route b{color:var(--fg-2);}
+
+  /* --- live lanes + definitions --- */
+  .lv-lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px;padding:0 20px;}
+  .lv-lane{border:1px solid var(--line);border-radius:9px;padding:10px 12px;}
+  .lv-lane-h{display:flex;align-items:baseline;gap:8px;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--muted);font-family:var(--mono);}
+  .lv-lane-n{font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--fg);font-family:var(--font);}
+  .lv-lane-s{font-size:10.5px;color:var(--muted-2);line-height:1.5;margin-top:5px;}
+  .lv-def{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:9px;padding:14px 20px 0;}
+  .lv-defcard{border:1px solid var(--line);border-radius:9px;padding:11px 12px;}
+  .lv-deft{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.06em;font-family:var(--mono);padding:2px 6px;border-radius:4px;margin-bottom:7px;}
+  .lv-defr{font-size:11px;color:var(--fg-2);line-height:1.55;}
+  .lv-defp{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;font-style:italic;}
+  .lv-defroute{font-size:10.5px;color:var(--muted-2);line-height:1.5;margin-top:7px;border-top:1px solid var(--line-3);padding-top:7px;}
+  .lv-track{font-size:8.5px;font-family:var(--mono);font-weight:700;color:var(--muted);background:var(--panel-3);border-radius:4px;padding:2px 6px;flex-shrink:0;white-space:nowrap;}
+  @media(max-width:1000px){.lv-track{display:none;}}
+
+  /* --- input drop zone --- */
+  .dz{border:1.5px dashed var(--line-2);border-radius:9px;padding:11px 13px;margin-bottom:12px;background:var(--panel-2);transition:border-color .12s,background .12s;}
+  .dz.over{border-color:var(--blue);background:#f4faff;}
+  .dz-main{display:flex;align-items:center;gap:9px;}
+  .dz-i{width:22px;height:22px;border-radius:6px;background:#fff;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--muted-2);font-size:11px;flex-shrink:0;}
+  .dz-t{font-size:12px;color:var(--fg-2);font-weight:500;}
+  .dz-accepts{font-family:var(--mono);font-size:9.5px;color:var(--muted-2);margin:6px 0 0 31px;line-height:1.6;}
+  .dz-url{display:block;width:calc(100% - 31px);margin:9px 0 0 31px;font:inherit;font-size:11.5px;color:var(--fg);background:#fff;border:1px solid var(--line-2);border-radius:6px;padding:6px 9px;}
+  .dz-url::placeholder{color:var(--muted-2);}
+  .dz-url:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(13,153,255,.16);}
+  .dz-added{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0 31px;}
+  .dz-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono);color:var(--sds-color-green-800);background:var(--sds-color-green-100);border:1px solid rgba(20,174,92,.28);border-radius:5px;padding:2px 7px;}
+
+  /* --- lighter page rhythm --- */
+  .lede-2{font-size:15px;color:#8b9099;line-height:1.6;max-width:46ch;margin:14px 0 0;}
+  .section-head p.hint{font-size:13px;color:#6f757e;margin-top:8px;}
+  .section-head p.hint b{color:#a6abb3;font-family:var(--mono);font-size:12px;}
+
+  /* ============ LOGIC SECTION (page) ============ */
+  #logic .lg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:10px;margin-bottom:30px;}
+  .lg-card{background:var(--d-panel);border:1px solid var(--d-line);border-radius:12px;padding:16px 17px;}
+  .lg-glyph{font-size:17px;line-height:1;margin-bottom:9px;display:block;}
+  .lg-card h5{margin:0 0 3px;font-size:14.5px;letter-spacing:-.01em;color:var(--d-text);}
+  .lg-scale{font-family:var(--mono);font-size:11px;color:#8b9099;margin-bottom:8px;}
+  .lg-card p{margin:0;font-size:12.5px;line-height:1.55;color:#8b9099;}
+  .lg-card p b{color:var(--d-text);font-weight:600;}
+  .lg-h{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#8b9099;margin:0 0 12px;}
+
+  /* logic section, simplified: one idea per block, one glance each */
+  .lx{margin:0 0 54px;}
+  .lx:last-of-type{margin-bottom:0;}
+  .lx-eb{display:inline-flex;align-items:center;gap:9px;color:var(--d-muted);font-size:13px;font-weight:600;margin-bottom:8px;}
+  .lx-eb .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(13,153,255,.16);}
+  .lx h3{margin:0 0 6px;font-size:clamp(20px,2.4vw,25px);font-weight:800;letter-spacing:-.02em;color:var(--d-text);}
+  .lx-sub{margin:0 0 20px;color:var(--d-muted);font-size:15px;}
+  .lx-box{background:var(--d-panel);border:1px solid var(--d-line);border-radius:12px;}
+
+  /* 1 · assets */
+  .lx-kinds{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .lx-kind{padding:18px 18px 20px;}
+  .lx-kind .g{display:block;font-size:20px;line-height:1;margin-bottom:22px;}
+  .lx-kind h5{margin:0 0 8px;font-size:16px;font-weight:700;color:var(--d-text);letter-spacing:-.01em;}
+  .lx-kind .sp{font-family:var(--mono);font-size:11.5px;color:#8b9099;}
+  .lx-axis{position:relative;height:1px;background:#3a3d42;margin:20px 6px 8px 0;}
+  .lx-axis:after{content:"";position:absolute;right:-1px;top:-4px;width:8px;height:8px;border-top:1px solid #3a3d42;border-right:1px solid #3a3d42;transform:rotate(45deg);}
+  .lx-axl{display:flex;justify-content:space-between;font-size:12px;color:#6f757e;}
+  @media(max-width:820px){.lx-kinds{grid-template-columns:repeat(2,1fr);} .lx-kind:first-child{grid-column:1/-1;}}
+
+  /* 2 · priority */
+  .lx-pri{display:flex;flex-direction:column;gap:6px;max-width:760px;}
+  .lx-row{display:flex;align-items:center;gap:14px;padding:11px 16px;}
+  .lx-row .n{font-family:var(--mono);font-size:13px;color:#6f757e;width:20px;flex-shrink:0;}
+  .lx-row .d{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .lx-row .d.o{background:none;border:1.5px solid #6f757e;}
+  .lx-row .nm{font-size:15px;font-weight:600;color:var(--d-text);}
+  .lx-row.zero .nm{font-style:italic;font-weight:400;color:#8b9099;}
+  .lx-row.zero{background:transparent;border-style:dashed;}
+  .lx-row .tg{margin-left:auto;font-family:var(--mono);font-size:11.5px;white-space:nowrap;padding-left:12px;}
+  .lx-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-family:var(--mono);font-size:11.5px;color:#8b9099;}
+  .lx-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;}
+  @media(max-width:560px){.lx-row{gap:10px;padding:10px 12px;} .lx-row .nm{font-size:13.5px;} .lx-row .tg{font-size:10.5px;}}
+
+  /* 3 · surfaces */
+  .lx-track{padding:20px 22px 22px;overflow-x:auto;}
+  .lx-tr-h{display:flex;justify-content:space-between;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8b9099;margin-bottom:22px;min-width:760px;}
+  .lx-tr-h .hot{color:var(--red);}
+  .lx-tr-h .ar:after{content:"→";}
+  @media(max-width:720px){.lx-tr-h .ar:after{content:"↓";}}
+  .lx-stops{position:relative;display:grid;grid-template-columns:repeat(9,1fr);min-width:760px;}
+  .lx-stops:before{content:"";position:absolute;left:0;right:0;top:17px;height:3px;border-radius:2px;background:linear-gradient(90deg,#3a3d42,var(--red));}
+  .lx-stop{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;}
+  .lx-stop .c{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;color:#a6abb3;background:#1f2125;border:1px solid #3a3d42;}
+  .lx-stop .l{font-size:13px;font-weight:600;color:var(--d-text);line-height:1.25;}
+  .lx-stop .t{font-family:var(--mono);font-size:10.5px;color:#8b9099;background:rgba(255,255,255,.05);border-radius:5px;padding:2px 6px;white-space:nowrap;}
+  .lx-stop .t.any{color:var(--d-text);background:rgba(255,255,255,.12);}
+  @media(max-width:720px){
+    .lx-tr-h,.lx-stops{min-width:0;}
+    .lx-stops{grid-template-columns:1fr;gap:12px;}
+    .lx-stops:before{left:17px;right:auto;top:0;bottom:0;width:3px;height:auto;background:linear-gradient(180deg,#3a3d42,var(--red));}
+    .lx-stop{flex-direction:row;text-align:left;gap:12px;}
+    .lx-stop .t{margin-left:auto;}
+  }
+
+  /* 4 · audiences */
+  .lx-fan{display:grid;grid-template-columns:minmax(200px,.8fr) 90px 1.6fr;align-items:center;}
+  .lx-old{padding:16px 18px;background:#1c1817;border:1px solid #3a2f2b;border-radius:12px;}
+  .lx-old .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8b9099;margin-bottom:6px;}
+  .lx-old .h{font-size:16px;font-weight:700;color:var(--d-text);}
+  .lx-fan svg{width:100%;height:100%;display:block;}
+  .lx-seats{display:flex;flex-direction:column;gap:8px;}
+  .lx-seat{display:flex;align-items:baseline;gap:9px;padding:12px 16px;font-size:15px;}
+  .lx-seat i{width:9px;height:9px;border-radius:50%;flex-shrink:0;align-self:center;}
+  .lx-seat .r{color:#8b9099;white-space:nowrap;}
+  .lx-seat b{color:var(--d-text);font-weight:700;}
+  .lx-foot{margin:14px 0 0;text-align:right;font-size:12.5px;color:#6f757e;}
+  @media(max-width:820px){.lx-fan{grid-template-columns:1fr;gap:10px;} .lx-fan svg{display:none;} .lx-seat{flex-wrap:wrap;font-size:14px;} .lx-foot{text-align:left;}}
+  .lg-note{font-size:12.5px;color:#6f757e;line-height:1.6;margin-top:22px;max-width:70ch;}
+  .lg-note b{color:var(--d-text);font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="logo">
+    <svg class="fmark" viewBox="0 0 16 24"><circle cx="4" cy="4" r="4" fill="#f24e1e"/><circle cx="12" cy="4" r="4" fill="#ff7262"/><circle cx="4" cy="12" r="4" fill="#a259ff"/><circle cx="12" cy="12" r="4" fill="#1abcfe"/><circle cx="4" cy="20" r="4" fill="#0acf83"/></svg>
+    <span class="logo-name">Cadence</span>
+    <span class="logo-sub">Third-party AI agent for Figma</span>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <button type="button" data-jump="studio">Prototype</button>
+    <button type="button" data-jump="how">How it works</button> <button type="button" data-jump="platform">The platform</button>
+    <button type="button" data-jump="logic">The logic</button>
+    <button type="button" data-jump="thesis">The thesis</button>
+  </div>
+  <span class="tag">Figma plugin · coming soon</span>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>Figma plugin · Coming soon to Figma Community</div>
+    <h1>A third-party AI agent, built to teach Figma <span class="soft">your design system.</span></h1>
+    <p class="lede">Describe any message your product needs to send, from a feature launch to an error to a policy change. Cadence designs it for iOS, Android and web from your own components, then tells you if it's ready or who needs to see it first.</p>
+    <p class="lede-2">Your rules are the input. So the fastest way to ship is also the on-brand way.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px"><a class="btn btn-primary" href="https://www.julietorrisi.com/about-jf3b8" target="_blank" rel="noopener">Get notified at launch</a><a class="btn btn-ghost" href="#studio">Try the concept</a></div>
+    <div class="hero-meta">
+      <div><div class="k">Input</div><div class="v">Any message + your design system</div></div>
+      <div><div class="k">Output</div><div class="v">Layered, editable frames for iOS, Android and web</div></div>
+      <div><div class="k">Decides</div><div class="v">Which surface, how loud, which asset</div></div>
+      <div><div class="k">Hands off</div><div class="v">To a person, and says why</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- STUDIO -->
+<section id="studio">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>Concept prototype</div>
+      <h2>Where it started: the concept prototype.</h2>
+      <p>Before the plugin, there was this interactive concept, shown on six fictional Figma launches. Pick one and watch it build and review the whole set. The plugin launching soon is built on the same rules.</p>
+      <p class="hint"><b>⁘</b> tools menu &nbsp;·&nbsp; <b>▤</b> the rules &nbsp;·&nbsp; <b>{ }</b> what's underneath &nbsp;·&nbsp; <b>Live</b> the company feed</p>
+    </div>
+
+    <div class="studio">
+
+      <!-- ── window tab strip ───────────────────────────────────────── -->
+      <div class="fx-tabs">
+        <span class="fx-lights"><i></i><i></i><i></i></span>
+        <span class="fx-icobtn" title="Home"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 7.2 8 2.8l5.5 4.4V13H2.5z"/></svg></span>
+        <div class="fx-tablist">
+          <div class="fx-tab"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/></svg><span>UI3 · Figma</span></div>
+          <div class="fx-tab"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/></svg><span>Config 2026</span></div>
+          <div class="fx-tab"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/></svg><span>Comms DS</span></div>
+          <div class="fx-tab"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/></svg><span>Weave · Brand</span></div>
+          <div class="fx-tab on"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/></svg><span>Cadence · Launch comms</span><span class="x">✕</span></div>
+        </div>
+        <span class="fx-icobtn">+</span>
+        <span class="fx-icobtn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="3.5" width="11" height="9" rx="1.4"/><path d="M6.2 3.5v9"/></svg></span>
+      </div>
+
+      <!-- ── body ───────────────────────────────────────────────────── -->
+      <div class="fx-body">
+
+        <!-- icon rail -->
+        <nav class="fx-rail">
+          <span class="fx-rlogo"><svg viewBox="0 0 16 24" width="13" height="20"><circle cx="4" cy="4" r="4" fill="#f24e1e"/><circle cx="12" cy="4" r="4" fill="#ff7262"/><circle cx="4" cy="12" r="4" fill="#a259ff"/><circle cx="12" cy="12" r="4" fill="#1abcfe"/><circle cx="4" cy="20" r="4" fill="#0acf83"/></svg></span>
+          <button class="fx-ritem" data-chrome="File, Assets and Variables are Figma's own panels — Tools is where Cadence lives."><span class="ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3.5 2h5L12.5 6v8h-9z"/><path d="M8.5 2v4h4"/></svg></span>File</button>
+          <button class="fx-ritem" data-chrome="File, Assets and Variables are Figma's own panels — Tools is where Cadence lives."><span class="ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="5.5"/><path d="M8 5.5v5M5.5 8h5"/></svg></span>Assets</button>
+          <button class="fx-ritem on" data-chrome="Tools is the active panel — Cadence is running inside it."><span class="ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.5" y="5" width="11" height="8" rx="1.4"/><path d="M6 5V3.6h4V5"/></svg></span>Tools</button>
+          <button class="fx-ritem" id="liveRail"><span class="ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="2"/><path d="M4.6 4.6a4.8 4.8 0 0 0 0 6.8M11.4 11.4a4.8 4.8 0 0 0 0-6.8"/></svg></span>Live</button>
+          <span class="fx-rdiv"></span>
+          <button class="fx-ritem" data-chrome="File, Assets and Variables are Figma's own panels — Tools is where Cadence lives."><span class="ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="1.6"/></svg></span>Variables</button>
+        </nav>
+
+        <!-- left panel -->
+        <aside class="fx-left">
+          <div class="fx-file">Cadence <span class="cv">▾</span><span class="fx-collapse"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="3.5" width="11" height="9" rx="1.4"/><path d="M6.2 3.5v9"/></svg></span></div>
+          <div class="fx-sub">Product comms · Drafts</div>
+          <div class="fx-sec">Launches <span class="cnt" id="launchCount">6</span><span class="sp"></span><span class="a" data-chrome="Six launches in this demo — search and add are Figma's own.">⌕</span><span class="a" data-chrome="Six launches in this demo — search and add are Figma's own.">+</span></div>
+          <div class="fl-list" id="launchList"></div>
+          <div class="fx-sec">Layers</div>
+          <div class="fx-layers" id="layerList"></div>
+        </aside>
+
+        <!-- canvas -->
+        <div class="fx-canvas">
+          <div class="fig-canvas-grid"></div>
+          <div class="copilot-bar">
+            <div class="cb-spark">✦</div>
+            <div class="cb-text" id="copilotText"><span class="ph">Ask Cadence to build a launch…</span></div>
+            <span class="cb-conn">◆ Connected · Figma SDS</span>
+            <span class="cb-kbd">⌘K</span>
+          </div>
+          <div class="canvas-scroll" id="canvasArea"></div>
+          <div class="rules-panel" id="rulesPanel"></div>
+          <div class="live-panel" id="livePanel"></div>
+
+          <!-- the tools menu — where an ad-hoc tool like Cadence actually lives -->
+          <div class="fx-actions" id="actionsMenu">
+            <div class="fx-ah">Tools &amp; plugins</div>
+            <div class="fx-arow on" data-tool="__active"><span class="ai" style="background:linear-gradient(135deg,#9747ff,#0d99ff)">✦</span><span class="an"><b>Cadence</b><i>Launch comms · on your design system</i></span><span class="chk">✓</span></div>
+            <div class="fx-arow" data-tool="Weave"><span class="ai" style="background:#1abcfe">◈</span><span class="an"><b>Weave</b><i>Node-based AI asset workflows</i></span></div>
+            <div class="fx-arow" data-tool="Make"><span class="ai" style="background:#0acf83">✎</span><span class="an"><b>Make</b><i>Build from a prompt</i></span></div>
+            <div class="fx-adiv"></div>
+            <div class="fx-arow" data-tool="Buzz"><span class="ai" style="background:#f24e1e">▣</span><span class="an"><b>Buzz</b><i>Campaign assets at scale</i></span></div>
+            <div class="fx-arow" data-tool="Community plugins"><span class="ai" style="background:var(--sds-color-gray-500)">⁘</span><span class="an"><b>Browse plugins…</b><i>Community</i></span></div>
+          </div>
+
+          <!-- floating bottom toolbar -->
+          <div class="fx-toolbar">
+            <button class="fx-t on" title="Move" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">▶<span class="cv">▾</span></button>
+            <button class="fx-t" title="Frame" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">#<span class="cv">▾</span></button>
+            <button class="fx-t" title="Shape" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">▢<span class="cv">▾</span></button>
+            <button class="fx-t" title="Pen" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">✎<span class="cv">▾</span></button>
+            <button class="fx-t" title="Text" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">T<span class="cv">▾</span></button>
+            <button class="fx-t" title="Comment" data-chrome="Figma's own tools. Cadence lives under ⁘, and ▤ / { } open the rules and the infrastructure.">◌</button>
+            <button class="fx-t" id="actionsBtn" title="Actions, tools and plugins">⁘</button>
+            <span class="fx-tdiv"></span>
+            <button class="fx-t" id="rulesToggle" title="Show the system rules">▤</button>
+            <button class="fx-t" id="hoodToggle" title="Under the hood">{ }</button>
+            <button class="fx-t" title="Code" data-chrome="Dev Mode's code view — Cadence hands off to it, but it isn't part of this demo.">&lt;/&gt;</button>
+          </div>
+          <div class="fx-help" data-chrome="⁘ opens the tools menu · ▤ shows the system rules · { } opens the infrastructure · Live shows the company feed.">?</div>
+        </div>
+
+        <!-- right panel -->
+        <aside class="fx-right">
+          <div class="fx-rtop">
+            <span class="fx-av"></span><span class="cv">▾</span>
+            <span class="sp"></span>
+            <span class="play" data-chrome="Present mode is Figma's own — this whole page is the presentation.">▷</span><span class="cv">▾</span>
+            <button class="fx-share" data-chrome="Share is Figma's own. This prototype is already public — the URL is the share.">Share</button>
+          </div>
+          <div class="fx-rtabs"><b>Cadence</b><span data-chrome="In this file Cadence replaces the Design panel — the Brief, Generate and Review steps below are the inspector.">Design</span><span data-chrome="In this file Cadence replaces the Design panel — the Brief, Generate and Review steps below are the inspector.">Prototype</span><span class="zoom">100%</span></div>
+          <div class="insp-tabs" id="inspTabs"></div>
+          <div class="insp-body" id="inspBody"></div>
+        </aside>
+      </div>
+
+      <!-- under the hood -->
+      <div class="hood" id="hood">
+        <div class="hood-inner" id="hoodInner"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- HOW -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>How it works</div>
+      <h2>One message in. Reviewed designs out.</h2>
+      <p>Three steps, instead of a dozen requests.</p>
+    </div>
+    <div class="flow">
+      <div class="fnode"><span class="fs">01</span>
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 5h16M4 10h16M4 15h9"/></svg></div>
+        <h5>Describe</h5>
+        <p>Write the message in plain words. Cadence works out what kind it is: an error, an announcement, a milestone, a policy change, or one of seven more.</p>
+      </div>
+      <div class="fnode"><span class="fs">02</span>
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4M4 19h4"/><path d="M13 4l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg></div>
+        <h5>Design</h5>
+        <p>It picks where the message goes and how loud to be. Push only when it can't wait. Then it builds layered frames from your library: real components, variables and named layers.</p>
+      </div>
+      <div class="fnode"><span class="fs">03</span>
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h5>Review</h5>
+        <p>A review agent checks every frame against your rules. Ready to publish, needs review by a named team, or fix needed. AI suggests, people decide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PLATFORM -->
+<section id="platform">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>The platform</div>
+      <h2>Built for someone else's platform.</h2>
+    </div>
+    <div class="thesis">
+      <p class="big">Cadence doesn't own the canvas. It runs as a plugin inside Figma, <span class="u">next to Figma's own AI.</span></p>
+      <p>That shaped every decision: be clear about what it made, only touch what it's been given, and leave the file cleaner than it found it. A good third-party agent makes the platform feel stronger, not more crowded.</p>
+      <p><b>Clear attribution.</b> Everything Cadence makes lands in one section named “Cadence · [your message]”. Run it again and it replaces that section instead of adding another.</p>
+      <p><b>Scoped access.</b> It reads only the libraries and assets you point it at, and talks only to the AI model you choose.</p>
+      <p><b>Visible handoffs.</b> When a message needs a person, Cadence names the team and the reason: “Needs review · Legal. Mentions pricing.”</p>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+<!-- LOGIC -->
+<section id="logic">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>The logic</div>
+      <h2>The rules aren't in the agent. They're in your system.</h2>
+      <p>Rules a design-system team already owns. Written once, read on every message.</p>
+    </div>
+
+    <div class="lx">
+      <div class="lx-eb"><span class="dot"></span>The assets</div>
+      <h3>Five ways a message can look.</h3>
+      <p class="lx-sub">From no asset at all to the heaviest one a surface can hold.</p>
+      <div class="lx-kinds" id="lgKinds"></div>
+      <div class="lx-axis"></div>
+      <div class="lx-axl"><span>lighter</span><span>heavier</span></div>
+    </div>
+
+    <div class="lx">
+      <div class="lx-eb"><span class="dot"></span>Priority</div>
+      <h3>Who gets to interrupt.</h3>
+      <p class="lx-sub">Eleven comms types. Top wins when two messages collide.</p>
+      <div class="lx-pri" id="lgPri"></div>
+      <div class="lx-legend" id="lgLegend"></div>
+    </div>
+
+    <div class="lx">
+      <div class="lx-eb"><span class="dot"></span>Surfaces</div>
+      <h3>Where it shows up.</h3>
+      <p class="lx-sub">The louder the surface, the more it has to earn.</p>
+      <div class="lx-box lx-track">
+        <div class="lx-tr-h"><span>Less disruptive</span><span class="hot">More <span class="ar"></span></span></div>
+        <div class="lx-stops" id="lgLadder"></div>
+      </div>
+    </div>
+
+    <div class="lx">
+      <div class="lx-eb"><span class="dot"></span>Audiences</div>
+      <h3>One message, five voices.</h3>
+      <p class="lx-sub">Same launch. Each person hears what matters to them.</p>
+      <div class="lx-fan" id="lgVoice"></div>
+      <p class="lx-foot">Impression-capped, so nobody sees the same message twice.</p>
+    </div>
+
+    <div class="lx-eb" style="margin-top:54px"><span class="dot"></span>Review</div>
+    <h3 style="margin:0 0 20px;font-size:clamp(20px,2.4vw,25px);font-weight:800;letter-spacing:-.02em;color:var(--d-text)">Then: stable, or not yet?</h3>
+    <div class="lg-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      <div class="lg-card"><span class="lg-glyph" style="color:#14ae5c">●</span><h5>Stable</h5>
+        <div class="lg-scale">→ next release</div>
+        <p>Published components, every check passed, nothing downstream has to change.</p></div>
+      <div class="lg-card"><span class="lg-glyph" style="color:#e8b931">◐</span><h5>Unproven</h5>
+        <div class="lg-scale">→ a beta, not a delay</div>
+        <p>New pattern, or a change other teams absorb. Not wrong. Just not proven.</p></div>
+      <div class="lg-card"><span class="lg-glyph" style="color:#ec221f">✕</span><h5>Blocked</h5>
+        <div class="lg-scale">→ stays in the file</div>
+        <p>Failed a spec check. It would ship broken.</p></div>
+      <div class="lg-card"><span class="lg-glyph" style="color:#0d99ff">◉</span><h5>You choose</h5>
+        <div class="lg-scale">ship · public beta · company beta</div>
+        <p>Cadence recommends and says why. You decide where it goes.</p></div>
+    </div>
+
+    <p class="lg-note">The concept is built on <a href="https://github.com/figma/sds" target="_blank" rel="noopener">figma/sds</a>, real tokens, not approximations. The rules were already published in a format a machine can read. They just needed wiring up. The plugin works the same way with any published Figma library, and writes its rules to a DESIGN.md file any AI agent can read.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- THESIS -->
+<section id="thesis">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>The thesis</div>
+      <h2>Every product talks to its users. Almost none have a system for it.</h2>
+    </div>
+    <div class="thesis">
+      <p class="big">One message isn't one design. It's <span class="u">a dozen</span> — across a dozen surfaces, on a deadline, all supposed to feel like one thing.</p>
+      <p>Today that's a scramble. A banner here, a push there, a dialog someone remembers late. Each built by a different person. Each drifting a little.</p>
+
+      <p class="big" style="margin-top:38px">The hard part of a design system was never writing it. It's <span class="u">getting teams to adopt it</span>.</p>
+      <p>Adoption doesn't fail because teams disagree. It fails because following the system is slower than not following it. So make the rules an input, not a document. A team gets a complete, on-brand set in one pass — and the only way to get it that fast is to be on-system.</p>
+      <p>That matters most for the products moving fastest. They don't need a brand review. They need a sandbox with the rules already loaded, so they can build an idea and ship it the same day. <b>Speed to execution, concept to code.</b></p>
+
+      <p class="big" style="margin-top:38px">Comms is the pilot. <span class="u">The mechanism is the product.</span></p>
+      <p>Take the rules a company already has, make them machine-readable, let an agent resolve them into finished work. That generalises to every place a brand has to hold across many teams — which is what every enterprise design-system team is trying to solve.</p>
+      <p class="big" style="margin-top:38px">Agents from different makers <span class="u">will share one product.</span></p>
+      <p>Figma, Jira, Slack. Who built it, what it can see, and when it hands off should never be a mystery.</p>
+      <p style="margin-top:22px"><a class="btn btn-primary" href="https://www.julietorrisi.com/about-jf3b8" target="_blank" rel="noopener">Get notified at launch</a></p>
+      <p class="src">Extends Julie's product-communications concept — <a href="https://www.julietorrisi.com/home/design-ai" target="_blank" rel="noopener">julietorrisi.com/design-ai</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fnote">Cadence is an independent Figma plugin, coming soon to Figma Community. Not affiliated with or endorsed by Figma. The concept prototype's launches, surfaces and telemetry are fictional examples.</div>
+    <div class="fby">Designed by <b>Julie Torrisi</b></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span class="ti">✓</span><span id="toastMsg">Done</span></div>
+
+<script>
+/* ==========================================================================
+   THE SYSTEM  —  machine-readable rules the copilot resolves against.
+   Two libraries feed every decision:
+     1. VISUAL    — what asset, what size, what ratio, or none at all.
+     2. ECOSYSTEM — what kind of comms it is, how disruptive, which surface,
+                    how often, and what outranks what.
+   ========================================================================== */
+
+/* ---------- 1. VISUAL ASSET SYSTEM ---------- */
+const ICON_SIZES = [12,16,24];        // one of these, and only ONE per screen
+const HIFI_SIZES = [40,60,132];       // large icons, full colour, 3D
+const MOTION_MIN = 132;               // "speed bump" — motion never runs smaller
+const RATIOS = {
+  "16:7":{name:"billboard", w:16, h:7},
+  "16:9":{name:"billboard", w:16, h:9},
+  "9:16":{name:"immersive", w:9,  h:16}
+};
+const VISUAL_KINDS = {
+  none:{ label:"Words only", glyph:"—", color:"#9a9ea3",
+    rule:"No room, or a daily message. The words carry it.",
+    scale:"no asset" },
+  icon:{ label:"Icon", glyph:"◆", color:"#6b7178",
+    rule:"Filled or outline. One size per screen — never mixed.",
+    scale:"12 · 16 · 24 dp" },
+  hifi:{ label:"Hi-fi / 3D", glyph:"◇", color:"#9747ff",
+    rule:"Larger icons, full colour and 3D.",
+    scale:"40 · 60 · 132 dp" },
+  illo:{ label:"Illustration", glyph:"◧", color:"#0d99ff",
+    rule:"Two formats only. Nothing else is a valid crop.",
+    scale:"billboard 16:7 / 16:9 · immersive 9:16" },
+  motion:{ label:"Motion", glyph:"▷", color:"#14ae5c",
+    rule:"Speed-bump size or larger. Below that it's noise.",
+    scale:"≥ 132" }
+};
+
+/* how much room a surface actually has for a visual */
+const ROOM = {
+  none:  {label:"No room",      allow:["none"]},
+  small: {label:"Icon only",    allow:["icon","none"]},
+  medium:{label:"Icon + hi-fi", allow:["icon","hifi","none"]},
+  large: {label:"Full range",   allow:["icon","hifi","illo","motion","none"]}
+};
+
+/* ---------- 2. SURFACE LADDER (less → more disruptive) ---------- */
+const SURFACES = {
+  dashtips:  {n:1, name:"Dashboard tips & resources", fig:"Dev Mode / admin dashboard", room:"medium"},
+  nextsteps: {n:2, name:"Dashboard next steps",       fig:"Home · file browser",        room:"small"},
+  tooltip:   {n:3, name:"Tooltip",                    fig:"Canvas tooltip / coachmark", room:"none"},
+  floating:  {n:4, name:"Profile floating banner",    fig:"In-file banner",             room:"small"},
+  megaphone: {n:5, name:"Profile megaphone",          fig:"Community profile",          room:"medium"},
+  activity:  {n:6, name:"Activity feed notification", fig:"Notifications feed",         room:"none"},
+  feedmega:  {n:7, name:"Feed megaphone",             fig:"Community feed",             room:"large", guarded:true},
+  dialog:    {n:8, name:"Dialog",                     fig:"In-canvas modal",            room:"large"},
+  push:      {n:9, name:"Push notification",          fig:"Push / desktop",             room:"none", caution:true},
+  email:     {n:0, name:"Email",                      fig:"Out-of-product",             room:"large"},
+  social:    {n:0, name:"Owned social / blog",        fig:"Out-of-product",             room:"large"}
+};
+
+/* ---------- 3. THE ELEVEN COMMS TYPES ---------- */
+/* disruption tiers, coloured from SDS status ramps */
+const DIS = {
+  MD: {l:"More disruptive",  c:"var(--sds-color-red-500)",    bg:"var(--sds-color-red-100)",    fg:"var(--sds-color-red-700)",    s:"MD"},
+  MED:{l:"Medium disruption",c:"var(--sds-color-yellow-400)", bg:"var(--sds-color-yellow-100)", fg:"var(--sds-color-yellow-900)", s:"MED"},
+  LOW:{l:"Less disruptive",  c:"var(--sds-color-green-500)",  bg:"var(--sds-color-green-100)",  fg:"var(--sds-color-green-800)",  s:"LOW"}
+};
+const COMMS_TYPES = {
+  errors:{name:"Errors & warnings", dis:"MD",
+    def:"Something is blocking them, or about to.",
+    allow:["icon","none"], lead:"icon",
+    why:"This has to be read, not admired. Icon carries the status, copy carries the fix."},
+  legal:{name:"Trust, safety & policy", dis:"MD",
+    def:"A policy or terms change they need to know about.",
+    allow:["icon","none"], lead:"none",
+    why:"The words are the payload. A visual competes with them."},
+  deprecation:{name:"Deprecations & changes", dis:"MD",
+    def:"Something is going away, and they need to act.",
+    allow:["icon","hifi","illo"], lead:"icon",
+    why:"Worth a visual. Never a celebratory one."},
+  announce:{name:"Product & feature announcements", dis:"MED",
+    def:"Something new they can use.",
+    allow:["illo","motion","hifi","icon","none"], lead:"illo",
+    why:"The one type where the full range is open."},
+  onboarding:{name:"Onboarding reminders", dis:"MED",
+    def:"Finish what you started.",
+    allow:["icon","hifi","none"], lead:"hifi",
+    why:"Progress, not spectacle."},
+  incentive:{name:"Incentives & promotions", dis:"MED",
+    def:"There is something to earn.",
+    allow:["hifi","illo","icon"], lead:"hifi",
+    why:"A reward is easier to picture in colour."},
+  bestprac:{name:"Best practices", dis:"MED",
+    def:"A tip that would improve their work.",
+    allow:["icon","none"], lead:"icon",
+    why:"A tip is a sentence. Dress it up and it reads as an ad."},
+  education:{name:"Education & guidance", dis:"MED",
+    def:"Longer-form help and how-tos.",
+    allow:["illo","hifi","icon"], lead:"illo",
+    why:"Here the illustration does real work, not decoration."},
+  status:{name:"Status & utility", dis:"LOW",
+    def:"Something they did just finished.",
+    allow:["icon","none"], lead:"icon",
+    why:"Fires too often to carry art."},
+  activity:{name:"Activity", dis:"LOW",
+    def:"Someone else did something.",
+    allow:["none","icon"], lead:"none",
+    why:"Daily and high volume. Content leads, always."},
+  milestone:{name:"Milestones & recognition", dis:"LOW",
+    def:"Worth celebrating.",
+    allow:["motion","hifi","illo"], lead:"motion",
+    why:"The rare quiet type that earns motion."}
+};
+/* who gets to interrupt, in priority order — earlier wins when two comms collide.
+   0 is the default: no interruption, the content carries it. Every type has its own tier. */
+const PRIORITY = ["Content first","Errors & warnings","Trust, safety & policy","Deprecations & changes","Product & feature announcements","Onboarding reminders","Incentives & promotions","Best practices","Education & guidance","Status & utility","Activity","Milestones & recognition"];
+
+/* ---------- 4. THE RESOLVER — comms type ∩ surface room → one legal spec ---------- */
+function resolveVisual(v, typeKey, surfKey){
+  const t=COMMS_TYPES[typeKey], s=SURFACES[surfKey]||{room:"large",name:"—"}, room=ROOM[s.room];
+  const out=Object.assign({},v);
+  out.allowedHere = t.allow.filter(k=>room.allow.includes(k));
+  out.room = s.room; out.surfaceName = s.name;
+  out.violations=[];
+  if(v.kind==="none") return out;
+  if(!room.allow.includes(v.kind)) out.violations.push({t:"room", m:`${VISUAL_KINDS[v.kind].label} on a no-room surface (${s.name})`});
+  else if(!t.allow.includes(v.kind)) out.violations.push({t:"type", m:`${VISUAL_KINDS[v.kind].label} isn't allowed for ${t.name}`});
+  if(v.kind==="icon"){
+    if(!ICON_SIZES.includes(v.size)) out.violations.push({t:"size", m:`Icon at ${v.size} dp — off the 12 / 16 / 24 scale`});
+    if(v.mixed) out.violations.push({t:"mix", m:`Two icon sizes on one screen (${v.mixed})`, soft:true});
+  }
+  if(v.kind==="hifi" && !HIFI_SIZES.includes(v.size)) out.violations.push({t:"size", m:`${v.size} dp — off the 40 / 60 / 132 scale`});
+  if(v.kind==="motion" && v.size<MOTION_MIN) out.violations.push({t:"motion", m:`Motion at ${v.size} — below the ${MOTION_MIN} speed-bump minimum`});
+  if(v.kind==="illo" && !RATIOS[v.ratio]) out.violations.push({t:"ratio", m:`${v.ratio} is neither billboard (16:7 / 16:9) nor immersive (9:16)`});
+  return out;
+}
+function visualLabel(v){
+  if(v.kind==="none") return "Words only";
+  if(v.kind==="illo") return `${RATIOS[v.ratio]?RATIOS[v.ratio].name:"off-spec"} ${v.ratio}`;
+  if(v.kind==="motion") return `Motion ${v.size}`;
+  if(v.kind==="icon") return `Icon ${v.size} · ${v.style||"outline"}`;
+  return `${VISUAL_KINDS[v.kind].label} ${v.size}`;
+}
+function assetVisual(L,a){ return resolveVisual(a.visual||{kind:"none"}, L.commsType, a.surface); }
+
+/* ================= DATA ================= */
+const LAUNCHES = [
+  {
+    id:"codelayers", feature:"Code Layers · GA", team:"Dev Mode", pm:"Dev Mode PM", commsType:"announce",
+    color:"#0acf83", art:"linear-gradient(135deg,#0b3d2b,#12a866 70%,#0acf83)",
+    brief:"Code Layers is live — turn design layers into real interactive code on the canvas, with React and CSS in Dev Mode. Developers need to know. Keep it developer-focused, not marketing-y.",
+    chips:[{k:"WHO",v:"Dev Mode users"},{k:"MESSAGE",v:"Design layers, now real code"},{k:"SURFACES",v:"6 surfaces"}],
+    seats:214800, mix:{designer:.29,engineer:.40,pm:.17,content:.08,marketer:.06},
+    voice:{
+      generic:{h:"Introducing Code Layers",s:"A powerful new way to work, now available for everyone."},
+      designer:{h:"Your layers, now real code",s:"Design and code stay in sync — no more handoff drift."},
+      engineer:{h:"Production React & CSS, from the design",s:"Inspect and export real code in Dev Mode."},
+      pm:{h:"Design and code, finally in sync",s:"Fewer handoff cycles, faster ship."},
+      content:{h:"Your strings, straight into code",s:"Copy stays consistent from design to build."},
+      marketer:{h:"Campaign pages, built from the design",s:"Hand engineering a page that's already on-brand."}},
+    bundle:[
+      {label:"Dev Mode banner", render:"banner", bannerType:"informative", comp:true, cleared:true, match:true,
+        surface:"floating", visual:{kind:"icon", size:16, style:"outline"}},
+      {label:"In-app announcement", render:"modal", comp:true, cleared:true, match:true,
+        surface:"dialog", visual:{kind:"illo", ratio:"16:9"}},
+      {label:"Launch email", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"illo", ratio:"16:7"}},
+      {label:"Community post", render:"card", comp:true, cleared:true, match:true,
+        surface:"feedmega", visual:{kind:"illo", ratio:"16:9"}},
+      {label:"Blog / social hero", render:"social", comp:true, cleared:true, match:true,
+        surface:"social", visual:{kind:"illo", ratio:"16:9"}},
+      {label:"Release note", render:"release", comp:true, cleared:true, match:true,
+        surface:"dashtips", visual:{kind:"icon", size:16, style:"outline"}}
+    ],
+    policy:false, privacy:false,
+    infra:{ retrieval:[
+      {k:"◈",n:"Banner / Informative",s:"0.94",src:"library"},
+      {k:"◈",n:"Modal / Announcement",s:"0.91",src:"library"},
+      {k:"◧",n:"Asset rule · billboard 16:9 / 16:7",s:"0.93",src:"visual system"},
+      {k:"❏",n:"Brand · developer voice",s:"0.89",src:"brand kit"},
+      {k:"§",n:"Comms policy · launch",s:"0.86",src:"policy"},
+      {k:"↺",n:"Past launch · Dev Mode GA",s:"0.82",src:"history"}
+    ], tokensIn:4200, tokensOut:9100, latency:[["Extract brief",240],["Plan surfaces",180],["Generate 6 assets",3100],["Critic pass",520]] }
+  },
+  {
+    id:"motion", feature:"Figma Motion · GA", team:"Motion", pm:"Motion PM", commsType:"announce",
+    color:"#a259ff", art:"linear-gradient(135deg,#2a0f4d,#7b2fd6 65%,#a259ff)",
+    brief:"Big one — Figma Motion is GA: timeline-based animation built right into Design. Tell every editor. Make it feel alive, but we've already sent two announcements this week, so don't spam people.",
+    chips:[{k:"WHO",v:"All editors who haven't tried Motion"},{k:"MESSAGE",v:"Animate on the canvas, now GA"},{k:"SURFACES",v:"5 surfaces"}],
+    seats:486200, mix:{designer:.41,engineer:.25,pm:.14,content:.09,marketer:.11},
+    voice:{
+      generic:{h:"Figma Motion is here",s:"Animation, reimagined. Try it today."},
+      designer:{h:"Animate right on the canvas",s:"Timeline-based motion, no plugins."},
+      engineer:{h:"Motion with real code export",s:"Inspect timing and export CSS/React in Dev Mode."},
+      pm:{h:"Prototypes that feel real",s:"Show motion without a separate tool."},
+      content:{h:"Bring your words to life",s:"Time copy reveals with the animation."},
+      marketer:{h:"Motion for social, without an editor",s:"Animate a campaign asset and export it in minutes."}},
+    bundle:[
+      {label:"Canvas welcome modal", render:"modal", comp:true, cleared:true, match:true,
+        surface:"dialog", visual:{kind:"motion", size:132}},
+      {label:"Command-bar coachmark", render:"coach", comp:true, cleared:true, match:true,
+        surface:"tooltip", visual:{kind:"none"}},
+      {label:"Launch email", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"illo", ratio:"16:7"}},
+      {label:"Community post", render:"card", comp:true, cleared:true, match:true,
+        surface:"feedmega", visual:{kind:"illo", ratio:"16:9"}},
+      {label:"Social hero", render:"social", comp:true, cleared:true, match:true, freqWarn:true,
+        surface:"social", visual:{kind:"illo", ratio:"9:16"}}
+    ],
+    policy:false, privacy:false,
+    infra:{ retrieval:[
+      {k:"◈",n:"Modal / Announcement",s:"0.93",src:"library"},
+      {k:"◈",n:"Coachmark / Spotlight",s:"0.90",src:"library"},
+      {k:"▷",n:"Motion floor · 132 speed bump",s:"0.94",src:"visual system"},
+      {k:"❏",n:"Brand · AI visual system",s:"0.92",src:"brand kit"},
+      {k:"§",n:"Frequency cap · 3/wk",s:"0.88",src:"policy"},
+      {k:"↺",n:"Past launch · AI beta",s:"0.80",src:"history"}
+    ], tokensIn:4600, tokensOut:8700, latency:[["Extract brief",220],["Plan surfaces",190],["Generate 5 assets",2700],["Critic pass",560]] }
+  },
+  {
+    id:"shaders", feature:"Shader Fills & Effects · adoption", team:"Design Systems", pm:"Design Systems PM", commsType:"bestprac",
+    color:"#ff7262", art:"linear-gradient(135deg,#4d1c12,#c2472e 65%,#ff7262)",
+    brief:"Nudge designers to try Shader Fills & Effects from the fill picker. Point right at it. Use the new spotlight coachmark the DS team has been prototyping.",
+    chips:[{k:"WHO",v:"Designers who use lots of effects"},{k:"MESSAGE",v:"Procedural shaders in the fill picker"},{k:"SURFACES",v:"4 surfaces"}],
+    seats:96400, mix:{designer:.58,engineer:.16,pm:.08,content:.06,marketer:.12},
+    voice:{
+      generic:{h:"Shader Fills & Effects",s:"Beautiful new visual effects are now available."},
+      designer:{h:"Procedural shaders in the fill picker",s:"Rich materials without leaving Figma."},
+      engineer:{h:"Shader effects, Dev Mode-ready",s:"Convert effects to code on inspect."},
+      pm:{h:"More expressive visuals, faster",s:"Richer work without new tools."},
+      content:{h:"Set the mood, on-brand",s:"Effects that support the message."},
+      marketer:{h:"Campaign-grade texture, in one click",s:"Rich backdrops without a stock-art licence."}},
+    bundle:[
+      {label:"Properties-panel coachmark", render:"coach", comp:false, cleared:true, match:true,
+        surface:"tooltip", visual:{kind:"none"}},
+      {label:"In-app tip card", render:"nudge", comp:true, cleared:true, match:true,
+        surface:"dashtips", visual:{kind:"icon", size:24, style:"filled"}},
+      {label:"Launch email", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"icon", size:24, style:"filled"}},
+      {label:"Release note", render:"release", comp:true, cleared:true, match:true,
+        surface:"dashtips", visual:{kind:"icon", size:16, style:"outline", mixed:"16 and 24"}}
+    ],
+    policy:false, privacy:false,
+    infra:{ retrieval:[
+      {k:"◈",n:"Coachmark / Spotlight (beta)",s:"0.72",src:"library"},
+      {k:"◈",n:"Card / Tip",s:"0.90",src:"library"},
+      {k:"◆",n:"Icon scale · one size per screen",s:"0.91",src:"visual system"},
+      {k:"❏",n:"Brand · product voice",s:"0.88",src:"brand kit"},
+      {k:"§",n:"Comms policy · nudges",s:"0.84",src:"policy"}
+    ], tokensIn:3800, tokensOut:6900, latency:[["Extract brief",210],["Plan surfaces",170],["Generate 4 assets",2200],["Critic pass",480]] }
+  },
+  {
+    id:"agent", feature:"Figma Agent · connectors add-on", team:"Billing", pm:"Billing PM", commsType:"legal",
+    color:"#0d99ff", art:"linear-gradient(135deg,#06304f,#0a76c4 65%,#0d99ff)",
+    brief:"Figma Agent's external connectors (Notion, Slack, GitHub) are moving to a paid add-on. Legal needs workspace admins notified about the new pricing before it goes live. Must be accurate and on the record.",
+    chips:[{k:"WHO",v:"Workspace admins on affected plans"},{k:"MESSAGE",v:"Agent connectors — new add-on pricing"},{k:"SURFACES",v:"4 surfaces"}],
+    seats:8940, mix:{designer:.18,engineer:.31,pm:.34,content:.06,marketer:.11},
+    voice:{
+      generic:{h:"A change to Figma Agent connectors",s:"Connectors are moving to a paid add-on."},
+      designer:{h:"Connect Agent to your tools",s:"Bring Notion and Slack context into Figma."},
+      engineer:{h:"Wire Agent to GitHub",s:"Connect your repo and tools to the workflow."},
+      pm:{h:"Agent that plugs into your stack",s:"Notion, Slack, GitHub — in one place."},
+      content:{h:"Agent with your sources connected",s:"Pull real context into the work."},
+      marketer:{h:"Agent, connected to your campaign docs",s:"Brief in Notion, work in Figma."}},
+    bundle:[
+      {label:"Account notice modal", render:"account", comp:true, cleared:true, match:true,
+        surface:"dialog", visual:{kind:"icon", size:24, style:"filled"}},
+      {label:"Admin email of record", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"none"}},
+      {label:"In-app banner (Upsell)", render:"banner", bannerType:"upsell", comp:true, cleared:true, match:true,
+        surface:"floating", visual:{kind:"icon", size:16, style:"filled"}},
+      {label:"Help-center notice", render:"release", comp:true, cleared:true, match:true,
+        surface:"dashtips", visual:{kind:"none"}}
+    ],
+    policy:true, policyLabel:"Pricing &amp; billing change", policyTeams:["Legal","Finance","Brand"], privacy:false,
+    infra:{ retrieval:[
+      {k:"◈",n:"Modal / Account notice",s:"0.95",src:"library"},
+      {k:"—",n:"Trust, safety & policy · content-led, no art",s:"0.96",src:"visual system"},
+      {k:"❏",n:"Brand · account voice",s:"0.90",src:"brand kit"},
+      {k:"§",n:"Policy · billing notice (legal)",s:"0.94",src:"policy"},
+      {k:"§",n:"Policy · required disclosure",s:"0.91",src:"policy"}
+    ], tokensIn:4100, tokensOut:6200, latency:[["Extract brief",230],["Plan surfaces",160],["Generate 4 assets",2000],["Critic pass",610]] }
+  },
+  {
+    id:"genplugins", feature:"Generative Plugins · Community", team:"Community", pm:"Community PM", commsType:"announce",
+    color:"#f24e1e", art:"linear-gradient(135deg,#4d1c12,#d1472e 65%,#f24e1e)",
+    brief:"Spotlight the first partner Generative Plugins on Community this weekend — tools people built from a prompt. The partner sent us the hero art already.",
+    chips:[{k:"WHO",v:"Community browsers, plugin builders"},{k:"MESSAGE",v:"Build a plugin from a prompt"},{k:"SURFACES",v:"4 surfaces"}],
+    seats:152300, mix:{designer:.31,engineer:.38,pm:.11,content:.07,marketer:.13},
+    voice:{
+      generic:{h:"Generative Plugins on Community",s:"Explore powerful new plugins from our partners."},
+      designer:{h:"Build a plugin from a prompt",s:"No code — describe the tool you want."},
+      engineer:{h:"Prompt-built plugins, yours to extend",s:"Start from a prompt, refine in code."},
+      pm:{h:"Tools your team can build itself",s:"Less waiting on custom tooling."},
+      content:{h:"Make the tool you keep wishing for",s:"Describe it, and it's built."},
+      marketer:{h:"Automate the asset resize you dread",s:"Describe the batch job — it makes the plugin."}},
+    bundle:[
+      {label:"Community spotlight card", render:"card", comp:true, cleared:true, match:true,
+        surface:"feedmega", visual:{kind:"illo", ratio:"2:3", partner:true}},
+      {label:"Feed teaser loop", render:"nudge", comp:true, cleared:true, match:true,
+        surface:"feedmega", visual:{kind:"motion", size:96}},
+      {label:"Social hero", render:"social", comp:true, cleared:true, match:true, copyOver:true,
+        surface:"social", visual:{kind:"illo", ratio:"16:9"}},
+      {label:"Launch email", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"illo", ratio:"16:7"}}
+    ],
+    policy:false, privacy:false,
+    infra:{ retrieval:[
+      {k:"◈",n:"Card / Community",s:"0.92",src:"library"},
+      {k:"❏",n:"Partner asset · hero (2:3)",s:"0.79",src:"asset library"},
+      {k:"◧",n:"Ratio spec · billboard / immersive",s:"0.95",src:"visual system"},
+      {k:"▷",n:"Motion floor · 132 speed bump",s:"0.93",src:"visual system"},
+      {k:"§",n:"Copy limits · social hero",s:"0.85",src:"policy"}
+    ], tokensIn:3600, tokensOut:6400, latency:[["Extract brief",200],["Plan surfaces",150],["Generate 4 assets",1900],["Critic pass",540]] }
+  },
+  {
+    id:"weave", feature:"Figma Weave · win-back", team:"Growth", pm:"Growth PM", commsType:"incentive",
+    color:"#1abcfe", art:"linear-gradient(135deg,#083b4d,#0f93c4 65%,#1abcfe)",
+    brief:"Win back people who tried AI generation once and bounced. Use behavioral signals to find users who'd benefit from Weave's node-based workflows but never came back.",
+    chips:[{k:"WHO",v:"Inferred lapsed AI-generation users"},{k:"MESSAGE",v:"Multi-model asset workflows in Weave"},{k:"SURFACES",v:"3 surfaces"}],
+    seats:41700, mix:{designer:.27,engineer:.27,pm:.13,content:.09,marketer:.24},
+    voice:{
+      generic:{h:"Come back to Figma Weave",s:"There's a lot new since you last visited."},
+      designer:{h:"Node-based AI workflows",s:"Chain models and style transfer on the canvas."},
+      engineer:{h:"Composable AI, on a canvas",s:"Wire multi-model steps visually."},
+      pm:{h:"Repeatable AI workflows",s:"Standardize how your team makes assets."},
+      content:{h:"Consistent AI-made assets",s:"Same workflow, on-brand every time."},
+      marketer:{h:"One workflow, a whole campaign's assets",s:"Same recipe, every size, on-brand."}},
+    bundle:[
+      {label:"File-browser nudge", render:"nudge", comp:true, cleared:true, match:true,
+        surface:"nextsteps", visual:{kind:"icon", size:24, style:"filled"}},
+      {label:"Win-back email", render:"email", comp:true, cleared:true, match:true,
+        surface:"email", visual:{kind:"hifi", size:60}},
+      {label:"In-app tip", render:"coach", comp:true, cleared:true, match:true,
+        surface:"tooltip", visual:{kind:"none"}}
+    ],
+    policy:false, privacy:true, privacyLabel:"Behavioral targeting from AI-usage signals", privacyTeams:["Privacy","Growth"],
+    infra:{ retrieval:[
+      {k:"◈",n:"Card / Nudge",s:"0.90",src:"library"},
+      {k:"◇",n:"Hi-fi scale · 40 / 60 / 132",s:"0.90",src:"visual system"},
+      {k:"❏",n:"Brand · growth voice",s:"0.86",src:"brand kit"},
+      {k:"§",n:"Policy · behavioral targeting",s:"0.93",src:"policy"},
+      {k:"↺",n:"Segment · lapsed AI-generation",s:"0.81",src:"audience"}
+    ], tokensIn:3900, tokensOut:6000, latency:[["Extract brief",210],["Plan surfaces",160],["Generate 3 assets",1650],["Critic pass",500]] }
+  }
+];
+
+/* ==========================================================================
+   THE INPUT — six doors into the same brief.
+   A designer arrives with frames. An engineer arrives with a diff. A content
+   designer arrives with copy. A PM arrives with a Slack message. A marketer
+   arrives with a prototype link. Someone who knows exactly what they want
+   fills in the form. Cadence normalises all six into one structured brief.
+   ========================================================================== */
+const INPUT_MODES = [
+  {id:"frames", label:"Screens", glyph:"▦",
+    hint:"Select frames, paste a Figma link, or drop exports.",
+    accepts:"figma.com/design · .fig · .png · .jpg · .svg · .pdf",
+    eg:"figma.com/design/…?node-id=204:18"},
+  {id:"code", label:"Code", glyph:"</>",
+    hint:"Paste a PR link, or drop the component file.",
+    accepts:"github.com/…/pull · .diff · .patch · .tsx · .jsx · .vue · .swift · .kt · tokens.json",
+    eg:"github.com/figma/dev-mode/pull/2841"},
+  {id:"copy", label:"Copy", glyph:"¶",
+    hint:"Paste the copy, or drop the doc it lives in.",
+    accepts:"Google Doc · Notion · .docx · .md · .txt · strings.csv · en.json",
+    eg:"docs.google.com/document/d/…"},
+  {id:"proto", label:"Prototype", glyph:"▷",
+    hint:"Paste a prototype link and it walks the flow.",
+    accepts:"figma.com/proto · .mp4 · .mov · Loom",
+    eg:"figma.com/proto/…?node-id=12:4"},
+  {id:"brief", label:"Message", glyph:"✎",
+    hint:"Paste a Slack thread, a ticket, or the release note.",
+    accepts:"Slack permalink · Linear · Jira · Notion · .pdf · .docx",
+    eg:"figma.slack.com/archives/C02…/p17…"},
+  {id:"form", label:"Form", glyph:"☰",
+    hint:"Nothing to bring — just tell it.",
+    accepts:"no file needed", eg:""}
+];
+const addedInputs = {};   // what the person dropped or pasted, per launch
+/* who's arriving, what they usually bring, and what they say they're doing */
+const AUTHORS = {
+  designer:{mode:"frames", intent:L=>`I've got the screens for ${featOf(L)} — I want people to understand the flow before they land in it.`},
+  engineer:{mode:"code",   intent:L=>`${featOf(L)} is merged and going out. Developers need to know. Keep it technical, not marketing-y.`},
+  pm:      {mode:"brief",  intent:L=>L.brief},
+  content: {mode:"copy",   intent:L=>`I wrote the copy for ${featOf(L)}. I want it to land for beginners <i>and</i> engineers, not just designers.`},
+  marketer:{mode:"proto",  intent:L=>`Launch week for ${featOf(L)}. I need the whole campaign set, on-brand, without waiting on a review queue.`}
+};
+function featOf(L){ return L.feature.split("·")[0].trim(); }
+
+const INPUTS = {
+  codelayers:{
+    frames:["Dev Mode / Code Layers — empty","Dev Mode / Code Layers — inspect","Onboarding / 1 · What changed","Onboarding / 2 · Export"],
+    code:`// dev-mode/code-layers/inspect.tsx\nexport function CodeLayer({ node }: { node: SceneNode }) {\n  const react = useGeneratedCode(node, 'react')\n  const css   = useGeneratedCode(node, 'css')\n  return <InspectPanel react={react} css={css} live />\n}`,
+    copy:`Your layers, now real code.\nDesign and code stay in sync — no more handoff drift.\n\n(Needs a version that works for engineers in Dev Mode, not just designers.)`,
+    proto:{flow:"Code Layers · first run", steps:["Select a layer","Open Dev Mode","Copy the React"]}
+  },
+  motion:{
+    frames:["Motion / Timeline — default","Motion / Keyframe editor","Onboarding / 1 · Add motion","Onboarding / 2 · Export"],
+    code:`// motion/export/css.ts\nexport const toKeyframes = (track: Track) =>\n  track.frames\n    .map(f => \`\${f.pct}% { transform: \${f.transform}; }\`)\n    .join('\\n')`,
+    copy:`Animate right on the canvas.\nTimeline-based motion, no plugins.\n\n(We've already sent two announcements this week — don't spam people.)`,
+    proto:{flow:"Motion · make it move", steps:["Add a keyframe","Scrub the timeline","Export the CSS"]}
+  },
+  shaders:{
+    frames:["Fill picker / Shaders tab","Effects / Shader parameters","Tip card / Shader intro"],
+    code:`// tokens/effects/shader.ts\nexport const shaderFill = {\n  type: 'SHADER',\n  program: 'noise-warp',\n  params: { scale: 0.4, seed: 12 }\n} satisfies Paint`,
+    copy:`Procedural shaders in the fill picker.\nRich materials without leaving Figma.\n\n(Point right at the control — this is a nudge, not a launch.)`,
+    proto:{flow:"Shaders · from the fill picker", steps:["Open fills","Pick a shader","Tune the params"]}
+  },
+  agent:{
+    frames:["Billing / Add-on notice","Admin / Connectors settings"],
+    code:`// billing/plans/connectors.ts\nexport const AGENT_CONNECTORS = {\n  sku: 'agent-connectors-addon',\n  effective: '2026-11-01',\n  requiresNotice: true   // legal: 30 days\n}`,
+    copy:`Agent connectors are moving to a paid add-on on 1 November.\nWorkspace admins on affected plans need to review the details.\n\n(Legal has to sign this off. Accurate, on the record, no marketing tone.)`,
+    proto:{flow:"Agent · connectors", steps:["Open Agent","Connect a source","Review the plan change"]}
+  },
+  genplugins:{
+    frames:["Community / Spotlight card","Plugin / Built from a prompt","Partner / Hero art (2:3)"],
+    code:`// community/spotlight/partner.json\n{\n  "slug": "generative-plugins-launch",\n  "hero": "partner-hero.png",   // 2:3 — supplied by partner\n  "surface": "feed-megaphone"\n}`,
+    copy:`Build a plugin from a prompt.\nNo code — describe the tool you want.\n\n(Partner already sent the hero art. Going out this weekend.)`,
+    proto:{flow:"Generative Plugins · build one", steps:["Describe the tool","Watch it build","Publish to Community"]}
+  },
+  weave:{
+    frames:["Weave / Node graph — beginner","Weave / Run panel","Onboarding / 1 · Pick a model","Onboarding / 2 · Chain a step"],
+    code:`// weave/graph/run.ts\nexport async function runGraph(g: Graph, input: Asset) {\n  return g.nodes.reduce(\n    async (acc, n) => n.run(await acc), Promise.resolve(input)\n  )\n}`,
+    copy:`I wrote the copy for the new Weave tooling — I want it to show how it works\nfor beginner designers, engineers, and everyone in between.\n\nNode-based AI workflows.\nChain models and style transfer on the canvas.`,
+    proto:{flow:"Weave · your first graph", steps:["Add a model node","Chain a second","Run the graph"]}
+  }
+};
+
+/* ================= RESOLVE PICKS (WHAT/WHO/WHERE/HOW OFTEN/WHAT VISUAL) ================= */
+function visualSummary(L){
+  const tally={};
+  L.bundle.forEach(a=>{ const v=a.visual||{kind:"none"}; tally[v.kind]=(tally[v.kind]||0)+1; });
+  const order=["illo","motion","hifi","icon","none"];
+  return order.filter(k=>tally[k]).map(k=>{
+    if(k==="none") return `${tally[k]} content-led`;
+    if(k==="illo") return `${tally[k]} illustration${tally[k]>1?"s":""}`;
+    if(k==="icon") return `${tally[k]} icon set${tally[k]>1?"s":""}`;
+    if(k==="motion") return `${tally[k]} motion`;
+    return `${tally[k]} hi-fi / 3D`;
+  }).join(" · ");
+}
+function freqFor(L){
+  if(L.id==="motion") return {v:"Held to 1 announcement (2 already sent this week)", flag:true};
+  if(L.id==="weave")  return {v:"1× per user, dismissable · impression-capped"};
+  if(L.policy)        return {v:"1× required notice — cap does not apply"};
+  return {v:"1× on launch, per user"};
+}
+function picksFor(L){
+  const t=COMMS_TYPES[L.commsType], d=DIS[t.dis];
+  const surfs=L.bundle.map(a=>SURFACES[a.surface]).filter(Boolean);
+  const inProduct=surfs.filter(s=>s.n>0);
+  const topSurf=inProduct.length?inProduct.reduce((m,s)=>s.n>m.n?s:m):null;
+  const p=[];
+  p.push({k:"Comms type", dim:"WHAT", v:t.name, tag:d.l, tagBg:d.bg, tagFg:d.fg,
+    why:`${t.def}<span class="pk-src">1 of 11 comms types</span>`});
+  const sc=seatCounts(L), top=sc[0];
+  p.push({k:"Audience", dim:"WHO", v:`${fmtN(L.seats||0)} seats · ${sc.length} disciplines`, seats:sc,
+    why:`${L.chips[0].v}. Mostly <b>${top.d.label}s</b>, at ${Math.round(top.share*100)}%.`});
+  p.push({k:"Surfaces", dim:"WHERE", v:`${L.bundle.length} surfaces${topSurf?` · up to ${topSurf.name.toLowerCase()}`:""}`,
+    why:`The lowest rung that still lands it${topSurf?`. Nothing above <b>${topSurf.name.toLowerCase()}</b>`:""}.`});
+  const f=freqFor(L);
+  p.push({k:"Frequency", dim:"HOW OFTEN", v:f.v, flag:!!f.flag,
+    why:"Capped per person, so nobody sees it twice."});
+  p.push({k:"Visual assets", dim:"WHAT VISUAL", v:visualSummary(L), asset:true,
+    why:`${t.why}<span class="pk-src">comms type × surface room → one spec</span>`});
+  p.push({k:"Voice", dim:"WHAT VOICE", v:`${L.bundle.length*DISCIPLINES.length} copy variants · ${DISCIPLINES.length} per asset`,
+    why:`Same components, same spec. Only the words change.<span class="pk-src">one per discipline</span>`});
+  p.push({k:"System", v:"Built from the design system",
+    why:"Published components and tokens. Nothing drawn from scratch."});
+  return p;
+}
+
+/* ================= GOVERNANCE ================= */
+function evalAsset(L,a){
+  const rv = assetVisual(L,a);
+  const hard = rv.violations.filter(x=>!x.soft);
+  const soft = rv.violations.filter(x=>x.soft);
+  if(a.comp===false)    return {status:"review", label:"Off-library component", route:"Design Systems", rv};
+  if(a.cleared===false) return {status:"fix", label:"Asset rights not cleared", rv};
+  if(hard.length)       return {status:"fix", label:hard[0].m, rv};
+  if(a.copyOver)        return {status:"fix", label:"Copy over limit", rv};
+  if(soft.length)       return {status:"ok", warn:true, label:soft[0].m, rv};
+  if(a.freqWarn)        return {status:"ok", warn:true, label:"Frequency at cap", rv};
+  return {status:"ok", label:"On-system", rv};
+}
+function evaluate(L){
+  const assets = L.bundle.map(a=>({a, r:evalAsset(L,a)}));
+  const nFix = assets.filter(x=>x.r.status==="fix").length;
+  const nReview = assets.filter(x=>x.r.status==="review").length;
+  const nOk = assets.filter(x=>x.r.status==="ok").length;
+  const T = COMMS_TYPES[L.commsType];
+  const vio = k => assets.flatMap(x=>x.r.rv.violations.filter(y=>y.t===k));
+  const checks=[];
+
+  /* --- visual asset system --- */
+  const placement = vio("room").concat(vio("type"));
+  checks.push(placement.length===0
+    ? {s:"pass",l:"Visual treatment fits the comms type",d:`${T.name} allows ${T.allow.map(k=>VISUAL_KINDS[k].label.toLowerCase()).join(", ")}.`}
+    : {s:"fail",l:"Visual not allowed here",d:placement[0].m+" — blocked."});
+  const nNone = L.bundle.filter(a=>(a.visual||{}).kind==="none").length;
+  checks.push({s:"pass",l:"Content leads where it should",d:nNone
+    ? `${nNone} asset${nNone>1?"s":""} ship with no visual.`
+    : "Every surface here has room for its asset."});
+  const sizes = vio("size").concat(vio("motion"));
+  checks.push(sizes.length===0
+    ? {s:"pass",l:"Sizes on the dp scale",d:"12 / 16 / 24 · 40 / 60 / 132 · motion ≥ 132."}
+    : {s:"fail",l:"Off the size scale",d:sizes[0].m+" — blocked."});
+  const ratios = vio("ratio");
+  checks.push(ratios.length===0
+    ? {s:"pass",l:"Illustrations are billboard or immersive",d:"16:7 or 16:9, or 9:16."}
+    : {s:"fail",l:"Off-format illustration",d:ratios[0].m+" — blocked. Reframe to a billboard crop or replace."});
+  const mixes = vio("mix");
+  checks.push(mixes.length===0
+    ? {s:"pass",l:"One icon size per screen",d:"No screen mixes scales."}
+    : {s:"warn",l:"Icon scale mixed on one screen",d:mixes[0].m+" — flagged, not blocked."});
+
+  /* --- system + rights --- */
+  checks.push(nReview===0 && !assets.some(x=>x.a.comp===false)
+    ? {s:"pass",l:"All components on-system",d:"All published components."}
+    : {s:"warn",l:"New pattern in the bundle",d:`${assets.filter(x=>x.a.comp===false).length} asset uses a beta component.`});
+  const uncleared = assets.some(x=>x.a.cleared===false);
+  checks.push(!uncleared
+    ? {s:"pass",l:"Asset rights cleared",d:"Usage rights on file."}
+    : {s:"fail",l:"Asset rights not cleared",d:"One asset has no clearance."});
+  const sc2=seatCounts(L);
+  checks.push({s:"pass",l:"Voiced per discipline",d:`${L.bundle.length*DISCIPLINES.length} variants — ${DISCIPLINES.length} per asset. Same spec, different words.`});
+  const copyover = assets.some(x=>x.a.copyOver);
+  checks.push(!copyover
+    ? {s:"pass",l:"Copy within limits",d:"Everything fits its component."}
+    : {s:"fail",l:"Copy over limit",d:"One asset will truncate on device."});
+  const surfs = L.bundle.map(a=>SURFACES[a.surface]).filter(Boolean);
+  const topRung = surfs.filter(s=>s.n>0).reduce((m,s)=>s.n>(m?m.n:0)?s:m, null);
+  const overReach = T.dis==="LOW" && topRung && topRung.n>=8;
+  checks.push(!overReach
+    ? {s:"pass",l:"Surface matches the disruption tier",d:topRung
+        ? `Nothing above ${topRung.name.toLowerCase()}.`
+        : "Out-of-product only — nothing interrupts anyone."}
+    : {s:"warn",l:"Surface above the tier",d:"Step it down a rung."});
+  const freqwarn = assets.some(x=>x.a.freqWarn);
+  checks.push(freqwarn
+    ? {s:"warn",l:"Frequency at cap",d:"At the weekly cap — flagged, not blocked."}
+    : {s:"pass",l:"Frequency within cap",d:"Capped per person."});
+  checks.push(!L.policy
+    ? {s:"pass",l:"No brand/legal/financial triggers",d:"Nothing needs sign-off."}
+    : {s:"warn",l:"Policy review required",d:`${L.policyLabel}.`});
+  checks.push(!L.privacy
+    ? {s:"pass",l:"Privacy & data use OK",d:"First-party eligibility only."}
+    : {s:"warn",l:"Privacy review required",d:`${L.privacyLabel}.`});
+
+  let decision, teams=[], reason;
+  if(nFix>0){
+    decision="fix";
+    reason=`${nFix} of ${L.bundle.length} can't ship. They break the asset spec, and no sign-off overrides a spec. The rest is ready.`;
+  } else if(nReview>0 || L.policy || L.privacy){
+    decision="review";
+    const set=new Set();
+    assets.forEach(x=>{ if(x.r.route) set.add(x.r.route); });
+    if(L.policy) L.policyTeams.forEach(t=>set.add(t));
+    if(L.privacy) L.privacyTeams.forEach(t=>set.add(t));
+    teams=[...set];
+    const rs=[];
+    if(assets.some(x=>x.a.comp===false)) rs.push("a new pattern to promote");
+    if(L.policy) rs.push("pricing / legal content");
+    if(L.privacy) rs.push("behavioral targeting");
+    reason=`On-spec, but ${rs.join(" and ")} needs a human. The whole set goes over with it.`;
+  } else {
+    decision="ready";
+    reason="On-system, on-spec, right surface. Nothing here needs a human.";
+  }
+  const conf = decision==="ready"?96:decision==="review"?89:99;
+  return {assets, checks, decision, teams, reason, conf, nOk, nReview, nFix};
+}
+
+LAUNCHES.forEach(L=>{ L._origType=L.commsType; });
+
+/* ================= STATE ================= */
+let selected = LAUNCHES[0].id;
+let stage = 1;                 // 1 brief · 2 generate+govern · 3 submitted
+const genDone = {}, subState = {}, resultCache = {}, destState = {};
+let hoodOpen = false;
+let animTimers = [];
+/* the seats Figma is trying to capture — every one of them reads the same launch differently */
+const DISCIPLINES=[
+  {id:"designer", label:"Designer", color:"#9747ff", jtbd:"ships the craft — wants to know what changes on their canvas"},
+  {id:"engineer", label:"Engineer", color:"#0d99ff", jtbd:"lives in Dev Mode — wants the output, the code, the spec"},
+  {id:"pm",       label:"PM",       color:"#14ae5c", jtbd:"owns the outcome — wants the cycle-time and the risk"},
+  {id:"content",  label:"Content",  color:"#f24e1e", jtbd:"owns the words — wants to know where copy lives and how it travels"},
+  {id:"marketer", label:"Marketer", color:"#ff7262", jtbd:"ships campaigns in Buzz and Slides — wants speed and on-brand output"}
+];
+const DISC_BY_ID = Object.fromEntries(DISCIPLINES.map(d=>[d.id,d]));
+function seatCounts(L){
+  const mix = L.mix || {designer:.36,engineer:.28,pm:.16,content:.10,marketer:.10};
+  return DISCIPLINES.map(d=>({d, n: Math.round((L.seats||0)*(mix[d.id]||0)), share: mix[d.id]||0}))
+    .filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
+}
+function fmtN(n){ return n.toLocaleString(); }
+let currentDisc="designer";
+let oneBlast=false;   // the "old way" comparison — one message for everyone
+let author="pm";      // who's bringing the input
+let inputMode="brief";// what they're bringing
+let liveView=false;   // the company-wide beta feed
+function clearTimers(){animTimers.forEach(t=>clearTimeout(t));animTimers=[];}
+
+/* ================= QUEUE ================= */
+function launchBadge(L){
+  const st=subState[L.id];
+  if(st) return `<span class="lc-badge b-sub">✓ Submitted</span>`;
+  const v=resultCache[L.id];
+  if(!v) return `<span class="lc-badge b-idle">● Not built</span>`;
+  if(v.decision==="ready") return `<span class="lc-badge b-ready">Ready to publish</span>`;
+  if(v.decision==="review") return `<span class="lc-badge b-review">Needs review</span>`;
+  return `<span class="lc-badge b-fix">Fix required</span>`;
+}
+function renderQueue(){
+  document.getElementById("launchList").innerHTML = LAUNCHES.map(L=>`
+    <div class="lcard ${L.id===selected?'active':''}" data-id="${L.id}">
+      <div class="lc-top"><span class="lc-dot" style="background:${L.color}"></span><span class="lc-feat">${L.feature}</span></div>
+      <div class="lc-team">${L.team}</div>
+      ${launchBadge(L)}
+    </div>`).join("");
+  document.querySelectorAll(".lcard").forEach(el=>el.addEventListener("click",()=>select(el.dataset.id)));
+  document.getElementById("launchCount").textContent = LAUNCHES.filter(L=>!subState[L.id]).length;
+}
+
+/* ================= COPILOT + STAGES ================= */
+function copilotLine(L){
+  if(stage===1) return `<span>Build the launch bundle for <b style="color:#1e1e1e">${L.feature}</b></span>`;
+  if(stage===2) return `<span>Generating ${L.bundle.length} on-brand designs × ${DISCIPLINES.length} disciplines…</span>`;
+  return `<span>Bundle submitted for review ✦</span>`;
+}
+function render(){
+  const L=LAUNCHES.find(x=>x.id===selected);
+  document.getElementById("copilotText").innerHTML=copilotLine(L);
+  renderTabs(L); renderCanvas(L); renderInspector(L); renderHood(L); renderLayers(L);
+  if(rulesOpen) renderRules(L);
+}
+function renderTabs(L){
+  const sub=!!subState[L.id];
+  const done={1:!!genDone[L.id]||stage>1, 2:sub, 3:sub};
+  const steps=[{n:1,t:"Brief"},{n:2,t:"Generate"},{n:3,t:"Review"}];
+  document.getElementById("inspTabs").innerHTML=steps.map(s=>{
+    let cls="insp-tab"; if(stage===s.n)cls+=" active"; if(done[s.n])cls+=" done";
+    const dis=(s.n===2&&false)||(s.n===3&&!genDone[L.id]);
+    return `<div class="${cls}" data-step="${s.n}" aria-disabled="${dis}"><span class="tn">${done[s.n]&&stage!==s.n?'✓':s.n}</span>${s.t}</div>`;
+  }).join("");
+  document.querySelectorAll(".insp-tab").forEach(t=>t.addEventListener("click",()=>{
+    if(t.getAttribute("aria-disabled")==="true")return;
+    stage=+t.dataset.step; render();
+  }));
+}
+
+/* ---------- CANVAS ---------- */
+function renderCanvas(L){
+  const area=document.getElementById("canvasArea");
+  if(stage===1){
+    area.innerHTML=`
+      <div class="stage-banner"><span class="sb-ico">✎</span>Bring whatever you already have.</div>
+      <div class="composer" id="composer"></div>`;
+    renderComposer(L);
+    return;
+  }
+  // stage 2 & 3: gallery
+  area.innerHTML=`
+    <div class="bundle-meta">
+      <div><div class="bm-t">${L.feature} — launch bundle</div><div class="bm-s">${L.bundle.length} designs · ${L.bundle.length*DISCIPLINES.length} copy variants · built from your design system</div></div>
+      <div class="agents-strip"><span class="ag"><span class="agd" style="background:var(--violet)"></span>Design agent · your Figma UI kit + Variables</span><span class="ag"><span class="agd" style="background:var(--blue)"></span>Content Design agent · ${DISCIPLINES.length} disciplines, ${DISCIPLINES.length} voices</span></div>
+    </div>
+    <div class="disc-bar" id="discBar"></div>
+    <div class="gallery" id="gallery"></div>`;
+  const g=document.getElementById("gallery");
+  const v=resultCache[L.id]||evaluate(L);
+  const submitted=!!subState[L.id];
+  L.bundle.forEach((a,i)=>{
+    const r=v.assets[i].r;
+    const card=document.createElement("div");
+    card.className="asset";
+    let statusChip=`<span class="af-status st-gen">✦ gen…</span>`;
+    let flag="";
+    if(stage===3||genDone[L.id]){
+      if(r.status==="ok") statusChip=`<span class="af-status st-ok">✓ ${a.freqWarn?'cap':'on-system'}</span>`;
+      else if(r.status==="review"){ statusChip=`<span class="af-status st-review">! review</span>`; flag=`<div class="asset-flag review">${r.label}</div>`;}
+      else { statusChip=`<span class="af-status st-fix">✕ fix</span>`; flag=`<div class="asset-flag fix">${r.label}</div>`;}
+    }
+    const av=a.visual||{kind:"none"}, vk=VISUAL_KINDS[av.kind], sf=SURFACES[a.surface];
+    const bad=(stage===3||genDone[L.id]) && r.rv && r.rv.violations.length;
+    const chipColor = bad ? (r.rv.violations.some(x=>!x.soft) ? "#f24822" : "#f2a900") : vk.color;
+    card.innerHTML=`<div class="asset-canvas">${flag}${surfaceMini(L,a)}</div>
+      <div class="asset-foot"><span class="af-label">${a.label}</span>${statusChip}</div>
+      <div class="asset-spec">
+        <span class="as-chip${av.kind==="none"&&!bad?" muted":""}" style="--c:${chipColor}"><b>${vk.glyph}</b>${visualLabel(av)}</span>
+        <span class="as-surf" title="${sf?sf.fig:""}">${sf?sf.name:"—"}</span>
+      </div>`;
+    g.appendChild(card);
+    animTimers.push(setTimeout(()=>card.classList.add("show"), (submitted?40:150)*(i+1)));
+  });
+  const db=document.getElementById("discBar");
+  if(db){
+    const cnt=seatCounts(L).reduce((m,x)=>{m[x.d.id]=x.n;return m;},{});
+    db.innerHTML='<span class="disc-lbl">Speaking to</span>'
+      +`<button class="disc-btn blast ${oneBlast?'active':''}" data-blast="1">◻ Old way · one blast</button><span class="disc-sep"></span>`
+      +DISCIPLINES.map(d=>`<button class="disc-btn ${!oneBlast&&d.id===currentDisc?'active':''}${oneBlast?' dim':''}" data-d="${d.id}" title="${d.jtbd}"><span class="disc-dot" style="background:${d.color}"></span>${d.label}<span class="disc-n">${fmtN(cnt[d.id]||0)}</span></button>`).join('')
+      +`<span class="disc-note">${oneBlast?'one message, every seat — the way it used to work':`${DISCIPLINES.length} voices · ${L.bundle.length*DISCIPLINES.length} copy variants in this bundle`}</span>`;
+    db.querySelectorAll("[data-d]").forEach(x=>x.addEventListener("click",()=>{oneBlast=false;currentDisc=x.dataset.d;renderCanvas(L);}));
+    db.querySelector("[data-blast]").addEventListener("click",()=>{oneBlast=!oneBlast;renderCanvas(L);});
+  }
+}
+
+/* ---------- THE INPUT COMPOSER ---------- */
+function hiCode(t){
+  return t
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/(\/\/[^\n]*)/g,'<span class="c">$1</span>')
+    .replace(/\b(export|function|const|return|await|async|satisfies|type)\b/g,'<span class="k">$1</span>')
+    .replace(/('[^']*')/g,'<span class="s">$1</span>');
+}
+function dropZone(){
+  const M=INPUT_MODES.find(m=>m.id===inputMode);
+  if(inputMode==="form") return "";
+  const added=(addedInputs[selected]||[]).filter(x=>x.mode===inputMode);
+  return `<div class="dz" id="dropZone">
+      <div class="dz-main"><span class="dz-i">⬍</span>
+        <span class="dz-t">${M.hint}</span></div>
+      <div class="dz-accepts">${M.accepts}</div>
+      <input class="dz-url" id="dzUrl" type="text" placeholder="or paste a link — ${M.eg}" spellcheck="false">
+      ${added.length?`<div class="dz-added">${added.map(a=>`<span class="dz-chip">${a.kind==="link"?"↗":"⬒"} ${a.name}</span>`).join("")}</div>`:""}
+    </div>`;
+}
+function inputBody(L){
+  const I=INPUTS[L.id]||{};
+  switch(inputMode){
+    case "frames": return `<div class="cmp-hint">${I.frames.length} frames selected on Page 1</div>
+      <div class="in-frames">${I.frames.map((f,i)=>{
+        const parts=f.split(" / ");
+        return `<div class="in-frame"><div class="th" style="background:${L.art};opacity:${1-i*0.07}"><i style="top:12px;width:60%"></i><i style="top:22px;width:42%"></i><i style="top:38px;width:30%;height:9px"></i></div>
+          <div class="nm"><b>${parts[0]}</b><br>${parts[1]||""}</div></div>`;}).join("")}</div>`;
+    case "code": return `<div class="cmp-hint">pasted from the PR · ${featOf(L).toLowerCase().replace(/ /g,"-")}</div>
+      <div class="in-code">${hiCode(I.code)}</div>`;
+    case "copy": return `<div class="cmp-hint">draft copy · not yet placed in a component</div>
+      <div class="in-copy">${I.copy}</div>`;
+    case "proto": return `<div class="in-proto-h"><span class="pl">▷ FLOW</span>${I.proto.flow}</div>
+      <div class="in-proto">${I.proto.steps.map((st,i)=>`${i?'<span class="in-arrow"></span>':''}<div class="in-step"><div class="sc" style="background:${i===0?L.art:'#fff'};color:${i===0?'#fff':'var(--muted-2)'}">${i+1}</div><div class="sn">${st}</div></div>`).join("")}</div>`;
+    case "brief": return `<div class="in-msg"><div class="from"><span class="av"></span>${L.pm} · #launches</div>
+      <div class="body">"${L.brief}"</div></div>`;
+    case "form": {
+      const t=COMMS_TYPES[L.commsType];
+      const surfCount=L.bundle.length;
+      return `<div class="cmp-hint">you already know what you want — tell it directly</div>
+      <div class="in-form">
+        <div class="ff"><label>Comms type</label>
+          <select id="fType">${Object.keys(COMMS_TYPES).map(k=>`<option value="${k}"${k===L.commsType?" selected":""}>${COMMS_TYPES[k].name}</option>`).join("")}</select></div>
+        <div class="ff"><label>Audience <span class="ff-ro">RESOLVED</span></label><div class="fake">${L.chips[0].v}</div></div>
+        <div class="ff"><label>Surfaces <span class="ff-ro">RESOLVED</span></label><div class="fake">${surfCount} · from the ladder</div></div>
+        <div class="ff"><label>Frequency <span class="ff-ro">RESOLVED</span></label><div class="fake">${freqFor(L).v}</div></div>
+        <div class="form-note">Change the type and <b>everything below re-resolves</b>. Try it.</div>
+      </div>`;
+    }
+  }
+  return "";
+}
+function renderComposer(L){
+  const el=document.getElementById("composer"); if(!el) return;
+  const A=AUTHORS[author], t=COMMS_TYPES[L.commsType], d=DIS[t.dis];
+  el.innerHTML=`
+    <div class="cmp-who"><span class="cmp-lbl">I'm a</span>
+      ${DISCIPLINES.map(x=>`<button class="cmp-chip${x.id===author?" on":""}" data-a="${x.id}"><span class="d" style="background:${x.color}"></span>${x.label}</button>`).join("")}
+    </div>
+    <div class="cmp-intent"><span class="q">“</span>${A.intent(L)}<span class="q">”</span></div>
+    <div class="cmp-modes">${INPUT_MODES.map(m=>`<button class="cmp-mode${m.id===inputMode?" on":""}" data-m="${m.id}" title="${m.note}"><span class="g">${m.glyph}</span>${m.label}</button>`).join("")}</div>
+    <div class="cmp-body">${dropZone()}${inputBody(L)}</div>
+    <div class="cmp-norm">
+      <div class="nlbl">✦ Cadence reads this as</div>
+      <div class="nchips">
+        <span class="nchip"><span class="k">TYPE</span>${t.name}</span>
+        <span class="nchip"><span class="k">TIER</span><span style="color:${d.c==="var(--sds-color-yellow-400)"?"var(--sds-color-yellow-900)":d.c}">${d.l}</span></span>
+        <span class="nchip"><span class="k">WHO</span>${fmtN(L.seats||0)} seats · ${DISCIPLINES.length} voices</span>
+        <span class="nchip"><span class="k">WHERE</span>${L.bundle.length} surfaces</span>
+        <span class="nchip"><span class="k">ASSETS</span>${visualSummary(L)}</span>
+      </div>
+      <div class="cmp-foot">Six doors, one brief. <b>${L.bundle.length} designs · ${L.bundle.length*DISCIPLINES.length} copy variants</b> from this.</div>
+    </div>`;
+  el.querySelectorAll("[data-a]").forEach(b=>b.addEventListener("click",()=>{
+    author=b.dataset.a; inputMode=AUTHORS[author].mode; renderComposer(L);
+  }));
+  el.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{
+    inputMode=b.dataset.m; renderComposer(L);
+  }));
+  const dz=el.querySelector("#dropZone");
+  if(dz){
+    const add=(kind,name)=>{
+      (addedInputs[L.id]=addedInputs[L.id]||[]).push({mode:inputMode,kind,name});
+      toast(`Read ${name} — folded into the brief`);
+      renderComposer(L);
+    };
+    ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("over");}));
+    ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("over");}));
+    dz.addEventListener("drop",e=>{
+      const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+      add("file", f?f.name:"pasted file");
+    });
+    const u=el.querySelector("#dzUrl");
+    u.addEventListener("keydown",e=>{
+      if(e.key!=="Enter"||!u.value.trim()) return;
+      const v=u.value.trim().replace(/^https?:\/\//,"");
+      add("link", v.length>44?v.slice(0,44)+"…":v);
+    });
+  }
+  const ft=el.querySelector("#fType");
+  if(ft) ft.addEventListener("change",()=>{
+    L.commsType=ft.value; delete resultCache[L.id]; delete genDone[L.id];
+    renderComposer(L); renderInspector(L); renderLayers(L);
+    toast("Comms type changed — bundle re-resolved");
+  });
+}
+
+/* ---------- VOICE ---------- */
+function voiceFor(L,feat){
+  const v=L.voice||{}, fb={h:feat||L.feature.split("·")[0].trim(),s:"Now available for everyone"};
+  if(oneBlast) return v.generic||fb;
+  return v[currentDisc]||v.generic||fb;
+}
+
+/* ---------- MINI SURFACE RENDERS ---------- */
+function ratioCss(v){ const r=RATIOS[v.ratio]; if(r) return `${r.w}/${r.h}`; const p=(v.ratio||"16:9").split(":"); return p.length===2?`${p[0]}/${p[1]}`:"16/9"; }
+/* the visual block, drawn to whatever the resolver allowed — or omitted entirely */
+function artBlock(L,a,cls,extra){
+  const v=a.visual||{kind:"none"};
+  if(v.kind==="none") return "";
+  if(v.kind==="motion") return `<div class="${cls} v-motion" style="background:${L.art};${extra||""}"><span class="v-play">▷</span><i class="v-sweep"></i><span class="v-dp">${v.size}</span></div>`;
+  if(v.kind==="hifi")   return `<div class="${cls} v-hifi" style="${extra||""}"><span class="v-blob" style="background:${L.art};width:${Math.round(v.size/3.4)}px;height:${Math.round(v.size/3.4)}px"></span><span class="v-dp dark">${v.size}</span></div>`;
+  if(v.kind==="icon")   return `<div class="${cls} v-icon" style="${extra||""}"><span class="v-ico" style="width:${Math.max(9,v.size*.62)}px;height:${Math.max(9,v.size*.62)}px;background:${v.style==="filled"?L.color:"transparent"};border:1.5px solid ${L.color}"></span></div>`;
+  return `<div class="${cls} v-illo" style="background:${L.art};aspect-ratio:${ratioCss(v)};height:auto;${extra||""}"><span class="v-dp">${RATIOS[v.ratio]?RATIOS[v.ratio].name:"off-spec"} ${v.ratio}</span></div>`;
+}
+function surfaceMini(L,a){
+  const c=L.color, art=L.art, feat=L.feature.split("·")[0].trim();
+  const vo=voiceFor(L,feat);
+  switch(a.render){
+    case "banner": {
+      const bt=a.bannerType||"informative";
+      const cls=bt==="upsell"?"up":bt==="warning"?"warn":"info";
+      const icon=bt==="upsell"?"↑":bt==="warning"?"⚠":"✦";
+      const label=bt==="upsell"?`${feat} — new add-on`:bt==="warning"?`Action needed · ${feat}`:`${feat} is live`;
+      const cta=bt==="upsell"?`<span class="bx cta">Learn more</span>`:bt==="warning"?`<span class="bx cta">Review</span>`:`<span class="bx">✕</span>`;
+      const iconStyle=bt==="informative"?`style="background:${c};color:#fff"`:bt==="warning"?`style="background:rgba(0,0,0,.12);color:#1e1e1e"`:"";
+      return `<div class="srf srf-app"><div class="srf-topbar"><span class="d"></span><span class="d"></span></div>
+        <div class="srf-banner ${cls}"><span class="bi" ${iconStyle}>${icon}</span><span class="bt">${label}</span>${cta}</div>
+        <div style="position:absolute;left:9px;right:9px;top:60px"><div style="height:6px;background:#ececec;border-radius:2px;margin-bottom:5px;width:72%"></div><div style="height:6px;background:#f2f2f2;border-radius:2px;width:52%"></div></div></div>`;
+    }
+    case "modal": return `<div class="srf srf-app"><div class="srf-topbar"></div><div class="srf-modal"><div class="mbox">
+      ${artBlock(L,a,"mhero","max-height:58px")}<div class="mbody"><div class="mh">${vo.h}</div><div class="ms">${vo.s}</div>
+      <div class="mc" style="background:${c}">Try it</div></div></div></div></div>`;
+    case "email": {
+      const ev=a.visual||{kind:"none"};
+      const head = ev.kind==="none"
+        ? `<div class="ehead plain">${feat}</div>`
+        : artBlock(L,a,"ehead","max-height:46px");
+      return `<div class="srf srf-email">${head}
+      <div class="ebody"><div class="esub">${vo.h}</div><div class="etxt">${vo.s}</div>
+      <span class="ebtn" style="background:${c}">See what's new</span></div></div>`;
+    }
+    case "card": return `<div class="srf srf-card" style="background:#fff">${artBlock(L,a,"cthumb","flex:1;min-height:0")||'<div class="cthumb plain"></div>'}
+      <div class="cmeta"><span class="cav"></span><div><div class="ct">${feat}</div><div class="cs">Figma · Official</div></div></div></div>`;
+    case "social": return `<div class="srf srf-social" style="background:${art}"><div class="sk">Introducing</div><div class="sh">${feat}</div><div class="ss">figma.com</div></div>`;
+    case "coach": return `<div class="srf srf-coach"><div class="cpanel"><div class="crow"></div><div class="crow chi"></div><div class="crow"></div><div class="crow"></div></div>
+      <div class="tip"><div class="tt">${feat}</div><div class="tb">Try it right here →</div></div></div>`;
+    case "account": {
+      const qv=a.visual||{kind:"none"};
+      const qi = qv.kind==="icon" ? `<span class="aico" style="width:${qv.size}px;height:${qv.size}px;background:${qv.style==="filled"?"#f2a900":"transparent"};border:1.5px solid #f2a900"></span>` : "";
+      return `<div class="srf srf-app"><div class="srf-topbar"></div><div class="srf-account"><div class="abox">
+      ${qi}<div class="ah">A change to your plan</div><div class="ab">${feat} — review the details before Nov 1.</div></div></div></div>`;
+    }
+    case "nudge": {
+      const nv=a.visual||{kind:"none"};
+      let mark="";
+      if(nv.kind==="motion") mark=`<span class="nico mot" style="background:${c}">▷<i class="v-sweep"></i></span>`;
+      else if(nv.kind==="hifi") mark=`<span class="nico" style="background:${art};width:${Math.round(nv.size/2.6)}px;height:${Math.round(nv.size/2.6)}px;border-radius:50%"></span>`;
+      else if(nv.kind==="icon") mark=`<span class="nico ico" style="width:${nv.size}px;height:${nv.size}px;background:${nv.style==="filled"?c:"transparent"};border:1.5px solid ${c}"></span>`;
+      return `<div class="srf srf-nudge"><div class="ncard">${mark}
+      <div><div class="nt">${feat}</div><div class="ns">Built for how you already work</div><span class="nb" style="background:${c}">Turn it on</span></div></div></div>`;
+    }
+    case "release": return `<div class="srf srf-release"><div class="rh">What's new</div>
+      <div class="rrow"><span class="rtag" style="background:${art}"></span><div class="rl"><div class="a"></div><div class="b"></div></div></div>
+      <div class="rrow"><span class="rtag" style="background:#eee"></span><div class="rl"><div class="a"></div><div class="b"></div></div></div></div>`;
+    default: return `<div class="srf srf-app"></div>`;
+  }
+}
+
+/* ---------- INSPECTOR ---------- */
+function renderInspector(L){
+  const body=document.getElementById("inspBody");
+  if(stage===1){
+    body.innerHTML=`<div class="insp-h">Brief <span class="auto">✦ parsed</span></div>
+      <div class="insp-sub">What it is, who it's for, where it goes, how often, and which visual.</div>
+      <div id="pickList"></div>
+      <div class="insp-actions"><button class="btn btn-primary" id="genBtn">✦ Generate the ${L.bundle.length}-asset bundle</button></div>`;
+    const pl=body.querySelector("#pickList");
+    const picks=picksFor(L);
+    clearTimers();
+    picks.forEach((p,i)=>{
+      const row=document.createElement("div"); row.className="pick"+(p.flag?" flag":"");
+      const dimCls = p.dim==='WHO'?'dim-who':p.dim==='WHERE'?'dim-where':p.dim==='WHAT'?'dim-what':p.dim==='WHAT VISUAL'?'dim-vis':'dim-often';
+      row.innerHTML=`<div class="pk-ico">${p.flag?"!":"✓"}</div><div class="pk-body">
+        <div class="pk-head"><span class="pk-k">${p.k}</span>${p.dim?`<span class="pk-dim ${dimCls}">${p.dim}</span>`:""}${p.tag?`<span class="pk-tag" style="--tb:${p.tagBg};--tc:${p.tagFg}">${p.tag}</span>`:""}</div>
+        <div class="pk-v">${p.v}</div>
+        ${p.seats?`<div class="pk-seatbar">${p.seats.map(x=>`<i style="width:${(x.share*100).toFixed(1)}%;background:${x.d.color}" title="${x.d.label} · ${fmtN(x.n)}"></i>`).join("")}</div>
+          <div class="pk-seats">${p.seats.map(x=>`<span><i style="background:${x.d.color}"></i>${x.d.label} <b>${fmtN(x.n)}</b></span>`).join("")}</div>`:""}
+        <div class="pk-why">${p.why}</div>
+        ${p.asset?`<div class="pk-rules"><button class="rules-btn" data-rules="1">▤ Show the rules it used</button></div>`:""}</div>`;
+      pl.appendChild(row);
+      const rb=row.querySelector("[data-rules]");
+      if(rb) rb.addEventListener("click",()=>openRules(L));
+      animTimers.push(setTimeout(()=>row.classList.add("show"),120*(i+1)));
+    });
+    body.querySelector("#genBtn").addEventListener("click",()=>{ stage=2; render(); });
+    return;
+  }
+  if(stage===2){
+    body.innerHTML=`<div class="insp-h">Review the bundle <span class="auto">✦ governing</span></div>
+      <div class="insp-sub">Every asset, checked at once.</div>
+      <ul class="checks" id="checkList"></ul>
+      <div class="verdict" id="verdict"></div>
+      <div class="insp-actions" id="inspActions"></div>`;
+    runGovern(L);
+    return;
+  }
+  // stage 3 submitted
+  const v=resultCache[L.id]||evaluate(L);
+  const st=subState[L.id];
+  const dest = destState[L.id] || {track:"held"};
+  let cls,ico,head,p,meta="";
+  if(dest.track==="ship"){
+    cls="ready";ico="✓";head="Recommended for ship";
+    p=`Queued for the next version update. ${L.bundle.length} designs, ${L.bundle.length*DISCIPLINES.length} copy variants — already on the feed.`;
+    meta=`<span class="m">Next version update</span><span class="m">${L.bundle.length} assets</span><span class="m">${L.chips[0].v}</span>`;
+  } else if(dest.track==="pbeta"){
+    cls="review";ico="◐";head="Live in public beta";
+    p=`Out to opted-in users, measured against <b>${dest.metric}</b>. It ships to everyone when the number holds.`;
+    meta=`<span class="m">Public beta</span><span class="m">${dest.metric}</span>${(v.teams||[]).map(t=>`<span class="m">${t}</span>`).join("")}`;
+  } else if(dest.track==="cbeta"){
+    cls="review";ico="◑";head="Live in the company beta";
+    p="Everyone at Figma has it. 460 in the cohort get it first and tell us what breaks before users do.";
+    meta=`<span class="m">Company-wide</span><span class="m">460 in cohort</span>${(v.teams||[]).map(t=>`<span class="m">${t}</span>`).join("")}`;
+  } else {
+    cls="fix";ico="↩";head="Held — fix required";
+    p=`${v.nFix} asset(s) failed a spec check. The rest is ready and waiting.`;
+    meta=v.assets.filter(x=>x.r.status==="fix").map(x=>`<span class="m">${x.r.label}</span>`).join("");
+  }
+  body.innerHTML=`<div class="submitted ${cls}"><div class="sub-ico">${ico}</div><h4>${head}</h4><p>${p}</p><div class="sub-meta">${meta}</div>
+    <div class="insp-actions">${dest.track!=="held"?`<button class="btn btn-primary" id="feedBtn">◉ See it on the live feed</button>`:""}<button class="btn btn-ghost" id="nextBtn">Build the next launch →</button></div></div>`;
+  const fb=body.querySelector("#feedBtn"); if(fb) fb.addEventListener("click",()=>openLive());
+  body.querySelector("#nextBtn").addEventListener("click",()=>{ const n=LAUNCHES.find(x=>!subState[x.id]); if(n)select(n.id); else {stage=1;render();} });
+}
+
+function runGovern(L){
+  clearTimers();
+  const v=evaluate(L); resultCache[L.id]=v; genDone[L.id]=true;
+  const list=document.getElementById("checkList");
+  const verdictEl=document.getElementById("verdict");
+  const actions=document.getElementById("inspActions");
+  list.innerHTML="";
+  v.checks.forEach((k,i)=>{
+    const li=document.createElement("li"); li.className="check";
+    const sym=k.s==="pass"?"✓":k.s==="warn"?"!":"✕";
+    li.innerHTML=`<div class="cico ${k.s}">${sym}</div><div><div class="cl">${k.l}</div><div class="cd">${k.d}</div></div>`;
+    list.appendChild(li);
+    animTimers.push(setTimeout(()=>li.classList.add("show"),130*(i+1)));
+  });
+  // reveal the asset statuses on the canvas after checks
+  animTimers.push(setTimeout(()=>renderCanvas(L), 130*(v.checks.length)+200));
+  const at=130*(v.checks.length+1)+300;
+  animTimers.push(setTimeout(()=>{
+    const label=v.decision==="ready"?"✓ Ready to publish":v.decision==="review"?"⏸ Needs review":"✕ Fix required";
+    let route="";
+    if(v.decision==="review"&&v.teams.length) route=`<div class="route"><span class="rlbl">SUBMIT TO</span>${v.teams.map(t=>`<span class="rteam">${t}</span>`).join("")}</div>`;
+    verdictEl.className=`verdict ${v.decision}`;
+    verdictEl.innerHTML=`<div class="vlabel">${label}</div><div class="vreason">${v.reason}</div>
+      <div class="vroll"><div class="rc ok"><div class="n">${v.nOk}</div><div class="l">ready</div></div><div class="rc rev"><div class="n">${v.nReview}</div><div class="l">to review</div></div><div class="rc fx"><div class="n">${v.nFix}</div><div class="l">to fix</div></div></div>${route}`;
+    verdictEl.classList.add("show");
+    renderTabs(L);
+    // actions
+    if(v.decision==="fix"){
+      actions.innerHTML=`<button class="btn btn-primary" id="fix">↩ Send back to fix</button>`;
+      actions.querySelector("#fix").addEventListener("click",()=>{ subState[L.id]="returned"; destState[L.id]={track:"held"}; toast("Held — "+v.nFix+" asset(s) failed a spec check"); afterSubmit(L); });
+    } else {
+      renderDestination(L, v, actions);
+    }
+    if(hoodOpen) renderHood(L);
+  }, at));
+}
+function renderDestination(L, v, actions){
+  const rec = recommendTrack(L);
+  const sta = stabilityOf(L);
+  const S = STABILITY[sta];
+  const chosen = (destState[L.id] && destState[L.id].track) || rec.id;
+  const metric = (destState[L.id] && destState[L.id].metric) || METRICS[0];
+  const opts = ["ship","pbeta","cbeta"];
+  actions.innerHTML = `
+    <div class="dest">
+      <div class="dest-h">Where does this go?
+        <span class="dest-grade" style="background:${S.bg};color:${S.fg}">${S.label.toUpperCase()}</span></div>
+      <div class="dest-why">${rec.why}</div>
+      ${opts.map(k=>`
+        <label class="dest-opt${k===chosen?" on":""}" data-k="${k}">
+          <input type="radio" name="dest-${L.id}" value="${k}"${k===chosen?" checked":""}>
+          <span class="do-body">
+            <span class="do-t">${TRACKS[k].l}${k===rec.id?`<span class="do-rec">✦ recommended</span>`:""}</span>
+            <span class="do-n">${TRACKS[k].note}</span>
+            ${k==="pbeta"?`<select class="do-metric" id="destMetric">${METRICS.map(m=>`<option${m===metric?" selected":""}>${m}</option>`).join("")}</select>`:""}
+          </span>
+        </label>`).join("")}
+      ${v.decision==="review"&&v.teams.length?`<div class="dest-route">Goes to <b>${v.teams.join(" · ")}</b> either way.</div>`:""}
+    </div>
+    <button class="btn btn-primary" id="sub"></button>`;
+
+  const btn = actions.querySelector("#sub");
+  const sel = actions.querySelector("#destMetric");
+  const label = () => {
+    const k = actions.querySelector('input[name="dest-'+L.id+'"]:checked').value;
+    btn.textContent = k==="ship" ? "➜ Submit — recommend for ship"
+      : k==="pbeta" ? `➜ Send to public beta · ${(sel?sel.value:METRICS[0]).split(" —")[0]}`
+      : "➜ Push to company-wide beta";
+  };
+  actions.querySelectorAll('input[name="dest-'+L.id+'"]').forEach(r=>r.addEventListener("change",()=>{
+    actions.querySelectorAll(".dest-opt").forEach(o=>o.classList.toggle("on",o.dataset.k===r.value));
+    if(sel) sel.disabled = r.value!=="pbeta";
+    label();
+  }));
+  if(sel){ sel.disabled = chosen!=="pbeta"; sel.addEventListener("change",label); }
+  label();
+
+  btn.addEventListener("click",()=>{
+    const k = actions.querySelector('input[name="dest-'+L.id+'"]:checked').value;
+    destState[L.id] = {track:k, metric: k==="pbeta" ? (sel?sel.value:METRICS[0]) : null};
+    subState[L.id] = k==="ship" ? "published" : "routed";
+    toast(k==="ship" ? "Recommended for ship — queued for the next version update"
+      : k==="pbeta" ? "Live in public beta — measuring " + (sel?sel.value.split(" —")[0].toLowerCase():"")
+      : "Live in the company-wide beta at Figma");
+    afterSubmit(L);
+  });
+}
+function afterSubmit(L){ stage=3; renderQueue(); render(); if(liveView) renderLive(); if(hoodOpen) animatePipe(L); }
+
+/* ==========================================================================
+   BETA · the live company feed + release tracks.
+   Everything published through Cadence lands on one real-time surface the
+   whole company — leadership included — can watch. What happens next depends
+   on whether the work is STABLE.
+   ========================================================================== */
+
+/* --- the definition, stated once and applied everywhere --- */
+const STABILITY = {
+  stable:{
+    label:"Stable",
+    rule:"Published components, every check passed, no new pattern, nothing an existing flow depends on.",
+    plain:"Nothing downstream has to change.",
+    route:"Next version update.",
+    c:"var(--sds-color-green-500)", bg:"var(--sds-color-green-100)", fg:"var(--sds-color-green-800)"
+  },
+  unproven:{
+    label:"Unproven",
+    rule:"A new pattern, an off-library component, or a change other teams absorb.",
+    plain:"Not wrong. Just not proven.",
+    route:"Beta cohort first — they tell us before users do.",
+    c:"var(--sds-color-yellow-400)", bg:"var(--sds-color-yellow-100)", fg:"var(--sds-color-yellow-900)"
+  },
+  blocked:{
+    label:"Blocked",
+    rule:"Off-scale size, off-format ratio, uncleared rights, or copy that truncates.",
+    plain:"It would ship broken.",
+    route:"Stays in the file.",
+    c:"var(--sds-color-red-500)", bg:"var(--sds-color-red-100)", fg:"var(--sds-color-red-700)"
+  }
+};
+/* the same verdict that governs the bundle routes the release */
+function stabilityOf(L){
+  const v = resultCache[L.id] || evaluate(L);
+  if(v.decision==="fix") return "blocked";
+  if(v.decision==="review") return "unproven";       // new pattern or a judgment call
+  return "stable";
+}
+/* --- the three destinations the submitter chooses between --- */
+const TRACKS = {
+  ship: {l:"RECOMMENDED FOR SHIP", short:"SHIP",   note:"Next Figma version update · all users",
+         desc:"Into the release train, out to everyone."},
+  pbeta:{l:"PUBLIC BETA",          short:"PUBLIC", note:"External opt-in, measured against a metric",
+         desc:"Real users, opted in, with a number attached."},
+  cbeta:{l:"COMPANY BETA",         short:"COMPANY",note:"Live to everyone at Figma",
+         desc:"Figma's own designers and engineers first."},
+  held: {l:"HELD",                 short:"HELD",   note:"Blocked on a spec",
+         desc:"Until it's fixed."}
+};
+const METRICS = [
+  "Activation rate — first successful use",
+  "Task completion — end-to-end without help",
+  "Time to first output",
+  "D7 retention on the new surface",
+  "Support ticket volume on the flow",
+  "Detachment rate on the new component"
+];
+/* Cadence recommends a destination; the person submitting decides. */
+function recommendTrack(L){
+  const v = resultCache[L.id] || evaluate(L);
+  if(v.decision==="fix")
+    return {id:"held", why:"A spec check failed. Fix it and this opens up."};
+  if(v.decision==="ready")
+    return {id:"ship", why:"Graded <b>stable</b>. Straight into the next version update."};
+  const newPattern = v.assets.some(x=>x.a.comp===false);
+  if(newPattern)
+    return {id:"cbeta", why:"There's a <b>new pattern</b> here. The people who'd live with it should try it first."};
+  return {id:"pbeta", why:"The open question is <b>user impact</b>. That needs real users and a number."};
+}
+const BETA_FEED = [
+  {team:"Dev Mode",       feat:"Inspect panel · density options", who:"K. Ito",       sta:"stable",   track:"ship",    n:4, t:"2m",  c:"#0acf83", mix:["icon","illo","none","icon"]},
+  {team:"Weave",          feat:"Node presets · beginner set",     who:"A. Okoro",     sta:"unproven", track:"cbeta",    n:5, t:"11m", c:"#1abcfe", mix:["illo","hifi","none","icon","illo"]},
+  {team:"Buzz",           feat:"Template refresh · Q4 campaigns", who:"M. Lindqvist", sta:"stable",   track:"pbeta", metric:"Activation rate — first successful use",    n:6, t:"24m", c:"#f24e1e", mix:["illo","illo","motion","icon","illo","none"]},
+  {team:"Slides",         feat:"Presenter notes · GA",            who:"R. Bhatt",     sta:"stable",   track:"ship", n:3, t:"38m", c:"#a259ff", mix:["icon","illo","none"]},
+  {team:"Make",           feat:"Prompt history",                  who:"S. Delacroix", sta:"stable",   track:"ship", n:3, t:"1h",  c:"#0acf83", mix:["hifi","icon","none"]},
+  {team:"Design Systems", feat:"Coachmark / Spotlight · promoted",who:"J. Park",      sta:"unproven", track:"cbeta",    n:2, t:"1h",  c:"#9747ff", mix:["icon","none"]},
+  {team:"Billing",        feat:"Seat management · self-serve",    who:"T. Nakamura",  sta:"blocked",  track:"held",    n:4, t:"2h",  c:"#0d99ff", mix:["none","icon","none","icon"]},
+  {team:"Community",      feat:"Creator payouts · policy update", who:"L. Mbeki",     sta:"stable",   track:"ship", n:3, t:"3h",  c:"#f24e1e", mix:["none","icon","none"]},
+  {team:"Mobile",         feat:"Offline files · beta",            who:"C. Alvarez",   sta:"unproven", track:"pbeta", metric:"D7 retention on the new surface",    n:5, t:"4h",  c:"#1abcfe", mix:["illo","icon","motion","none","illo"]}
+];
+function shippedRows(){
+  return LAUNCHES.filter(L=>subState[L.id]).map(L=>{
+    const sta=stabilityOf(L);
+    const d = destState[L.id] || {track: sta==="stable"?"ship":sta==="unproven"?"cbeta":"held"};
+    return {team:L.team, feat:featOf(L), who:"You", t:"now", c:L.color, fresh:true, n:L.bundle.length, sta,
+      track:d.track, metric:d.metric,
+      mix:L.bundle.map(a=>(a.visual||{kind:"none"}).kind)};
+  });
+}
+function openLive(){ liveView=true; renderLive(); }
+function closeLive(){ liveView=false; const el=document.getElementById("livePanel"); if(el) el.classList.remove("open"); const r=document.getElementById("liveRail"); if(r) r.classList.remove("on"); }
+function renderLive(){
+  const el=document.getElementById("livePanel");
+  el.classList.toggle("open",liveView);
+  document.getElementById("liveRail").classList.toggle("on",liveView);
+  if(!liveView) return;
+  const rows=shippedRows().concat(BETA_FEED);
+  const count=k=>rows.filter(r=>r.track===k).length;
+  const assets=rows.reduce((s,r)=>s+r.n,0);
+  const teams=new Set(rows.map(r=>r.team)).size;
+  const stablePct=Math.round(rows.filter(r=>r.sta==="stable").length/rows.length*100);
+  const lane=(k,extra)=>`<div class="lv-lane"><div class="lv-lane-h"><span class="lv-lane-n">${count(k)}</span>${TRACKS[k].l}</div>
+    <div class="lv-lane-s">${extra}</div></div>`;
+  el.innerHTML=`
+    <div class="lv-head">
+      <div class="lv-title"><span class="lv-dot"></span>Beta · what the company shipped today</div>
+      <div class="lv-sub">Everything published lands here in real time. Open to everyone, leadership included.</div>
+    </div>
+    <div class="lv-stats">
+      <div class="lv-stat"><div class="n">${rows.length}</div><div class="l">bundles shipped today</div><div class="d">▲ 6 vs. yesterday</div></div>
+      <div class="lv-stat"><div class="n">${assets}</div><div class="l">assets published</div><div class="d">all on-system</div></div>
+      <div class="lv-stat"><div class="n">${teams}</div><div class="l">teams shipping</div><div class="d">incl. 4 outlier products</div></div>
+      <div class="lv-stat"><div class="n">${stablePct}%</div><div class="l">graded stable, first pass</div><div class="d">▲ from 31% pre-Cadence</div></div>
+      <div class="lv-stat"><div class="n">2.4h</div><div class="l">median brief → shipped</div><div class="d">▼ from 9 days</div></div>
+      <div class="lv-stat"><div class="n">460</div><div class="l">in the beta cohort</div><div class="d">312 designers · 148 engineers</div></div>
+    </div>
+
+    <div class="lv-sec">Release tracks</div>
+    <div class="lv-lanes">
+      ${lane("ship",TRACKS.ship.desc)}
+      ${lane("pbeta",TRACKS.pbeta.desc)}
+      ${lane("cbeta",TRACKS.cbeta.desc)}
+      ${lane("held",TRACKS.held.desc)}
+    </div>
+
+    <div class="lv-def">
+      ${["stable","unproven","blocked"].map(k=>{const S=STABILITY[k];
+        return `<div class="lv-defcard"><div class="lv-deft" style="color:${S.fg};background:${S.bg}">${S.label}</div>
+          <div class="lv-defr">${S.rule}</div>
+          <div class="lv-defp">${S.plain}</div>
+          <div class="lv-defroute">→ ${S.route}</div></div>`;}).join("")}
+    </div>
+
+    <div class="lv-sec">Live activity</div>
+    <div class="lv-list">${rows.map(r=>{
+      const S=STABILITY[r.sta];
+      return `<div class="lv-row${r.fresh?" fresh":""}">
+        <span class="lv-av" style="background:${r.c}"></span>
+        <span class="lv-main"><span class="lv-ft">${r.feat}</span>
+          <span class="lv-meta">${r.team} · ${r.who} · ${r.n} assets${r.fresh?" · just now":""}</span></span>
+        <span class="lv-spec">${r.mix.map(k=>`<i style="background:${VISUAL_KINDS[k]?VISUAL_KINDS[k].color:"#ccc"};${k==="none"?"opacity:.35":""}"></i>`).join("")}</span>
+        <span class="lv-st" style="background:${S.bg};color:${S.fg}">${S.label.toUpperCase()}</span>
+        <span class="lv-track" title="${TRACKS[r.track].note}">${TRACKS[r.track].short}${r.metric?` · ${r.metric.split(" —")[0].toLowerCase()}`:""}</span>
+        <span class="lv-time">${r.t}</span>
+      </div>`;}).join("")}</div>
+
+    <div class="lv-note">No quarterly slide. Every bundle is already governed and tagged, so the roll-up writes itself — and teams see each other, which works better than a mandate.</div>`;
+}
+
+/* ================= THE RULES PANEL (the logic, on demand) ================= */
+let rulesOpen=false;
+function openRules(L){ rulesOpen=true; renderRules(L||LAUNCHES.find(x=>x.id===selected)); }
+function closeRules(){ rulesOpen=false; document.getElementById("rulesPanel").classList.remove("open"); }
+function renderRules(L){
+  const el=document.getElementById("rulesPanel");
+  el.classList.toggle("open",rulesOpen);
+  if(!rulesOpen) return;
+  const T=COMMS_TYPES[L.commsType];
+  const used={}; L.bundle.forEach(a=>{ const k=(a.visual||{kind:"none"}).kind; (used[k]=used[k]||[]).push(a); });
+  const usedSurf=new Set(L.bundle.map(a=>a.surface));
+
+  const kindCards = Object.keys(VISUAL_KINDS).map(k=>{
+    const K=VISUAL_KINDS[k], on=!!used[k];
+    const allowedForType = T.allow.includes(k);
+    return `<div class="rp-card${on?" on":""}">
+      <div class="rp-k"><span class="g" style="color:${K.color}">${K.glyph}</span>${K.label}
+        ${!allowedForType?`<span style="margin-left:auto;font-size:9px;font-weight:700;color:var(--muted-2)">not for this type</span>`:""}</div>
+      <div class="rp-scale">${K.scale}</div>
+      <div class="rp-rule">${K.rule}</div>
+      ${on?`<div class="rp-used">→ used ${used[k].length}× in this bundle</div>`:""}
+    </div>`;
+  }).join("");
+
+  const ladder = Object.keys(SURFACES).filter(k=>SURFACES[k].n>0)
+    .sort((a,b)=>SURFACES[a].n-SURFACES[b].n)
+    .map(k=>{const s=SURFACES[k];return `<div class="rung${usedSurf.has(k)?" on":""}"><span class="rn">${s.n}</span>${s.name}
+      <span class="rroom">${ROOM[s.room].label.toLowerCase()}</span></div>`;}).join("");
+
+  const types = Object.keys(COMMS_TYPES).map(k=>{const t=COMMS_TYPES[k],d=DIS[t.dis];
+    return `<div class="rtype${k===L.commsType?" on":""}"><span class="rd" style="background:${d.c}"></span>${t.name}<span class="rl" style="color:${d.c}">${t.dis}</span></div>`;}).join("");
+
+  el.innerHTML=`
+    <div class="rp-head">
+      <div><h4>The rules this bundle was built from</h4>
+        <p>Your rules, machine-readable. Highlighted rows fired for <b>${L.feature}</b>.</p></div>
+      <button class="rp-close" id="rpClose" aria-label="Close">✕</button>
+    </div>
+    <div class="rp-sub">Visual assets</div>
+    <div class="rp-grid">${kindCards}</div>
+    <div class="rp-sub">Where it can appear</div>
+    <div class="rp-ladder">${ladder}</div>
+    <div class="rp-sub">Comms types</div>
+    <div class="rp-types">${types}</div>
+    <div class="rp-ladder" style="margin-top:12px">
+      <div class="rp-k" style="margin-bottom:6px">Resolved for this launch</div>
+      <div class="rp-rule"><b>${T.name}</b> · ${DIS[T.dis].l.toLowerCase()} · allows ${T.allow.map(k=>VISUAL_KINDS[k].label.toLowerCase()).join(", ")}.<br>${T.why}</div>
+      <div class="rp-rule" style="margin-top:8px;color:var(--muted-2)"><b>Priority order:</b> ${PRIORITY.join(" → ")}</div>
+    </div>`;
+  el.querySelector("#rpClose").addEventListener("click",closeRules);
+}
+
+/* ================= UNDER THE HOOD ================= */
+function renderHood(L){
+  const el=document.getElementById("hood");
+  el.classList.toggle("open",hoodOpen);
+  if(!hoodOpen) return;
+  const inner=document.getElementById("hoodInner");
+  const inf=L.infra;
+  const totTok=inf.tokensIn+inf.tokensOut;
+  const totLat=inf.latency.reduce((s,x)=>s+x[1],0);
+  const maxLat=Math.max(...inf.latency.map(x=>x[1]));
+  inner.innerHTML=`
+    <div class="hood-title">Under the Hood · AI logic &amp; infra <span class="pill">run · ${L.id}</span></div>
+    <div class="hood-grid">
+      <div class="hbox"><h5>Agent routing</h5>
+        <div class="route-graph">
+          <div class="rnode"><span class="rstage">Extract</span><span class="rmodel"><span class="rdot"></span>intent · haiku<span class="rlat">${inf.latency[0][1]}ms</span></span></div>
+          <div class="rnode"><span class="rstage">Plan</span><span class="rmodel"><span class="rdot"></span>surface-planner · sonnet<span class="rlat">${inf.latency[1][1]}ms</span></span></div>
+          <div class="rnode"><span class="rstage">Design</span><span class="rmodel"><span class="rdot" style="background:var(--violet)"></span>Design agent · library + Variables<span class="rlat">${Math.round(inf.latency[2][1]*0.62)}ms</span></span></div>
+          <div class="rnode"><span class="rstage">Content</span><span class="rmodel"><span class="rdot" style="background:var(--blue)"></span>Content Design agent · ${DISCIPLINES.length} discipline voices<span class="rlat">${Math.round(inf.latency[2][1]*0.38)}ms</span></span></div>
+          <div class="rnode"><span class="rstage">Critic</span><span class="rmodel"><span class="rdot" style="background:var(--green)"></span>critic · a11y + spec + brand<span class="rlat">${inf.latency[3][1]}ms</span></span></div>
+        </div>
+      </div>
+      <div class="hbox"><h5>Telemetry <span class="tot">${(totTok/1000).toFixed(1)}k tok</span></h5>
+        <div class="telem">
+          <div class="trow"><span class="tlab">Tokens in</span><span class="tbar"><i style="width:${Math.round(inf.tokensIn/totTok*100)}%"></i></span><span class="tval">${inf.tokensIn.toLocaleString()}</span></div>
+          <div class="trow"><span class="tlab">Tokens out</span><span class="tbar"><i style="width:${Math.round(inf.tokensOut/totTok*100)}%"></i></span><span class="tval">${inf.tokensOut.toLocaleString()}</span></div>
+          ${inf.latency.map(x=>`<div class="trow"><span class="tlab">${x[0].split(' ')[0]}</span><span class="tbar"><i style="width:${Math.round(x[1]/maxLat*100)}%"></i></span><span class="tval">${x[1]}ms</span></div>`).join("")}
+          <div class="trow"><span class="tlab">Total</span><span class="tbar"><i style="width:100%"></i></span><span class="tval">${(totLat/1000).toFixed(1)}s</span></div>
+        </div>
+      </div>
+      <div class="hbox"><h5>Retrieval context <span class="tot">${inf.retrieval.length+2} hits</span></h5>
+        <div class="retr" style="margin-bottom:0">
+          <div class="rr"><span class="rk">☺</span><span class="rn">Tone of voice · ${DISCIPLINES.length} disciplines</span><span class="rs">0.96</span><span class="rsrc">voice kit</span></div>
+          <div class="rr"><span class="rk">⬡</span><span class="rn">SDS tokens · colour, space, radius</span><span class="rs">0.97</span><span class="rsrc">figma/sds</span></div>
+        </div>
+        <div class="retr">${inf.retrieval.map(r=>`<div class="rr"><span class="rk">${r.k}</span><span class="rn">${r.n}</span><span class="rs">${r.s}</span><span class="rsrc">${r.src}</span></div>`).join("")}</div>
+      </div>
+    </div>
+    <div class="pipe"><h5>Review submission <span class="hook">POST /webhooks/review · signed ✓</span></h5>
+      <div class="pipe-steps" id="pipeSteps"></div>
+    </div>`;
+  renderPipe(L, !!subState[L.id]);
+  requestAnimationFrame(()=>inner.querySelectorAll(".tbar i").forEach(i=>{const w=i.style.width;i.style.width="0";requestAnimationFrame(()=>i.style.width=w);}));
+}
+const PIPE=["Bundle packaged","Signed webhook","PR opened","Checks run","Review created"];
+function renderPipe(L,done){
+  const el=document.getElementById("pipeSteps"); if(!el)return;
+  el.innerHTML=PIPE.map((s,i)=>`<div class="pstep2 ${done?'on':''}" data-i="${i}"><span class="pd">${done?'✓':i+1}</span>${s}</div>${i<PIPE.length-1?`<span class="pline2 ${done?'on':''}"></span>`:""}`).join("");
+}
+function animatePipe(L){
+  if(!hoodOpen) return;
+  renderHood(L);
+  const steps=document.querySelectorAll("#pipeSteps .pstep2");
+  const lines=document.querySelectorAll("#pipeSteps .pline2");
+  steps.forEach(s=>s.classList.remove("on"));
+  let i=0;
+  const tick=()=>{
+    if(i>0){steps[i-1]&&steps[i-1].classList.remove("active");steps[i-1]&&steps[i-1].classList.add("on");lines[i-1]&&lines[i-1].classList.add("on");}
+    if(i<steps.length){ steps[i].classList.add("active"); steps[i].querySelector(".pd").textContent="●"; animTimers.push(setTimeout(()=>{steps[i].querySelector(".pd").textContent="✓";i++;tick();},480)); }
+  };
+  tick();
+}
+
+/* ================= SELECT + TOGGLE ================= */
+function select(id){
+  const L=LAUNCHES.find(x=>x.id===id);
+  if(L._origType) L.commsType=L._origType;      // undo any form override
+  selected=id; stage=1; oneBlast=false;
+  author="pm"; inputMode="brief";
+  closeRules(); closeLive(); renderQueue(); render();
+  document.getElementById("canvasArea").scrollTop=0;
+}
+document.getElementById("rulesToggle").addEventListener("click",function(){
+  rulesOpen=!rulesOpen; this.classList.toggle("tool-on",rulesOpen); closeActions();
+  renderRules(LAUNCHES.find(x=>x.id===selected));
+});
+document.getElementById("hoodToggle").addEventListener("click",function(){
+  hoodOpen=!hoodOpen; this.classList.toggle("tool-on",hoodOpen); closeActions();
+  renderHood(LAUNCHES.find(x=>x.id===selected));
+});
+document.getElementById("liveRail").addEventListener("click",()=>{
+  liveView=!liveView; if(liveView){ closeRules(); document.getElementById("rulesToggle").classList.remove("tool-on"); }
+  renderLive();
+});
+
+/* actions / tools menu — the entry point for an ad-hoc tool like Cadence */
+const actionsBtn=document.getElementById("actionsBtn"), actionsMenu=document.getElementById("actionsMenu");
+function closeActions(){ actionsMenu.classList.remove("open"); actionsBtn.classList.remove("tool-on"); }
+actionsBtn.addEventListener("click",e=>{
+  e.stopPropagation();
+  const open=!actionsMenu.classList.contains("open");
+  actionsMenu.classList.toggle("open",open); actionsBtn.classList.toggle("tool-on",open);
+});
+document.addEventListener("click",e=>{ if(!actionsMenu.contains(e.target)&&e.target!==actionsBtn) closeActions(); });
+
+/* left panel Layers — the bundle, as real layers */
+function renderLayers(L){
+  const el=document.getElementById("layerList"); if(!el) return;
+  if(stage===1&&!genDone[L.id]){
+    el.innerHTML=`<div class="fx-empty">Nothing on the canvas yet — generate the bundle and every asset lands here as a layer.</div>`;
+    return;
+  }
+  const v=resultCache[L.id]||evaluate(L);
+  el.innerHTML=L.bundle.map((a,i)=>{
+    const av=a.visual||{kind:"none"}, vk=VISUAL_KINDS[av.kind];
+    const bad=v.assets[i].r.rv&&v.assets[i].r.rv.violations.some(x=>!x.soft);
+    return `<div class="lay" data-i="${i}"><span class="g" style="color:${bad?"var(--sds-color-red-500)":vk.color}">${vk.glyph}</span>
+      <span class="n">${a.label}</span><span class="s">${visualLabel(av)}</span></div>`;
+  }).join("");
+}
+
+/* ================= TOAST ================= */
+let tt;
+function toast(m){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
+
+/* ================= THE LOGIC SECTION (same constants, rendered on the page) ================= */
+function renderLogicSection(){
+  /* 1 · assets: words only → motion */
+  document.getElementById("lgKinds").innerHTML=Object.keys(VISUAL_KINDS).map(k=>{const K=VISUAL_KINDS[k];
+    const sp = k==="illo" ? "16:7 · 16:9 · 9:16" : K.scale;
+    return `<div class="lx-box lx-kind" title="${K.rule}"><span class="g" style="color:${k==="none"?"var(--d-text)":K.color}">${K.glyph}</span>
+      <h5>${K.label}</h5><div class="sp">${sp}</div></div>`;}).join("");
+
+  /* 2 · priority: content first, then every type in order (COMMS_TYPES is in priority order) */
+  const tag=k=>{const K=VISUAL_KINDS[k]; const c=k==="none"?"var(--d-text)":k==="icon"?"#8b9099":K.color;
+    return `<span class="tg" style="color:${c}">${K.glyph} ${K.label.toLowerCase()}</span>`;};
+  const pad=n=>String(n).padStart(2,"0");
+  document.getElementById("lgPri").innerHTML=
+    `<div class="lx-box lx-row zero" title="No interruption, the content carries it."><span class="n">00</span><span class="d o"></span><span class="nm">Content first</span></div>`+
+    Object.keys(COMMS_TYPES).map((k,i)=>{const t=COMMS_TYPES[k];
+      return `<div class="lx-box lx-row" title="${t.def}"><span class="n">${pad(i+1)}</span><span class="d" style="background:${DIS[t.dis].c}"></span>
+        <span class="nm">${t.name}</span>${tag(t.lead)}</div>`;}).join("");
+  document.getElementById("lgLegend").innerHTML=
+    [["MD","interrupts"],["MED","can wait"],["LOW","quiet"]].map(([d,l])=>`<span><i style="background:${DIS[d].c}"></i>${l}</span>`).join("");
+
+  /* 3 · surfaces: quiet → loud */
+  const SHORT={dashtips:"Tips",nextsteps:"Next steps",tooltip:"Tooltip",floating:"Banner",megaphone:"Megaphone",activity:"Activity feed",feedmega:"Feed megaphone",dialog:"Dialog",push:"Push"};
+  const ROOMTAG={none:"words only",small:"icon only",medium:"icon + hi-fi",large:"any asset"};
+  const stops=Object.keys(SURFACES).filter(k=>SURFACES[k].n>0).sort((a,b)=>SURFACES[a].n-SURFACES[b].n);
+  document.getElementById("lgLadder").innerHTML=stops.map((k,i)=>{const s=SURFACES[k], f=i/(stops.length-1);
+    const bd=`color-mix(in srgb, var(--red) ${Math.round(f*100)}%, #3a3d42)`;
+    const bg=`color-mix(in srgb, var(--red) ${Math.round(f*22)}%, #1f2125)`;
+    return `<div class="lx-stop" title="${s.name}"><span class="c" style="border-color:${bd};background:${bg}">${s.n}</span>
+      <span class="l">${SHORT[k]||s.name}</span><span class="t${s.room==="large"?" any":""}">${ROOMTAG[s.room]}</span></div>`;}).join("");
+
+  /* 4 · audiences: one launch, every seat */
+  const L=LAUNCHES[0], V=L.voice, n=DISCIPLINES.length;
+  const ys=DISCIPLINES.map((_,i)=>((i+.5)/n*100).toFixed(1));
+  document.getElementById("lgVoice").innerHTML=`
+    <div class="lx-old"><div class="k">The old way</div><div class="h">${V.generic.h}</div></div>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      ${ys.map(y=>`<path d="M0,50 C55,50 45,${y} 100,${y}" fill="none" stroke="#4a4e55" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`).join("")}
+    </svg>
+    <div class="lx-seats">${DISCIPLINES.map(d=>`<div class="lx-box lx-seat"><i style="background:${d.color}"></i>
+      <span class="r">${d.label} —</span><b>${V[d.id].h}</b></div>`).join("")}</div>`;
+}
+
+/* ================= NOTHING CLICKABLE IS SILENT =================
+   Anything that looks like a control either does something or says what it
+   is. No dead affordances. */
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-chrome]");
+  if(c){ toast(c.dataset.chrome); return; }
+  const t=e.target.closest("[data-tool]");
+  if(t){ toast(t.dataset.tool==="__active" ? "Cadence is already the active tool." : t.dataset.tool+" would open here — Cadence is the active tool in this demo."); closeActions(); }
+});
+
+/* Layers panel → jump to that asset on the canvas */
+document.getElementById("layerList").addEventListener("click",e=>{
+  const row=e.target.closest(".lay"); if(!row) return;
+  const i=+row.dataset.i;
+  const card=document.querySelectorAll("#gallery .asset")[i];
+  if(!card){ toast("Generate the bundle first — then every asset is a layer."); return; }
+  card.scrollIntoView({behavior:"smooth",block:"center"});
+  card.classList.add("flash"); setTimeout(()=>card.classList.remove("flash"),900);
+});
+
+/* nav scrolls the page it's on — it never navigates away */
+document.querySelectorAll("[data-jump]").forEach(b=>b.addEventListener("click",()=>{
+  const t=document.getElementById(b.dataset.jump);
+  if(t) t.scrollIntoView({behavior:"smooth",block:"start"});
+}));
+
+/* ================= INIT ================= */
+renderQueue(); render(); renderLogicSection();
+</script>
+</body>
+</html>
