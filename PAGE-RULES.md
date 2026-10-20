@@ -29,7 +29,9 @@ COLOR (only these)
 
 ICONS
 - Use Cadence Kit dot icons only (from cadence/packages/plugin/src/ui/icons.tsx): shield, frame, edit, compose, rocket, clock, check, bell, settings, error, image. No other icon sets.
-- Current mapping: standards = shield, system = frame, brief = edit, template = compose, shipped = rocket, in progress = clock, done = check.
+- Current mapping: standards = shield, system = frame, brief = edit, shipped = rocket, in progress = clock, done = check.
+- Workflow steps: spec = edit, load the system = frame, plan = compose, build = settings, check = check, unstick = error, ship and retro = rocket.
+- Next-steps milestones each carry their own icon in ship-log.json (`icon` field): define = edit, golden set = frame, test = shield, public repo = compose, ship = rocket. A finished milestone switches to check.
 
 MOTION
 - Everything animates once, when scrolled into view, then stays still. Headlines flip like a departures board, sentences type on, charts draw in.
@@ -57,7 +59,7 @@ THE 3-LAYER SYSTEM (keep this the centerpiece)
 1. Standards (always on): her standing rules for every session. Check: would I put my name on it?
 2. System (per project): the design system written so a model can follow it, plus tests and lessons. Check: does it pass the tests?
 3. Brief (per task): a short spec: the problem, the limits, what done looks like. Check: did it ship?
-If layers disagree, the brief wins. Hard rules always win. The full template stays collapsed behind "Steal my template."
+If layers disagree, the brief wins. Hard rules always win. Below the layers sits "My workflow, with the prompts I actually use": 7 steps (Spec it, Load the system, Plan it, Build one step, Check it, Unstick it, Ship it then retro), each collapsed with a copyable prompt.
 - Layer 1 is her standing rules, loaded into every session in Claude, Claude Code and Cursor (spec-first, no scope creep). Layer 3 is a short spec: problem, limits, what done means.
 - Her retro agent runs after each session and turns what went wrong into new rules. Mention it once, right after the layers.
 - Stop rule: 2 or 3 prompts with no progress = stop and fix the spec. Always check the real thing on a real device.

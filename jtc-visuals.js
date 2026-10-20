@@ -144,15 +144,19 @@
   function trend(host, s) {
     var a = s.activity;
     if (!a.commits && !s.sample) { host.innerHTML = '<p class="empty">This chart fills in after the first daily update from GitHub.</p>'; return null; }
-    var weeks = a.grid.map(function (col) {
-      var c = 0, ai = 0, ship = [];
-      col.forEach(function (d) { if (!d.future) { c += d.commits; ai += d.ai; if (d.ship) ship.push(d.ship); } });
-      return { from: col[0].date, c: c, ai: ai, ship: ship };
-    });
-    var max = Math.max.apply(null, weeks.map(function (w) { return w.c; })) || 1;
-    host.innerHTML = '<div class="key lbl"><span><i style="background:' + C.ink + '"></i>All commits</span><span><i style="background:' + C.signal + '"></i>With AI as co-author</span><span>Peak week: ' + max + '</span></div>';
+    // Daily points, shown as running totals so every day is a point you can hover.
+    var days = [];
+    a.grid.forEach(function (col) { col.forEach(function (d) { if (!d.future) days.push(d); }); });
+    var first = days.findIndex(function (d) { return d.commits > 0; });
+    if (first < 0) first = 0;
+    first = Math.max(0, Math.min(first, days.length - 21));
+    days = days.slice(first);
+    var cc = 0, ca = 0;
+    var weeks = days.map(function (d) { cc += d.commits; ca += d.ai; return { from: d.date, day: d.commits, dayAi: d.ai, c: cc, ai: ca, ship: d.ship ? [d.ship] : [] }; });
+    var max = cc || 1;
+    host.innerHTML = '<div class="key lbl"><span><i style="background:' + C.ink + '"></i>Commits, running total</span><span><i style="background:' + C.signal + '"></i>With AI as co-author</span><span>' + weeks.length + ' days</span></div>';
     var d = new Dots(host, function (cols) { return Math.max(34, Math.min(70, Math.round(cols * 0.28))); });
-    host.insertAdjacentHTML('beforeend', '<div class="axis lbl"><span>' + fmt(weeks[0].from, { month: 'short', day: 'numeric' }) + '</span><span>This week</span></div>');
+    host.insertAdjacentHTML('beforeend', '<div class="axis lbl"><span>' + fmt(weeks[0].from, { month: 'short', day: 'numeric' }) + '</span><span>Today</span></div>');
     var tip = tipper(host), hover = -1;
     var chart = { progress: 0 };
     function geo() {
@@ -182,7 +186,7 @@
       weeks.forEach(function (w, i) {
         var x = g.xs[i]; if (x > lim) return;
         var yy = Math.round(g.y(w.c));
-        for (var a1 = -1; a1 <= 1; a1++) for (var b1 = -1; b1 <= 1; b1++) d.dot(x + a1, yy + b1, i === hover ? C.signal : C.ink);
+        if (w.day || i === hover) for (var a1 = -1; a1 <= 1; a1++) for (var b1 = -1; b1 <= 1; b1++) d.dot(x + a1, yy + b1, i === hover ? C.signal : C.ink);
         if (w.ship.length) for (var k = 0; k < 3; k++) d.dot(x, g.top - 3 + k, C.signal);
       });
       d.end();
@@ -192,7 +196,7 @@
       g.xs.forEach(function (x, i) { if (Math.abs(x - c.col) < Math.abs(g.xs[best] - c.col)) best = i; });
       hover = best; chart.draw();
       var w = weeks[best];
-      tip.show('<b>Week of ' + esc(fmt(w.from)) + '</b>' + w.c + ' commits<br><span class="s">' + w.ai + ' with AI (' + (w.c ? Math.round(w.ai / w.c * 100) : 0) + '%)</span>' +
+      tip.show('<b>' + esc(fmt(w.from)) + '</b>' + w.day + ' commit' + (w.day === 1 ? '' : 's') + ' that day' + (w.day ? '<br><span class="s">' + w.dayAi + ' with AI</span>' : '') + '<br>Running total: ' + w.c + ' (' + (w.c ? Math.round(w.ai / w.c * 100) : 0) + '% with AI)' +
         (w.ship.length ? '<br>Shipped: ' + esc(w.ship.join(', ')) : ''), hostXY(host, ev)[0], hostXY(host, ev)[1]);
     }
     d.c.addEventListener('pointermove', move); d.c.addEventListener('pointerdown', move);
@@ -299,7 +303,7 @@
     var n = s.next; if (!n) return null;
     var ms = n.milestones || [], cur = ms.findIndex(function (m) { return !m.done; });
     host.innerHTML = '<div class="steps">' + ms.map(function (m, i) {
-      return '<div class="st row' + (i === cur ? ' now' : '') + '" style="--i:' + i + '">' + icon(m.done ? 'check' : i === cur ? 'edit' : 'clock') + '<span class="lbl" style="color:inherit">' + esc(m.label) + (i === cur ? ' · now' : '') + '</span></div>';
+      return '<div class="st row' + (i === cur ? ' now' : '') + '" style="--i:' + i + '">' + icon(m.done ? 'check' : (m.icon || 'clock')) + '<span class="lbl" style="color:inherit">' + esc(m.label) + (i === cur ? ' · now' : '') + '</span></div>';
     }).join('') + '</div>';
     return null;
   }

@@ -41,14 +41,21 @@
   .layer:nth-child(1) .bar{width:100%} .layer:nth-child(2) .bar{width:70%} .layer:nth-child(3) .bar{width:40%}
   .layer .check{margin-top:calc(var(--jtc-p) * 3);color:var(--jtc-signal);font:800 15px/1.4 Doto,monospace;text-transform:uppercase;letter-spacing:.05em}
   @media (max-width:560px){.layer .head{flex-wrap:wrap}.layer .head .lbl{margin-left:42px;text-align:left;width:100%}}
-  details.tpl{margin-top:calc(var(--jtc-p) * 12);border:1px dashed var(--jtc-dim);border-radius:calc(var(--jtc-p) * 3);background:rgba(11,12,12,.9)}
-  details.tpl summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px}
-  details.tpl summary::-webkit-details-marker{display:none}
-  details.tpl summary .plus{margin-left:auto;font:900 22px Doto,monospace;color:var(--jtc-signal)}
-  details.tpl[open] summary .plus{transform:rotate(45deg)}
-  details.tpl .body{border-top:1px dashed var(--jtc-dim)}
-  details.tpl pre{margin:0;padding:18px 16px;font:500 13.5px/1.65 "JetBrains Mono",monospace;color:var(--jtc-ink);white-space:pre-wrap;word-break:break-word}
-  details.tpl pre .h{color:var(--jtc-signal)} details.tpl pre .c{color:var(--jtc-grey)}
+  .flow{margin-top:calc(var(--jtc-p) * 12);display:grid;gap:0;border-top:1px dashed var(--jtc-dim)}
+  .flow > .lbl{margin:calc(var(--jtc-p) * 4) 0}
+  .fs{border-bottom:1px dashed var(--jtc-dim)}
+  .fs summary{list-style:none;display:flex;align-items:center;gap:16px;padding:calc(var(--jtc-p) * 4) 0}
+  .fs summary::-webkit-details-marker{display:none}
+  .fs .n{font:900 18px Doto,monospace;color:var(--jtc-grey)}
+  .fs .tt{display:flex;flex-direction:column;gap:2px;flex:1}
+  .fs .tt b{font:900 clamp(18px,2vw,24px)/1.2 Doto,monospace;text-transform:uppercase;letter-spacing:.04em}
+  .fs .tt span{color:var(--jtc-grey);text-wrap:pretty}
+  .fs .plus{font:900 24px Doto,monospace;color:var(--jtc-signal);transition:transform .2s}
+  .fs[open] .plus{transform:rotate(45deg)}
+  .fs[open] summary .ico{color:var(--jtc-signal)}
+  .fs .body{padding:0 0 calc(var(--jtc-p) * 5) 44px}
+  .fs pre{margin:0 0 12px;padding:16px;border:1px dashed var(--jtc-dim);border-radius:calc(var(--jtc-p) * 2);background:rgba(11,12,12,.9);font:500 13.5px/1.65 "JetBrains Mono",monospace;color:var(--jtc-ink);white-space:pre-wrap;word-break:break-word}
+  @media (max-width:560px){.fs .body{padding-left:0}}
   .btn{font:900 13px Doto,monospace;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:99px;padding:9px 15px;background:var(--jtc-ink);color:var(--jtc-bg);cursor:pointer;text-decoration:none;display:inline-block}
   .btn:hover{background:var(--jtc-signal);color:#fff} .btn:focus-visible{outline:2px solid var(--jtc-signal);outline-offset:3px}
   details.tpl .copy{margin:0 16px 16px}
@@ -116,36 +123,53 @@
     <p class="jtc" data-role="lead">If two layers disagree, the brief wins. Hard rules always win.</p>
     <p class="jtc" data-role="body">The part that keeps it honest: after each session, a retro agent I built pulls out what went wrong and turns it into new rules. The system gets stricter without me remembering to make it stricter.</p>
 
-    <details class="tpl">
-      <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.33" cy="10.67" r="0.667"/><circle cx="5.33" cy="8.67" r="0.667"/><circle cx="6.67" cy="7.33" r="0.667"/><circle cx="8" cy="6" r="0.667"/><circle cx="9.33" cy="4.67" r="0.667"/><circle cx="10.67" cy="3.33" r="0.667"/><circle cx="12" cy="2" r="0.667"/><circle cx="7.33" cy="10.67" r="0.667"/><circle cx="8.67" cy="9.33" r="0.667"/><circle cx="10" cy="8" r="0.667"/><circle cx="11.33" cy="6.67" r="0.667"/><circle cx="12.67" cy="5.33" r="0.667"/><circle cx="14" cy="4" r="0.667"/><circle cx="14" cy="2" r="0.667"/><circle cx="5.33" cy="3.33" r="0.667"/><circle cx="3.33" cy="3.33" r="0.667"/><circle cx="2" cy="5.33" r="0.667"/><circle cx="2" cy="7.15" r="0.667"/><circle cx="2" cy="8.97" r="0.667"/><circle cx="2" cy="10.79" r="0.667"/><circle cx="2" cy="12.61" r="0.667"/><circle cx="3" cy="14" r="0.667"/><circle cx="4.83" cy="14" r="0.667"/><circle cx="6.67" cy="14" r="0.667"/><circle cx="8.5" cy="14" r="0.667"/><circle cx="10.33" cy="14" r="0.667"/><circle cx="12.17" cy="14" r="0.667"/><circle cx="13.33" cy="12.67" r="0.667"/><circle cx="13.33" cy="10.67" r="0.667"/></svg><span class="lbl" style="color:var(--jtc-ink)">Steal my template</span><span class="plus">+</span></summary>
-      <div class="body">
-<pre id="tplText"><span class="h"># 1 · STANDARDS (always on)</span>
-- Use real components, real tokens and real data. No lorem ipsum.
-- Never make up facts, numbers, quotes or sources. Say when you're unsure.
-- Accessibility is not optional.
-- Stay in scope. If the ask grows, stop and say so.
-- Show me a plan before anything big. Ask before anything you can't undo.
-- Done means shipped: a link, a file or a repo someone else can use.
-
-<span class="h"># 2 · SYSTEM (per project, in the repo)</span>
-- CLAUDE.md / DESIGN.md: only these tokens and components. <span class="c">[paths]</span>
-- VOICE.md: how the brand talks, with good and bad examples.
-- Rules a machine can check, plus tests that score the output.
-- Lessons: every past mistake, written as a rule. My retro agent adds these after each session.
-
-<span class="h"># 3 · BRIEF (per task)</span>
-Goal: <span class="c">[one sentence, and who it's for]</span>
-Done when: <span class="c">[how I'll know it worked]</span>
-Limits: <span class="c">[platforms, deadline, what not to touch]</span>
-Output: <span class="c">[exact format and where it goes]</span>
-Check: look at the real thing on a real device, not just the code.
-Stop rule: 2 or 3 prompts with no progress = stop and fix the spec.
-
-<span class="h"># IF THEY DISAGREE</span>
-Brief > System > Standards. Hard rules always win.</pre>
-        <button class="btn copy" id="copy" type="button">Copy template</button>
-      </div>
-    </details>
+    <div class="flow viz">
+      <p class="lbl a">My workflow, with the prompts I actually use</p>
+      <details class="fs a" style="--i:0">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="3.31" cy="20.66" r="1"/><circle cx="5.92" cy="20.66" r="1"/><circle cx="8.86" cy="20.34" r="1"/><circle cx="10.82" cy="18.37" r="1"/><circle cx="12.78" cy="16.41" r="1"/><circle cx="14.75" cy="14.45" r="1"/><circle cx="16.77" cy="12.56" r="1"/><circle cx="20.69" cy="8.63" r="1"/><circle cx="18.73" cy="10.59" r="1"/><circle cx="3.31" cy="18.05" r="1"/><circle cx="3.63" cy="15.11" r="1"/><circle cx="5.59" cy="13.14" r="1"/><circle cx="7.55" cy="11.18" r="1"/><circle cx="9.52" cy="9.22" r="1"/><circle cx="11.48" cy="7.26" r="1"/><circle cx="15.4" cy="3.34" r="1"/><circle cx="13.44" cy="5.3" r="1"/><circle cx="13.24" cy="9.03" r="1"/><circle cx="17.16" cy="5.1" r="1"/><circle cx="15.01" cy="10.79" r="1"/><circle cx="18.93" cy="6.87" r="1"/></svg><span class="n">01</span><span class="tt"><b>Spec it</b><span>Before any tool, I get the ask down to a few lines.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p1">Interview me one question at a time until we have a spec.
+Ask about: the problem, who it's for, the limits (platforms,
+deadline, what not to touch), and what "done" looks like.
+Then write the spec in under 10 lines. Don't start building.</pre><button class="btn copy" type="button" data-copy="p1">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:1">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="2.0" cy="2.0" r="0.667"/><circle cx="4.0" cy="2.0" r="0.667"/><circle cx="6.0" cy="2.0" r="0.667"/><circle cx="8.0" cy="2.0" r="0.667"/><circle cx="10.0" cy="2.0" r="0.667"/><circle cx="12.0" cy="2.0" r="0.667"/><circle cx="14.0" cy="2.0" r="0.667"/><circle cx="2.0" cy="4.0" r="0.667"/><circle cx="8.0" cy="4.0" r="0.667"/><circle cx="14.0" cy="4.0" r="0.667"/><circle cx="2.0" cy="6.0" r="0.667"/><circle cx="8.0" cy="6.0" r="0.667"/><circle cx="14.0" cy="6.0" r="0.667"/><circle cx="2.0" cy="8.0" r="0.667"/><circle cx="4.0" cy="8.0" r="0.667"/><circle cx="6.0" cy="8.0" r="0.667"/><circle cx="8.0" cy="8.0" r="0.667"/><circle cx="10.0" cy="8.0" r="0.667"/><circle cx="12.0" cy="8.0" r="0.667"/><circle cx="14.0" cy="8.0" r="0.667"/><circle cx="2.0" cy="10.0" r="0.667"/><circle cx="8.0" cy="10.0" r="0.667"/><circle cx="14.0" cy="10.0" r="0.667"/><circle cx="2.0" cy="12.0" r="0.667"/><circle cx="8.0" cy="12.0" r="0.667"/><circle cx="14.0" cy="12.0" r="0.667"/><circle cx="2.0" cy="14.0" r="0.667"/><circle cx="4.0" cy="14.0" r="0.667"/><circle cx="6.0" cy="14.0" r="0.667"/><circle cx="8.0" cy="14.0" r="0.667"/><circle cx="10.0" cy="14.0" r="0.667"/><circle cx="12.0" cy="14.0" r="0.667"/><circle cx="14.0" cy="14.0" r="0.667"/></svg><span class="n">02</span><span class="tt"><b>Load the system</b><span>The model gets my real rules, not vibes.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p2">Read CLAUDE.md, DESIGN.md and VOICE.md before anything else.
+Use only the tokens, components and words in them.
+If something you need is missing, don't invent it. Write:
+[SYSTEM GAP] Missing: ... · Needed for: ... · Proposed: ...
+· Fallback: ... and wait for me to pick.</pre><button class="btn copy" type="button" data-copy="p2">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:2">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.33" cy="10.67" r="0.667"/><circle cx="5.33" cy="8.67" r="0.667"/><circle cx="6.67" cy="7.33" r="0.667"/><circle cx="8" cy="6" r="0.667"/><circle cx="9.33" cy="4.67" r="0.667"/><circle cx="10.67" cy="3.33" r="0.667"/><circle cx="12" cy="2" r="0.667"/><circle cx="7.33" cy="10.67" r="0.667"/><circle cx="8.67" cy="9.33" r="0.667"/><circle cx="10" cy="8" r="0.667"/><circle cx="11.33" cy="6.67" r="0.667"/><circle cx="12.67" cy="5.33" r="0.667"/><circle cx="14" cy="4" r="0.667"/><circle cx="14" cy="2" r="0.667"/><circle cx="5.33" cy="3.33" r="0.667"/><circle cx="3.33" cy="3.33" r="0.667"/><circle cx="2" cy="5.33" r="0.667"/><circle cx="2" cy="7.15" r="0.667"/><circle cx="2" cy="8.97" r="0.667"/><circle cx="2" cy="10.79" r="0.667"/><circle cx="2" cy="12.61" r="0.667"/><circle cx="3" cy="14" r="0.667"/><circle cx="4.83" cy="14" r="0.667"/><circle cx="6.67" cy="14" r="0.667"/><circle cx="8.5" cy="14" r="0.667"/><circle cx="10.33" cy="14" r="0.667"/><circle cx="12.17" cy="14" r="0.667"/><circle cx="13.33" cy="12.67" r="0.667"/><circle cx="13.33" cy="10.67" r="0.667"/></svg><span class="n">03</span><span class="tt"><b>Plan it</b><span>A short plan first, so scope can’t sneak in.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p3">Give me a plan in 5 steps or fewer, and list every file you'll touch.
+Don't add features, refactors or dependencies I didn't ask for.
+Put any extra ideas in a one-line "Parking lot" at the end.</pre><button class="btn copy" type="button" data-copy="p3">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:3">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.25" cy="9.83" r="1"/><circle cx="14.5" cy="12" r="1"/><circle cx="13.25" cy="14.17" r="1"/><circle cx="10.75" cy="14.17" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="10.75" cy="9.83" r="1"/><circle cx="12" cy="4.8" r="1"/><circle cx="14.46" cy="5.23" r="1"/><circle cx="16.63" cy="6.48" r="1"/><circle cx="18.24" cy="8.4" r="1"/><circle cx="19.09" cy="10.75" r="1"/><circle cx="19.09" cy="13.25" r="1"/><circle cx="18.24" cy="15.6" r="1"/><circle cx="16.63" cy="17.52" r="1"/><circle cx="14.46" cy="18.77" r="1"/><circle cx="12" cy="19.2" r="1"/><circle cx="9.54" cy="18.77" r="1"/><circle cx="7.37" cy="17.52" r="1"/><circle cx="5.76" cy="15.6" r="1"/><circle cx="4.91" cy="13.25" r="1"/><circle cx="4.91" cy="10.75" r="1"/><circle cx="5.76" cy="8.4" r="1"/><circle cx="7.37" cy="6.48" r="1"/><circle cx="9.54" cy="5.23" r="1"/><circle cx="10.7" cy="2.19" r="1"/><circle cx="13.3" cy="2.19" r="1"/><circle cx="19.85" cy="5.97" r="1"/><circle cx="21.15" cy="8.22" r="1"/><circle cx="21.15" cy="15.78" r="1"/><circle cx="19.85" cy="18.03" r="1"/><circle cx="13.3" cy="21.81" r="1"/><circle cx="10.7" cy="21.81" r="1"/><circle cx="4.15" cy="18.03" r="1"/><circle cx="2.85" cy="15.78" r="1"/><circle cx="2.85" cy="8.22" r="1"/><circle cx="4.15" cy="5.97" r="1"/></svg><span class="n">04</span><span class="tt"><b>Build one step</b><span>Small steps I can actually check.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p4">Build step 1 only, with real components, real tokens and real data.
+No lorem ipsum. Stop when it runs and tell me how to see it.</pre><button class="btn copy" type="button" data-copy="p4">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:4">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="0.667"/><circle cx="6" cy="11" r="0.667"/><circle cx="13" cy="4" r="0.667"/><circle cx="4.5" cy="9.5" r="0.667"/><circle cx="7.4" cy="9.6" r="0.667"/><circle cx="8.8" cy="8.2" r="0.667"/><circle cx="10.2" cy="6.8" r="0.667"/><circle cx="11.6" cy="5.4" r="0.667"/></svg><span class="n">05</span><span class="tt"><b>Check it</b><span>Proof, not "looks good."</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p5">Go through the spec's "done" list. Mark each item checked
+(say how you checked it) or unchecked. Don't say it works
+unless you ran it. Flag any number or source you didn't verify.</pre><button class="btn copy" type="button" data-copy="p5">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:5">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="3.75" r="1"/><circle cx="10.5" cy="20.25" r="1"/><circle cx="10.5" cy="3.75" r="1"/><circle cx="8" cy="6" r="1"/><circle cx="13.5" cy="20.25" r="1"/><circle cx="5.75" cy="15.75" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="5.75" cy="8.25" r="1"/><circle cx="16" cy="18" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="18.25" cy="8.25" r="1"/><circle cx="3.75" cy="13.25" r="1"/><circle cx="20.25" cy="10.75" r="1"/><circle cx="3.75" cy="10.75" r="1"/><circle cx="18.25" cy="15.75" r="1"/><circle cx="20.25" cy="13.25" r="1"/><path d="M12 7.5V12.5" class="red-stroke" fill="none" stroke-width="2" stroke-linecap="round"/><path d="M12 16.25V16.26" class="red-stroke" fill="none" stroke-width="2" stroke-linecap="round"/></svg><span class="n">06</span><span class="tt"><b>Unstick it</b><span>If it’s not converging, the ask is the problem.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p6">We've tried this 3 times and it's not getting closer.
+Stop. Tell me what's unclear or wrong in my ask,
+then propose a better spec before trying again.</pre><button class="btn copy" type="button" data-copy="p6">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:6">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.76" cy="2.76" r="1"/><circle cx="10.24" cy="2.76" r="1"/><circle cx="12" cy="1" r="1"/><circle cx="12" cy="17.72" r="1" class="red"/><circle cx="12" cy="23" r="1" class="red"/><circle cx="10.9" cy="20.36" r="1" class="red"/><circle cx="13.32" cy="20.36" r="1" class="red"/><circle cx="9.8" cy="17.72" r="1" class="red"/><circle cx="14.2" cy="17.72" r="1" class="red"/><circle cx="15.52" cy="4.52" r="1"/><circle cx="8.48" cy="4.52" r="1"/><circle cx="15.52" cy="6.72" r="1"/><circle cx="8.48" cy="6.72" r="1"/><circle cx="15.52" cy="8.92" r="1"/><circle cx="15.52" cy="13.32" r="1"/><circle cx="15.52" cy="15.52" r="1"/><circle cx="8.48" cy="8.92" r="1"/><circle cx="8.48" cy="13.32" r="1"/><circle cx="15.52" cy="11.12" r="1"/><circle cx="8.48" cy="11.12" r="1"/><circle cx="5.84" cy="12.44" r="1"/><circle cx="18.16" cy="12.44" r="1"/><circle cx="4.08" cy="14.2" r="1"/><circle cx="19.92" cy="14.2" r="1"/><circle cx="8.48" cy="15.52" r="1"/><circle cx="10.9" cy="15.52" r="1"/><circle cx="13.32" cy="15.52" r="1"/></svg><span class="n">07</span><span class="tt"><b>Ship it, then retro</b><span>Ship it, then turn mistakes into rules.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p7">Retro on this session: what went wrong or took too long,
+and what one rule would have prevented it?
+Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy" type="button" data-copy="p7">Copy prompt</button></div>
+      </details>
+    </div>
   </section>
 
   <section>
@@ -229,10 +253,11 @@ Brief > System > Standards. Hard rules always win.</pre>
     align();
     addEventListener('resize', function () { setTimeout(align, 160); });
     new ResizeObserver(align).observe(document.body);
-    var b = document.getElementById('copy');
-    b.addEventListener('click', function () {
-      var t = document.getElementById('tplText').innerText;
-      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy template'; }, 1600); }, function () { b.textContent = 'Select and copy'; });
+    document.querySelectorAll('[data-copy]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = document.getElementById(b.getAttribute('data-copy')).innerText;
+        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy prompt'; }, 1600); }, function () { b.textContent = 'Select and copy'; });
+      });
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();

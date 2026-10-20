@@ -64,23 +64,28 @@
       "milestones": [
         {
           "label": "Define what it grades",
-          "done": false
+          "done": false,
+          "icon": "edit"
         },
         {
           "label": "Golden set and rubric",
-          "done": false
+          "done": false,
+          "icon": "frame"
         },
         {
           "label": "Test it on Cadence output",
-          "done": false
+          "done": false,
+          "icon": "shield"
         },
         {
           "label": "Public repo",
-          "done": false
+          "done": false,
+          "icon": "compose"
         },
         {
           "label": "Ship it",
-          "done": false
+          "done": false,
+          "icon": "rocket"
         }
       ],
       "proof": []
