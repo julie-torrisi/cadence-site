@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-20T18:22:39.815Z",
+  "updated": "2026-10-20T20:52:17.491Z",
   "sample": false,
-  "offline": true,
+  "offline": false,
   "owner": "julie-torrisi",
-  "repos_tracked": 0,
+  "repos_tracked": 5,
   "activity": {
     "weeks": 12,
     "grid": [
@@ -446,7 +446,7 @@
         },
         {
           "date": "2026-10-02",
-          "commits": 0,
+          "commits": 1,
           "ai": 0,
           "ship": null,
           "future": false
@@ -541,29 +541,29 @@
         },
         {
           "date": "2026-10-15",
-          "commits": 0,
+          "commits": 9,
           "ai": 0,
           "ship": "Cadence website",
           "future": false
         },
         {
           "date": "2026-10-16",
-          "commits": 0,
-          "ai": 0,
+          "commits": 23,
+          "ai": 22,
           "ship": null,
           "future": false
         },
         {
           "date": "2026-10-17",
-          "commits": 0,
-          "ai": 0,
+          "commits": 2,
+          "ai": 1,
           "ship": null,
           "future": false
         },
         {
           "date": "2026-10-18",
-          "commits": 0,
-          "ai": 0,
+          "commits": 10,
+          "ai": 5,
           "ship": null,
           "future": false
         }
@@ -578,8 +578,8 @@
         },
         {
           "date": "2026-10-20",
-          "commits": 0,
-          "ai": 0,
+          "commits": 20,
+          "ai": 20,
           "ship": null,
           "future": false
         },
@@ -620,10 +620,10 @@
         }
       ]
     ],
-    "active_days": 0,
-    "commits": 0,
-    "ai_commits": 0,
-    "ai_share": null
+    "active_days": 6,
+    "commits": 65,
+    "ai_commits": 48,
+    "ai_share": 74
   },
   "funnel": {
     "exploring": 0,
@@ -657,7 +657,6 @@
       "visibility": "public",
       "started": "2026-09-01",
       "shipped": null,
-      "ship_on_release": "julie-torrisi/cadence",
       "proof": [
         {
           "label": "Cadence page",
