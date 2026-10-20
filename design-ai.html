@@ -85,7 +85,7 @@
 <body>
 <div class="page">
 
-  <div class="top"><a class="home lbl" href="https://www.julietorrisi.com" aria-label="Back to julietorrisi.com">&larr; julietorrisi.com</a><p class="jtc" data-role="kicker">Design + AI</p></div>
+  <div class="top"><a class="home lbl" target="_top" href="https://www.julietorrisi.com" aria-label="Back to julietorrisi.com">&larr; julietorrisi.com</a><p class="jtc" data-role="kicker">Design + AI</p></div>
 
   <header class="hero">
     <p class="jtc" data-role="kicker">&gt; How I use AI</p>
@@ -261,6 +261,14 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
+  // When embedded on julietorrisi.com, report height so the frame grows to fit (no inner scrollbar).
+  if (window.parent !== window) {
+    var last = 0;
+    var post = function () { var h = document.documentElement.scrollHeight; if (Math.abs(h - last) > 2) { last = h; parent.postMessage({ jtcHeight: h }, '*'); } };
+    new ResizeObserver(post).observe(document.body);
+    addEventListener('load', post);
+    document.documentElement.classList.add('embedded');
+  }
 })();
 </script>
 <script src="jtc-dots.js"></script>
