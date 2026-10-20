@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-20T21:00:40.791Z",
+  "updated": "2026-10-20T21:45:56.941Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
-  "repos_tracked": 5,
+  "repos_tracked": 10,
   "activity": {
     "weeks": 12,
     "grid": [
@@ -578,8 +578,8 @@
         },
         {
           "date": "2026-10-20",
-          "commits": 21,
-          "ai": 21,
+          "commits": 28,
+          "ai": 28,
           "ship": null,
           "future": false
         },
@@ -621,9 +621,9 @@
       ]
     ],
     "active_days": 6,
-    "commits": 66,
-    "ai_commits": 49,
-    "ai_share": 74
+    "commits": 73,
+    "ai_commits": 56,
+    "ai_share": 77
   },
   "funnel": {
     "exploring": 0,
@@ -712,23 +712,28 @@
     "milestones": [
       {
         "label": "Define what it grades",
-        "done": false
+        "done": false,
+        "icon": "edit"
       },
       {
         "label": "Golden set and rubric",
-        "done": false
+        "done": false,
+        "icon": "frame"
       },
       {
         "label": "Test it on Cadence output",
-        "done": false
+        "done": false,
+        "icon": "shield"
       },
       {
         "label": "Public repo",
-        "done": false
+        "done": false,
+        "icon": "compose"
       },
       {
         "label": "Ship it",
-        "done": false
+        "done": false,
+        "icon": "rocket"
       }
     ],
     "proof": []
