@@ -14,7 +14,7 @@
   a{color:inherit}
   .page{padding:0 var(--pad) calc(var(--jtc-p) * 40)}
   .top{padding-top:calc(var(--jtc-p) * 6)}
-  .home{display:inline-block;margin-bottom:calc(var(--jtc-p) * 5);text-decoration:none;color:var(--jtc-grey)} .home:hover{color:var(--jtc-signal)}
+  .home{visibility:hidden;display:inline-block;margin-bottom:calc(var(--jtc-p) * 5);text-decoration:none;color:var(--jtc-grey)} .home:hover{color:var(--jtc-signal)}
   .hero{min-height:86vh;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--jtc-p) * 8)}
   section{padding-top:calc(var(--jtc-p) * 34)}
   section > .jtc + .jtc{margin-top:calc(var(--jtc-p) * 7)}
@@ -88,7 +88,7 @@
 <script>if (window.parent !== window) document.documentElement.classList.add('embedded');</script>
 <div class="page">
 
-  <div class="top"><a class="home lbl" target="_top" href="https://www.julietorrisi.com" aria-label="Back to julietorrisi.com">&larr; julietorrisi.com</a><p class="jtc" data-role="kicker">Design + AI</p></div>
+  <div class="top"><span class="home lbl" aria-hidden="true">&larr; julietorrisi.com</span><p class="jtc" data-role="kicker">Design + AI</p></div>
 
   <header class="hero">
     <p class="jtc" data-role="kicker">&gt; How I use AI</p>
