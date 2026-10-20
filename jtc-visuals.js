@@ -241,7 +241,12 @@
   var BLOCK_NOTES = { 'Skills': 'Reusable how-tos a model loads on demand', 'Rules files': 'CLAUDE.md, DESIGN.md and Cursor rules', 'Prompts': 'Saved prompts that worked', 'Evals': 'Tests that score AI output' };
   function blocks(host, s) {
     var sys = s.system, keys = Object.keys(sys), total = keys.reduce(function (t, k) { return t + sys[k]; }, 0);
-    if (!total && !s.sample) { host.innerHTML = '<p class="empty">This chart fills in after the first daily update from GitHub.</p>'; return null; }
+    if (!total && !s.sample) {
+      // Nothing public to show yet: hide the chart and the sentence that introduces it.
+      host.style.display = 'none';
+      var intro = document.querySelector('[data-viz-intro="blocks"]'); if (intro) intro.style.display = 'none';
+      return null;
+    }
     var max = Math.max.apply(null, keys.map(function (k) { return sys[k]; })) || 1;
     var wrap = document.createElement('div'); wrap.style.position = 'relative'; wrap.style.paddingBottom = '30px'; host.appendChild(wrap);
     var d = new Dots(wrap, function (cols) { return Math.max(30, Math.min(56, Math.round(cols * 0.22))); });

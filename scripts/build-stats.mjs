@@ -11,7 +11,7 @@ const TZ = 'America/New_York';
 const AI_RE = /co-authored-by:\s*(claude|cursor|copilot)|generated with \[?claude code|claude-session:/i;
 const SYSTEM_PATTERNS = [
   ['Skills', /(^|\/)SKILL\.md$/i],
-  ['Rules files', /(^|\/)(CLAUDE|DESIGN|AGENTS)\.md$|(^|\/)\.cursor\/rules\/|\.cursorrules$/i],
+  ['Rules files', /(^|\/)(CLAUDE|DESIGN|AGENTS|VOICE)\.md$|(^|\/)[\w-]*RULES\.md$|(^|\/)\.cursor\/rules\/|\.cursorrules$/i],
   ['Prompts', /(^|\/)prompts?\/.+\.(md|txt)$|\.prompt\.md$/i],
   ['Evals', /(^|\/)evals?\/.+\.(json|jsonl|md|ya?ml)$|golden/i],
 ];
