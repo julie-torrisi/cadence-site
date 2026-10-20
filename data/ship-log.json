@@ -1,0 +1,89 @@
+{
+  "_readme": "Public builds only. Every entry needs at least one https proof link or it won't show. status: building | shipped | stopped. Dates are YYYY-MM-DD. stage: optional short status shown on the card (e.g. 'Submitting to Figma for plugin review'). Update or remove it when it changes.",
+  "owner": "julie-torrisi",
+  "items": [
+    {
+      "id": "cadence",
+      "name": "Cadence",
+      "what": "Teaches AI your design system, then decides how and when your product should say something.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-09-01",
+      "shipped": null,
+      "proof": [
+        {
+          "label": "Cadence page",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        }
+      ],
+      "stage": "Submitting to Figma for plugin review"
+    },
+    {
+      "id": "cadence-site",
+      "name": "Cadence website",
+      "what": "The launch site for Cadence, built with Claude Code and versioned on GitHub.",
+      "status": "shipped",
+      "visibility": "public",
+      "started": "2026-10-01",
+      "shipped": "2026-10-15",
+      "proof": [
+        {
+          "label": "Live",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        },
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    },
+    {
+      "id": "design-ai-page",
+      "name": "This page",
+      "what": "Dot-screen type and live charts that update themselves from GitHub every morning.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-10-20",
+      "shipped": null,
+      "proof": [
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    },
+    {
+      "id": "output-agent",
+      "name": "AI output grader",
+      "what": "An agent that grades AI-made design against the design system it was supposed to follow.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-10-20",
+      "shipped": null,
+      "next": true,
+      "milestones": [
+        {
+          "label": "Define what it grades",
+          "done": false
+        },
+        {
+          "label": "Golden set and rubric",
+          "done": false
+        },
+        {
+          "label": "Test it on Cadence output",
+          "done": false
+        },
+        {
+          "label": "Public repo",
+          "done": false
+        },
+        {
+          "label": "Ship it",
+          "done": false
+        }
+      ],
+      "proof": []
+    }
+  ]
+}

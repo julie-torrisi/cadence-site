@@ -1,0 +1,737 @@
+{
+  "updated": "2026-10-20T18:22:39.815Z",
+  "sample": false,
+  "offline": true,
+  "owner": "julie-torrisi",
+  "repos_tracked": 0,
+  "activity": {
+    "weeks": 12,
+    "grid": [
+      [
+        {
+          "date": "2026-08-03",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-04",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-05",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-06",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-07",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-08",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-10",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-11",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-12",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-13",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-14",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-16",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-17",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-18",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-19",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-20",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-21",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-22",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-23",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-24",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-25",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-26",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-27",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-28",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-29",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-30",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-31",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-01",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-02",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-03",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-04",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-05",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-06",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-07",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-08",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-10",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-11",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-12",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-13",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-14",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-16",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-17",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-18",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-19",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-20",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-21",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-22",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-23",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-24",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-25",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-26",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-27",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-28",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-29",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-30",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-02",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-03",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-04",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-05",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-06",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-07",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-08",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-10",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-11",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-12",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-13",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-14",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": "Cadence website",
+          "future": false
+        },
+        {
+          "date": "2026-10-16",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-17",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-18",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-19",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-20",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-21",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-22",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-23",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-24",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-25",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        }
+      ]
+    ],
+    "active_days": 0,
+    "commits": 0,
+    "ai_commits": 0,
+    "ai_share": null
+  },
+  "funnel": {
+    "exploring": 0,
+    "building": 3,
+    "shipped": 1,
+    "stopped": 0,
+    "started": 3
+  },
+  "system": {
+    "Skills": 0,
+    "Rules files": 0,
+    "Prompts": 0,
+    "Evals": 0
+  },
+  "speed": {
+    "items": [
+      {
+        "name": "Cadence website",
+        "days": 14
+      }
+    ],
+    "median_days": 14,
+    "stopped": 0
+  },
+  "ledger": [
+    {
+      "id": "cadence",
+      "name": "Cadence",
+      "what": "Teaches AI your design system, then decides how and when your product should say something.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-09-01",
+      "shipped": null,
+      "ship_on_release": "julie-torrisi/cadence",
+      "proof": [
+        {
+          "label": "Cadence page",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        }
+      ],
+      "stage": "Submitting to Figma for plugin review"
+    },
+    {
+      "id": "cadence-site",
+      "name": "Cadence website",
+      "what": "The launch site for Cadence, built with Claude Code and versioned on GitHub.",
+      "status": "shipped",
+      "visibility": "public",
+      "started": "2026-10-01",
+      "shipped": "2026-10-15",
+      "proof": [
+        {
+          "label": "Live",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        },
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    },
+    {
+      "id": "design-ai-page",
+      "name": "This page",
+      "what": "Dot-screen type and live charts that update themselves from GitHub every morning.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-10-20",
+      "shipped": null,
+      "proof": [
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    }
+  ],
+  "next": {
+    "id": "output-agent",
+    "name": "AI output grader",
+    "what": "An agent that grades AI-made design against the design system it was supposed to follow.",
+    "status": "building",
+    "visibility": "public",
+    "started": "2026-10-20",
+    "shipped": null,
+    "next": true,
+    "milestones": [
+      {
+        "label": "Define what it grades",
+        "done": false
+      },
+      {
+        "label": "Golden set and rubric",
+        "done": false
+      },
+      {
+        "label": "Test it on Cadence output",
+        "done": false
+      },
+      {
+        "label": "Public repo",
+        "done": false
+      },
+      {
+        "label": "Ship it",
+        "done": false
+      }
+    ],
+    "proof": []
+  }
+}
