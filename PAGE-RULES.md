@@ -20,6 +20,8 @@ LAYOUT
 TYPE (jtc-dots.js)
 - All headlines, sentences and kickers are drawn as lit dots on the same grid as the background, using the deck's Doto letter shapes.
 - Use `<p class="jtc" data-role="…">`. Roles: hero (name, flips in, scales to fit, can break after a hyphen on phones), h2 (section headline, flips in), lead (white sentence), body (grey sentence), kicker (grey caps, starts with "> ").
+- Exception: a kicker directly above a title (the hero or an h2) is a serif kicker, not dot type: `<p class="kick">` with a dot `>` arrow (`<span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span>`) and the label in Instrument Serif, grey. The label is lifted so the arrow's point meets the middle of its capitals; the arrow never moves.
+- Section numbers in a serif kicker (`01 · …`) are pixel serif in signal red: `<span class="px">01</span>`. Never pixelate body copy; it stops being readable.
 - `<em>` turns one word red. Max one red word per headline.
 - Small labels, numbers and buttons use the Doto web font.
 

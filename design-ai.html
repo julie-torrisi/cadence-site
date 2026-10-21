@@ -7,9 +7,18 @@
 <meta name="description" content="How Julie Torrisi-Coffey uses AI: a three-layer setup behind every prompt, and live charts of what actually shipped.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800;900&family=JetBrains+Mono:wght@500&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
-  :root{--pad:max(16px,3.5vw)}
+  :root{--pad:max(16px,3.5vw);--font-serif:"Instrument Serif",Georgia,serif;--px-grain:30}
+  /* kicker over a title: dot arrow + Instrument Serif label; arrow point meets the middle of the capitals */
+  .kick{display:flex;align-items:flex-start;gap:calc(var(--jtc-p) * 3);margin:0;font:400 calc(var(--jtc-p) * 9)/1.1 var(--font-serif);color:var(--jtc-grey);--kick-lift:0px}
+  .kick > .jtc{display:block;flex:none;width:calc(var(--jtc-p) * 7)}
+  .kick > span:last-child{position:relative;top:calc(var(--kick-lift) * -1)}
+  @media (min-width:1280px){.kick{--kick-lift:3px}}
+  @media (min-width:860px) and (max-width:1279px){.kick{--kick-lift:4.5px}}
+  @media (max-width:859px){.kick{--kick-lift:1.5px}}
+  .kick .px{color:var(--jtc-signal);white-space:nowrap}
+  .kick .px canvas{display:inline-block;image-rendering:pixelated}
   body{color:var(--jtc-ink);font:700 18px/1.55 Doto,"JetBrains Mono",monospace}
   a{color:inherit}
   .page{padding:0 var(--pad) calc(var(--jtc-p) * 40)}
@@ -91,13 +100,13 @@
   <div class="top"><span class="home lbl" aria-hidden="true">&larr; julietorrisi.com</span><p class="jtc" data-role="kicker">Design + AI</p></div>
 
   <header class="hero">
-    <p class="jtc" data-role="kicker">&gt; How I use AI</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span>How I use AI</span></p>
     <h1 class="jtc" data-role="hero" data-cursor>Julie<br>Torrisi-Coffey</h1>
     <p class="jtc" data-role="body">Short version: I use AI every day for design, code and writing, plugged straight into Figma, GitHub and Jira. I only count it if something ships.</p>
   </header>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 01 · The setup</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">01</span> · The setup</span></p>
     <h2 class="jtc" data-role="h2">Three layers, <em>every</em> prompt</h2>
     <p class="jtc" data-role="body">I don't just chat with AI. Every prompt sits on three layers, and each one has a check so I can't fool myself.</p>
 
@@ -176,7 +185,7 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
   </section>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 02 · The receipts</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">02</span> · The receipts</span></p>
     <h2 class="jtc" data-role="h2">Is any of this <em>real</em>?</h2>
     <p class="jtc" data-role="body">Fair question. These charts pull from my public GitHub every morning. Hover for exact numbers.</p>
     <div class="duo">
@@ -189,7 +198,7 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
   </section>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 03 · Avoiding slop</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">03</span> · Avoiding slop</span></p>
     <h2 class="jtc" data-role="h2">Feeling fast isn't <em>being</em> fast</h2>
     <p class="jtc" data-role="body">In a 2025 study, experienced developers said AI made them faster. A stopwatch said otherwise.</p>
     <div class="rows viz">
@@ -203,14 +212,14 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
   </section>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 04 · Proof</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">04</span> · Proof</span></p>
     <h2 class="jtc" data-role="h2">Did it <em>ship</em>?</h2>
     <p class="jtc" data-role="body">That's the main metric, along with how many rounds it took and whether it held up. If you can't click it, it doesn't count.</p>
     <div data-jtc-viz="ledger" data-src="data/stats.json"></div>
   </section>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 05 · Where this is going</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">05</span> · Where this is going</span></p>
     <h2 class="jtc" data-role="h2">Everyone's about to get <em>graded</em></h2>
     <p class="jtc" data-role="body">Companies are starting to score people on how much they use AI. That's the wrong number. Usage is easy to fake, but shipped work isn't.</p>
     <div class="tl viz">
@@ -223,7 +232,7 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
   </section>
 
   <section>
-    <p class="jtc" data-role="kicker">&gt; 06 · Next</p>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">06</span> · Next</span></p>
     <h2 class="jtc" data-role="h2">So I'm building the <em>grader</em></h2>
     <p class="jtc" data-role="body">An agent that grades AI-made design against the design system it was supposed to follow. Quality, not volume.</p>
     <div data-jtc-viz="next" data-src="data/stats.json"></div>
@@ -272,6 +281,33 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
     addEventListener('load', post);
     document.documentElement.classList.add('embedded');
   }
+})();
+</script>
+<script>
+// pixel serif: draw .kick .px words at --px-grain cells per em, scaled up with hard edges
+(function(){
+  var words=[];
+  document.querySelectorAll('.kick .px').forEach(function(el){
+    var t=el.textContent; el.textContent='';
+    var sr=document.createElement('span'); sr.className='jtc-sr'; sr.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap'; sr.textContent=t;
+    var cv=document.createElement('canvas'); cv.setAttribute('aria-hidden','true');
+    el.append(sr,cv); words.push({el:el,t:t,cv:cv});
+  });
+  var ctx=document.createElement('canvas').getContext('2d');
+  function draw(){
+    var grain=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--px-grain'))||30;
+    words.forEach(function(o){
+      var cs=getComputedStyle(o.el), size=parseFloat(cs.fontSize), k=size/grain;
+      var font=cs.fontWeight+' '+grain+'px '+cs.fontFamily; ctx.font=font; var m=ctx.measureText(o.t);
+      var asc=Math.ceil(m.fontBoundingBoxAscent), desc=Math.ceil(m.fontBoundingBoxDescent);
+      var cv=o.cv, x=cv.getContext('2d',{willReadFrequently:true});
+      cv.width=Math.ceil(m.width)+1; cv.height=asc+desc; x.font=font; x.fillStyle=cs.color; x.fillText(o.t,0,asc);
+      var d=x.getImageData(0,0,cv.width,cv.height); for(var i=3;i<d.data.length;i+=4) d.data[i]=d.data[i]>80?255:0; x.putImageData(d,0,0);
+      cv.style.width=(cv.width*k)+'px'; cv.style.height=(cv.height*k)+'px'; cv.style.verticalAlign=(-desc*k)+'px';
+    });
+  }
+  (document.fonts?document.fonts.load('400 1em "Instrument Serif"'):Promise.resolve()).then(draw,draw);
+  var raf, lastW=innerWidth; addEventListener('resize',function(){ if(innerWidth===lastW)return; lastW=innerWidth; cancelAnimationFrame(raf); raf=requestAnimationFrame(draw); });
 })();
 </script>
 <script src="jtc-dots.js"></script>
