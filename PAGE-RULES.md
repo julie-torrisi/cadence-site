@@ -10,6 +10,8 @@ VOICE (Reddit tone)
 - No jargon or hype words (revolutionary, unlock, leverage, delve). Few em dashes.
 - Say each thing once. If a point is already on the page, cut it, don't rephrase it.
 - Keep the page short. Every section earns its place or goes.
+- Friendly, not a spec sheet. The page runs on one analogy: AI is a brilliant new hire who's never met your team, and the three layers are its onboarding. Talk to "you", ask the questions people actually ask, admit things ("Fair question."), and use one small joke per section at most.
+- Never call the rules "Claude rules" or tie the setup to one vendor.
 
 LAYOUT
 - One long page that scrolls vertically only. No slides, carousels, horizontal scroll, or snap sections. No footer.
@@ -60,15 +62,17 @@ HONESTY
 THE 3-LAYER SYSTEM (keep this the centerpiece)
 1. Standards (always on): her standing rules for every session. Check: would I put my name on it?
 2. System (per project): the design system written so a model can follow it, plus tests and lessons. Check: does it pass the tests?
-3. Brief (per task): a short spec: the problem, the limits, what done looks like. Check: did it ship?
-If layers disagree, the brief wins. Hard rules always win. Below the layers sits "My workflow, with the prompts I actually use": 7 steps (Spec it, Load the system, Plan it, Build one step, Check it, Unstick it, Ship it then retro), each collapsed with a copyable prompt.
-- Layer 1 is her standing rules, loaded into every session in Claude, Claude Code and Cursor (spec-first, no scope creep). Layer 3 is a short spec: problem, limits, what done means.
-- Her retro agent runs after each session and turns what went wrong into new rules. Mention it once, right after the layers.
+3. Brief (per task): under 10 lines before the first prompt: the problem and who it's for, the limits (platforms, deadline, what not to touch), and the exact list that means done. "If I can't write that list, I'm not ready to prompt." Check: did it ship?
+If layers disagree, the brief wins. Hard rules always win. Below the layers sits the workflow-first beat ("I design the workflow before I write the prompt", ending on the test-without-a-hypothesis analogy), then "Here's a real build, with the prompts I actually paste": 7 steps (Spec it, Load the system, Plan it, Build one step, Check it, Unstick it, Ship it then retro), each collapsed with a copyable prompt.
+- Layer 1 is her standing rules (house rules), loaded into every session whatever the tool. Keep it tool-agnostic: don't name Claude, Claude Code or Cursor. Layer 3 is the brief above.
+- Spec it (step 01) links the ask to the real, finished artifacts it depends on: the design system, the components, the docs.
+- Her retro agent runs once a week on a schedule. It reviews the work, turns what went wrong into new rules, and flags tools she missed. Mention it once, right after the layers.
 - Stop rule: 2 or 3 prompts with no progress = stop and fix the spec. Always check the real thing on a real device.
-- Her output measures: did it ship, how many rounds it took, and whether it held up in the system. Shipped and clickable comes first.
+- Her output measures: did it ship (if you can't click it, it doesn't count), then is it valuable, is it reusable, how many rounds it took, and whether it held up. Shipped and clickable comes first.
+- Receipts: the charts only count work since tracking started in early October 2026, which is why the early weeks look empty. Say so on the page.
 
 SECTIONS (in order)
-Hero → 01 The setup (3 layers) → 02 The receipts (live charts) → 03 Avoiding slop (METR study + stop rule) → 04 Proof (ledger) → 05 Where this is going (timeline of companies grading AI use) → 06 Next (the grader she's building + contact buttons).
+Hero → 01 The setup (3 layers) → 02 The receipts (live charts) → 03 Avoiding slop ("How do you know it's not slop?": METR study, then four checks: follows the system, real device, checked/unchecked labels, stop rule) → 04 Proof (ledger) → 05 Where this is going (timeline of companies grading AI use) → 06 Next (agents that grade how accurately a build applied the design system, because a design system should speed production up, not slow it down; plus contact buttons).
 
 BEFORE YOU CALL IT DONE
 - No console errors. No horizontal scroll at 375px. No widows anywhere.
