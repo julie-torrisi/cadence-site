@@ -9,6 +9,7 @@
  *   <p  class="jtc" data-role="kicker">&gt; Workflow</p>
  *
  * Roles: hero (flips, scales to fit, up to 3x) · h2 (flips, 2x) · body (types on, 1x, keeps case)
+ *        statement (a sentence-length hero: flips, 2x, scales down to fit, fills the width)
  *        kicker (types on, 1x, grey, caps). data-ink="ink|grey|signal" overrides colour.
  * <em> = signal red. <br> = line break. Text wraps full width and never leaves one word alone
  * on the last line. Animates once when scrolled into view. Real text stays for screen readers.
@@ -20,6 +21,7 @@
   var ROLES = {
     hero:   { s: 3, min: 1, fit: true, upper: true,  flip: true,  ink: 'ink',  lead: 11 },
     h2:     { s: 2, min: 1,            upper: true,  flip: true,  ink: 'ink',  lead: 11 },
+    statement: { s: 2, min: 1, fit: true, upper: true, flip: true, ink: 'ink', lead: 11 },
     h3:     { s: 1, min: 1,            upper: true,  flip: true,  ink: 'ink',  lead: 11 },
     body:   { s: 1, min: 1,            upper: false, flip: false, ink: 'grey', lead: 12 },
     lead:   { s: 1, min: 1,            upper: false, flip: false, ink: 'ink',  lead: 12 },
