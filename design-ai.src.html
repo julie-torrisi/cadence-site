@@ -18,7 +18,7 @@
   @media (min-width:860px) and (max-width:1279px){.kick{--kick-lift:4.5px}}
   @media (max-width:859px){.kick{--kick-lift:1.5px}}
   .kick .px{color:var(--jtc-signal);white-space:nowrap}
-  .kick .px canvas{display:inline-block;image-rendering:pixelated}
+  .kick .px canvas{display:inline-block;image-rendering:pixelated;filter:url(#px-hard)}
   body{color:var(--jtc-ink);font:700 18px/1.55 Doto,"JetBrains Mono",monospace}
   a{color:inherit}
   .page{padding:0 var(--pad) calc(var(--jtc-p) * 40)}
@@ -293,6 +293,9 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
     var cv=document.createElement('canvas'); cv.setAttribute('aria-hidden','true');
     el.append(sr,cv); words.push({el:el,t:t,cv:cv});
   });
+  // hard pixel edges come from an SVG alpha filter at display time, so nothing reads the canvas back
+  // (privacy extensions often block canvas readback, which used to blank the numbers)
+  if(!document.getElementById('px-hard')){var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.setAttribute('aria-hidden','true');svg.style.position='absolute';svg.innerHTML='<filter id="px-hard"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1 1"/></feComponentTransfer></filter>';document.body.appendChild(svg);}
   var ctx=document.createElement('canvas').getContext('2d');
   function draw(){
     var grain=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--px-grain'))||30;
@@ -300,9 +303,8 @@ Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy
       var cs=getComputedStyle(o.el), size=parseFloat(cs.fontSize), k=size/grain;
       var font=cs.fontWeight+' '+grain+'px '+cs.fontFamily; ctx.font=font; var m=ctx.measureText(o.t);
       var asc=Math.ceil(m.fontBoundingBoxAscent), desc=Math.ceil(m.fontBoundingBoxDescent);
-      var cv=o.cv, x=cv.getContext('2d',{willReadFrequently:true});
+      var cv=o.cv, x=cv.getContext('2d');
       cv.width=Math.ceil(m.width)+1; cv.height=asc+desc; x.font=font; x.fillStyle=cs.color; x.fillText(o.t,0,asc);
-      var d=x.getImageData(0,0,cv.width,cv.height); for(var i=3;i<d.data.length;i+=4) d.data[i]=d.data[i]>80?255:0; x.putImageData(d,0,0);
       cv.style.width=(cv.width*k)+'px'; cv.style.height=(cv.height*k)+'px'; cv.style.verticalAlign=(-desc*k)+'px';
     });
   }
