@@ -703,7 +703,7 @@
   "next": {
     "id": "output-agent",
     "name": "AI output grader",
-    "what": "An agent that grades AI-made design against the design system it was supposed to follow.",
+    "what": "Agents that grade how accurately a build applied the design system.",
     "status": "building",
     "visibility": "public",
     "started": "2026-10-20",
