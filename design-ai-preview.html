@@ -1,0 +1,1863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I Use AI Preview</title>
+<meta name="description" content="How Julie Torrisi-Coffey uses AI: a three-layer setup behind every prompt, and live charts of what actually shipped.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800;900&family=JetBrains+Mono:wght@500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  :root{--pad:max(16px,3.5vw);--font-serif:"Instrument Serif",Georgia,serif;--px-grain:30}
+  /* kicker over a title: dot arrow + Instrument Serif label; arrow point meets the middle of the capitals */
+  .kick{display:flex;align-items:flex-start;gap:calc(var(--jtc-p) * 3);margin:0;font:400 calc(var(--jtc-p) * 9)/1.1 var(--font-serif);color:var(--jtc-grey,#9da3a1);--kick-lift:0px}
+  .kick > .jtc{display:block;flex:none;width:calc(var(--jtc-p) * 7)}
+  .kick > span:last-child{position:relative;top:calc(var(--kick-lift) * -1)}
+  @media (min-width:1280px){.kick{--kick-lift:3px}}
+  @media (min-width:860px) and (max-width:1279px){.kick{--kick-lift:4.5px}}
+  @media (max-width:859px){.kick{--kick-lift:1.5px}}
+  .kick .px{color:var(--jtc-signal,#ff5a60);white-space:nowrap}
+  .kick .px canvas{display:inline-block;image-rendering:pixelated;filter:url(#px-hard)}
+  body{color:var(--jtc-ink);font:700 18px/1.55 Doto,"JetBrains Mono",monospace}
+  a{color:inherit}
+  .page{padding:0 var(--pad) calc(var(--jtc-p) * 40)}
+  .top{padding-top:calc(var(--jtc-p) * 6)}
+  .home{visibility:hidden;display:inline-block;margin-bottom:calc(var(--jtc-p) * 5);text-decoration:none;color:var(--jtc-grey)} .home:hover{color:var(--jtc-signal)}
+  .hero{min-height:86vh;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--jtc-p) * 8)}
+  section{padding-top:calc(var(--jtc-p) * 34)}
+  section > .jtc + .jtc{margin-top:calc(var(--jtc-p) * 7)}
+  .gap{height:calc(var(--jtc-p) * 12)}
+  .lbl{font:800 14px/1.4 Doto,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--jtc-grey)}
+  .src{margin-top:calc(var(--jtc-p) * 5)} .src a{color:var(--jtc-grey)} .src a:hover{color:var(--jtc-ink)}
+  .ico{width:28px;height:28px;flex:none;color:var(--jtc-ink)} .ico circle{fill:currentColor} .ico .red{fill:var(--jtc-signal)} .ico .red-stroke{stroke:var(--jtc-signal)}
+  .ico.big{width:40px;height:40px}
+
+  .dotfill{--fill:var(--jtc-ink);background-image:radial-gradient(circle at center,var(--fill) calc(var(--jtc-p) * .4),transparent calc(var(--jtc-p) * .4 + .6px));background-size:var(--jtc-p) var(--jtc-p)}
+  .f-grey{--fill:var(--jtc-grey)} .f-dim{--fill:var(--jtc-dim)} .f-sig{--fill:var(--jtc-signal)}
+
+  .viz .a{opacity:0;transform:translateY(calc(var(--jtc-p) * 3));transition:opacity .45s,transform .45s;transition-delay:calc(var(--i,0) * 110ms)}
+  .viz .bar{clip-path:inset(0 100% 0 0);transition:clip-path 1.1s steps(28,end);transition-delay:calc(var(--i,0) * 180ms + 120ms)}
+  .viz.in .a{opacity:1;transform:none} .viz.in .bar{clip-path:inset(0 0 0 0)}
+  @media (prefers-reduced-motion:reduce){.viz .a,.viz .bar{opacity:1;transform:none;clip-path:none;transition:none}}
+
+  /* layers */
+  .layers{display:grid;gap:calc(var(--jtc-p) * 10);margin-top:calc(var(--jtc-p) * 12)}
+  .layer .head{display:flex;align-items:center;gap:14px;margin-bottom:calc(var(--jtc-p) * 3)}
+  .layer .head b{font:900 clamp(20px,2.4vw,30px)/1.1 Doto,monospace;text-transform:uppercase;letter-spacing:.04em}
+  .layer .head .lbl{margin-left:auto;text-align:right}
+  .layer .bar{height:calc(var(--jtc-p) * 8);margin-bottom:calc(var(--jtc-p) * 4)}
+  .layer:nth-child(1) .bar{width:100%} .layer:nth-child(2) .bar{width:70%} .layer:nth-child(3) .bar{width:40%}
+  .layer .check{margin-top:calc(var(--jtc-p) * 3);color:var(--jtc-signal);font:800 15px/1.4 Doto,monospace;text-transform:uppercase;letter-spacing:.05em}
+  @media (max-width:560px){.layer .head{flex-wrap:wrap}.layer .head .lbl{margin-left:42px;text-align:left;width:100%}}
+  .flow{margin-top:calc(var(--jtc-p) * 12);display:grid;gap:0;border-top:1px dashed var(--jtc-dim)}
+  .flow > .lbl{margin:calc(var(--jtc-p) * 4) 0}
+  .fs{border-bottom:1px dashed var(--jtc-dim)}
+  .fs summary{list-style:none;display:flex;align-items:center;gap:16px;padding:calc(var(--jtc-p) * 4) 0}
+  .fs summary::-webkit-details-marker{display:none}
+  .fs .n{font:900 18px Doto,monospace;color:var(--jtc-grey)}
+  .fs .tt{display:flex;flex-direction:column;gap:2px;flex:1}
+  .fs .tt b{font:900 clamp(18px,2vw,24px)/1.2 Doto,monospace;text-transform:uppercase;letter-spacing:.04em}
+  .fs .tt span{color:var(--jtc-grey);text-wrap:pretty}
+  .fs .plus{font:900 24px Doto,monospace;color:var(--jtc-signal);transition:transform .2s}
+  .fs[open] .plus{transform:rotate(45deg)}
+  .fs[open] summary .ico{color:var(--jtc-signal)}
+  .fs .body{padding:0 0 calc(var(--jtc-p) * 5) 44px}
+  .fs pre{margin:0 0 12px;padding:16px;border:1px dashed var(--jtc-dim);border-radius:calc(var(--jtc-p) * 2);background:rgba(11,12,12,.9);font:500 13.5px/1.65 "JetBrains Mono",monospace;color:var(--jtc-ink);white-space:pre-wrap;word-break:break-word}
+  @media (max-width:560px){.fs .body{padding-left:0}}
+  .btn{font:900 13px Doto,monospace;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:99px;padding:9px 15px;background:var(--jtc-ink);color:var(--jtc-bg);cursor:pointer;text-decoration:none;display:inline-block}
+  .btn:hover{background:var(--jtc-signal);color:#fff} .btn:focus-visible{outline:2px solid var(--jtc-signal);outline-offset:3px}
+  details.tpl .copy{margin:0 16px 16px}
+
+  /* charts row */
+  .duo{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:calc(var(--jtc-p) * 10);align-items:start}
+  @media (max-width:860px){.duo{grid-template-columns:1fr}}
+
+  /* research bars */
+  .rows{display:grid;gap:calc(var(--jtc-p) * 6);margin-top:calc(var(--jtc-p) * 10)}
+  .row .k{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;margin-bottom:calc(var(--jtc-p) * 2)}
+  .row .k b{font:900 clamp(22px,2.6vw,34px)/1 Doto,monospace}
+  .row .bar{height:calc(var(--jtc-p) * 6)}
+
+  /* timeline */
+  .tl{margin-top:calc(var(--jtc-p) * 10);display:grid}
+  .ev{display:grid;grid-template-columns:minmax(90px,150px) calc(var(--jtc-p) * 4) 1fr;gap:calc(var(--jtc-p) * 4);padding:calc(var(--jtc-p) * 4) 0;border-bottom:1px dashed var(--jtc-dim);align-items:start}
+  .ev .d{font:900 16px Doto,monospace;letter-spacing:.04em;text-transform:uppercase;color:var(--jtc-grey)}
+  .ev .o{width:calc(var(--jtc-p) * 4);height:calc(var(--jtc-p) * 4);margin-top:3px}
+  .ev p{margin:0;text-wrap:pretty}
+  .ev p small{display:block;color:var(--jtc-grey);font-size:14px;margin-top:4px}
+  @media (max-width:560px){.ev{grid-template-columns:calc(var(--jtc-p) * 4) 1fr}.ev .d{grid-column:2;order:-1}.ev .o{grid-row:1/3}}
+
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:calc(var(--jtc-p) * 8)}
+  /* Embedded on julietorrisi.com: no viewport-height sizing, or the frame grows forever. */
+  html.embedded .hero{min-height:0;padding:calc(var(--jtc-p) * 30) 0}
+  html.embedded .top{padding-top:calc(var(--jtc-p) * 20)} /* room below the Squarespace nav */
+</style>
+</head>
+<body>
+<script>if (window.parent !== window) document.documentElement.classList.add('embedded');</script>
+<div class="page">
+
+  <div class="top"><span class="home lbl" aria-hidden="true">&larr; julietorrisi.com</span><p class="jtc" data-role="kicker">Design + AI</p></div>
+
+  <header class="hero">
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span>How I use AI</span></p>
+    <h1 class="jtc" data-role="statement" data-cursor>AI is only as good as the <em>structure</em> of information it runs on.</h1>
+    <p class="jtc" data-role="body">AI is a brilliant new hire who's never met your team. Skip the onboarding and you get slop. So I hand it the onboarding first: my rules, my design system, a short brief.</p>
+  </header>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">01</span> · The setup</span></p>
+    <h2 class="jtc" data-role="h2">The <em>onboarding</em> doc</h2>
+    <p class="jtc" data-role="body">A new hire doesn't start with a task. They start with how things work here. AI gets the same treatment: three layers, written down where it can read them. Each one has a check, so neither of us can fake it till we make it.</p>
+
+    <div class="layers viz">
+      <div class="layer">
+        <div class="head a" style="--i:0"><svg class="ico big" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="2" r="0.667"/><circle cx="13" cy="4" r="0.667"/><circle cx="13" cy="7.33" r="0.667"/><circle cx="8" cy="14" r="0.667"/><circle cx="3" cy="7.33" r="0.667"/><circle cx="3" cy="4" r="0.667"/><circle cx="9.67" cy="2.67" r="0.667"/><circle cx="11.33" cy="3.33" r="0.667"/><circle cx="13" cy="5.67" r="0.667"/><circle cx="12.62" cy="9.5" r="0.667"/><circle cx="11.53" cy="11.41" r="0.667"/><circle cx="9.92" cy="12.91" r="0.667"/><circle cx="6.08" cy="12.91" r="0.667"/><circle cx="4.47" cy="11.41" r="0.667"/><circle cx="3.38" cy="9.5" r="0.667"/><circle cx="3" cy="5.67" r="0.667"/><circle cx="4.67" cy="3.33" r="0.667"/><circle cx="6.33" cy="2.67" r="0.667"/></svg><b>1 · Standards</b><span class="lbl">Always on</span></div>
+        <div class="bar dotfill f-grey" style="--i:0"></div>
+        <p class="jtc" data-role="body">The house rules, loaded into every session, whatever the tool. Real data. No made-up facts. No scope creep. Accessibility isn't optional.</p>
+        <div class="check a" style="--i:1">Check: would I put my name on it?</div>
+      </div>
+      <div class="layer">
+        <div class="head a" style="--i:2"><svg class="ico big" viewBox="0 0 16 16" aria-hidden="true"><circle cx="2.0" cy="2.0" r="0.667"/><circle cx="4.0" cy="2.0" r="0.667"/><circle cx="6.0" cy="2.0" r="0.667"/><circle cx="8.0" cy="2.0" r="0.667"/><circle cx="10.0" cy="2.0" r="0.667"/><circle cx="12.0" cy="2.0" r="0.667"/><circle cx="14.0" cy="2.0" r="0.667"/><circle cx="2.0" cy="4.0" r="0.667"/><circle cx="8.0" cy="4.0" r="0.667"/><circle cx="14.0" cy="4.0" r="0.667"/><circle cx="2.0" cy="6.0" r="0.667"/><circle cx="8.0" cy="6.0" r="0.667"/><circle cx="14.0" cy="6.0" r="0.667"/><circle cx="2.0" cy="8.0" r="0.667"/><circle cx="4.0" cy="8.0" r="0.667"/><circle cx="6.0" cy="8.0" r="0.667"/><circle cx="8.0" cy="8.0" r="0.667"/><circle cx="10.0" cy="8.0" r="0.667"/><circle cx="12.0" cy="8.0" r="0.667"/><circle cx="14.0" cy="8.0" r="0.667"/><circle cx="2.0" cy="10.0" r="0.667"/><circle cx="8.0" cy="10.0" r="0.667"/><circle cx="14.0" cy="10.0" r="0.667"/><circle cx="2.0" cy="12.0" r="0.667"/><circle cx="8.0" cy="12.0" r="0.667"/><circle cx="14.0" cy="12.0" r="0.667"/><circle cx="2.0" cy="14.0" r="0.667"/><circle cx="4.0" cy="14.0" r="0.667"/><circle cx="6.0" cy="14.0" r="0.667"/><circle cx="8.0" cy="14.0" r="0.667"/><circle cx="10.0" cy="14.0" r="0.667"/><circle cx="12.0" cy="14.0" r="0.667"/><circle cx="14.0" cy="14.0" r="0.667"/></svg><b>2 · System</b><span class="lbl">Per project</span></div>
+        <div class="bar dotfill" style="--i:2"></div>
+        <p class="jtc" data-role="body">How we build here. The design system, written so a model can follow it: tokens, components, voice, and every past mistake turned into a rule. I've done this at scale. At Meta I pushed ours past color and type, so illustrations, photos and motion became tokens, each named for the job it does. The wrong asset can't land in the wrong message.</p>
+        <div class="check a" style="--i:3">Check: does it pass the tests?</div>
+      </div>
+      <div class="layer">
+        <div class="head a" style="--i:4"><svg class="ico big" viewBox="0 0 24 24" aria-hidden="true"><circle cx="3.31" cy="20.66" r="1"/><circle cx="5.92" cy="20.66" r="1"/><circle cx="8.86" cy="20.34" r="1"/><circle cx="10.82" cy="18.37" r="1"/><circle cx="12.78" cy="16.41" r="1"/><circle cx="14.75" cy="14.45" r="1"/><circle cx="16.77" cy="12.56" r="1"/><circle cx="20.69" cy="8.63" r="1"/><circle cx="18.73" cy="10.59" r="1"/><circle cx="3.31" cy="18.05" r="1"/><circle cx="3.63" cy="15.11" r="1"/><circle cx="5.59" cy="13.14" r="1"/><circle cx="7.55" cy="11.18" r="1"/><circle cx="9.52" cy="9.22" r="1"/><circle cx="11.48" cy="7.26" r="1"/><circle cx="15.4" cy="3.34" r="1"/><circle cx="13.44" cy="5.3" r="1"/><circle cx="13.24" cy="9.03" r="1"/><circle cx="17.16" cy="5.1" r="1"/><circle cx="15.01" cy="10.79" r="1"/><circle cx="18.93" cy="6.87" r="1"/></svg><b>3 · Brief</b><span class="lbl">Per task</span></div>
+        <div class="bar dotfill f-sig" style="--i:4"></div>
+        <p class="jtc" data-role="body">Today's job, in under 10 lines, before the first prompt:<br>• the problem, and who it's for<br>• the limits: platforms, deadline, what not to touch<br>• the exact list that means done<br>If I can't write that list, I'm not ready to prompt.</p>
+        <div class="check a" style="--i:5">Check: did it ship?</div>
+      </div>
+    </div>
+
+    <div class="gap"></div>
+    <p class="jtc" data-role="lead">When layers disagree, the brief wins. Hard rules always win.</p>
+    <p class="jtc" data-role="body">And like any good manager, I run retros. A retro agent I built runs once a week on a schedule. It reviews the work, turns what went wrong into new rules, and flags tools I missed. The setup gets stricter without me having to remember. My writing agent works the same way. I trained it on how I write, and every edit I make teaches it, so it sounds more like me over time.</p>
+    <div class="gap"></div>
+    <p class="jtc" data-role="lead">I design the workflow before I write the prompt.</p>
+    <p class="jtc" data-role="body">Before I ask AI for anything, I look at the workflow itself. What does it need to know? What should I plug in? Is there a simpler way to get there? Then I ask the uncomfortable one: am I asking the wrong question?</p>
+    <p class="jtc" data-role="body">It's like running a test, getting data back, and not knowing what hypothesis it answers. You can't fix that after the fact. You fix it by setting clear parameters up front.</p>
+
+    <div class="flow viz">
+      <p class="lbl a">Here's a real build, with the prompts I actually paste</p>
+      <details class="fs a" style="--i:0">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="3.31" cy="20.66" r="1"/><circle cx="5.92" cy="20.66" r="1"/><circle cx="8.86" cy="20.34" r="1"/><circle cx="10.82" cy="18.37" r="1"/><circle cx="12.78" cy="16.41" r="1"/><circle cx="14.75" cy="14.45" r="1"/><circle cx="16.77" cy="12.56" r="1"/><circle cx="20.69" cy="8.63" r="1"/><circle cx="18.73" cy="10.59" r="1"/><circle cx="3.31" cy="18.05" r="1"/><circle cx="3.63" cy="15.11" r="1"/><circle cx="5.59" cy="13.14" r="1"/><circle cx="7.55" cy="11.18" r="1"/><circle cx="9.52" cy="9.22" r="1"/><circle cx="11.48" cy="7.26" r="1"/><circle cx="15.4" cy="3.34" r="1"/><circle cx="13.44" cy="5.3" r="1"/><circle cx="13.24" cy="9.03" r="1"/><circle cx="17.16" cy="5.1" r="1"/><circle cx="15.01" cy="10.79" r="1"/><circle cx="18.93" cy="6.87" r="1"/></svg><span class="n">01</span><span class="tt"><b>Spec it</b><span>Get the ask down to a few lines, linked to the real, finished artifacts it depends on: the design system, the components, the docs.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p1">Interview me one question at a time until we have a spec.
+Ask about: the problem, who it's for, the limits (platforms,
+deadline, what not to touch), and what "done" looks like.
+Then write the spec in under 10 lines. Don't start building.</pre><button class="btn copy" type="button" data-copy="p1">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:1">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="2.0" cy="2.0" r="0.667"/><circle cx="4.0" cy="2.0" r="0.667"/><circle cx="6.0" cy="2.0" r="0.667"/><circle cx="8.0" cy="2.0" r="0.667"/><circle cx="10.0" cy="2.0" r="0.667"/><circle cx="12.0" cy="2.0" r="0.667"/><circle cx="14.0" cy="2.0" r="0.667"/><circle cx="2.0" cy="4.0" r="0.667"/><circle cx="8.0" cy="4.0" r="0.667"/><circle cx="14.0" cy="4.0" r="0.667"/><circle cx="2.0" cy="6.0" r="0.667"/><circle cx="8.0" cy="6.0" r="0.667"/><circle cx="14.0" cy="6.0" r="0.667"/><circle cx="2.0" cy="8.0" r="0.667"/><circle cx="4.0" cy="8.0" r="0.667"/><circle cx="6.0" cy="8.0" r="0.667"/><circle cx="8.0" cy="8.0" r="0.667"/><circle cx="10.0" cy="8.0" r="0.667"/><circle cx="12.0" cy="8.0" r="0.667"/><circle cx="14.0" cy="8.0" r="0.667"/><circle cx="2.0" cy="10.0" r="0.667"/><circle cx="8.0" cy="10.0" r="0.667"/><circle cx="14.0" cy="10.0" r="0.667"/><circle cx="2.0" cy="12.0" r="0.667"/><circle cx="8.0" cy="12.0" r="0.667"/><circle cx="14.0" cy="12.0" r="0.667"/><circle cx="2.0" cy="14.0" r="0.667"/><circle cx="4.0" cy="14.0" r="0.667"/><circle cx="6.0" cy="14.0" r="0.667"/><circle cx="8.0" cy="14.0" r="0.667"/><circle cx="10.0" cy="14.0" r="0.667"/><circle cx="12.0" cy="14.0" r="0.667"/><circle cx="14.0" cy="14.0" r="0.667"/></svg><span class="n">02</span><span class="tt"><b>Load the system</b><span>The model gets my real rules, not vibes.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p2">Read CLAUDE.md, DESIGN.md and VOICE.md before anything else.
+Use only the tokens, components and words in them.
+If something you need is missing, don't invent it. Write:
+[SYSTEM GAP] Missing: ... · Needed for: ... · Proposed: ...
+· Fallback: ... and wait for me to pick.</pre><button class="btn copy" type="button" data-copy="p2">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:2">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.33" cy="10.67" r="0.667"/><circle cx="5.33" cy="8.67" r="0.667"/><circle cx="6.67" cy="7.33" r="0.667"/><circle cx="8" cy="6" r="0.667"/><circle cx="9.33" cy="4.67" r="0.667"/><circle cx="10.67" cy="3.33" r="0.667"/><circle cx="12" cy="2" r="0.667"/><circle cx="7.33" cy="10.67" r="0.667"/><circle cx="8.67" cy="9.33" r="0.667"/><circle cx="10" cy="8" r="0.667"/><circle cx="11.33" cy="6.67" r="0.667"/><circle cx="12.67" cy="5.33" r="0.667"/><circle cx="14" cy="4" r="0.667"/><circle cx="14" cy="2" r="0.667"/><circle cx="5.33" cy="3.33" r="0.667"/><circle cx="3.33" cy="3.33" r="0.667"/><circle cx="2" cy="5.33" r="0.667"/><circle cx="2" cy="7.15" r="0.667"/><circle cx="2" cy="8.97" r="0.667"/><circle cx="2" cy="10.79" r="0.667"/><circle cx="2" cy="12.61" r="0.667"/><circle cx="3" cy="14" r="0.667"/><circle cx="4.83" cy="14" r="0.667"/><circle cx="6.67" cy="14" r="0.667"/><circle cx="8.5" cy="14" r="0.667"/><circle cx="10.33" cy="14" r="0.667"/><circle cx="12.17" cy="14" r="0.667"/><circle cx="13.33" cy="12.67" r="0.667"/><circle cx="13.33" cy="10.67" r="0.667"/></svg><span class="n">03</span><span class="tt"><b>Plan it</b><span>Five steps, max. Scope doesn't get to sneak in.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p3">Give me a plan in 5 steps or fewer, and list every file you'll touch.
+Don't add features, refactors or dependencies I didn't ask for.
+Put any extra ideas in a one-line "Parking lot" at the end.</pre><button class="btn copy" type="button" data-copy="p3">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:3">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.25" cy="9.83" r="1"/><circle cx="14.5" cy="12" r="1"/><circle cx="13.25" cy="14.17" r="1"/><circle cx="10.75" cy="14.17" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="10.75" cy="9.83" r="1"/><circle cx="12" cy="4.8" r="1"/><circle cx="14.46" cy="5.23" r="1"/><circle cx="16.63" cy="6.48" r="1"/><circle cx="18.24" cy="8.4" r="1"/><circle cx="19.09" cy="10.75" r="1"/><circle cx="19.09" cy="13.25" r="1"/><circle cx="18.24" cy="15.6" r="1"/><circle cx="16.63" cy="17.52" r="1"/><circle cx="14.46" cy="18.77" r="1"/><circle cx="12" cy="19.2" r="1"/><circle cx="9.54" cy="18.77" r="1"/><circle cx="7.37" cy="17.52" r="1"/><circle cx="5.76" cy="15.6" r="1"/><circle cx="4.91" cy="13.25" r="1"/><circle cx="4.91" cy="10.75" r="1"/><circle cx="5.76" cy="8.4" r="1"/><circle cx="7.37" cy="6.48" r="1"/><circle cx="9.54" cy="5.23" r="1"/><circle cx="10.7" cy="2.19" r="1"/><circle cx="13.3" cy="2.19" r="1"/><circle cx="19.85" cy="5.97" r="1"/><circle cx="21.15" cy="8.22" r="1"/><circle cx="21.15" cy="15.78" r="1"/><circle cx="19.85" cy="18.03" r="1"/><circle cx="13.3" cy="21.81" r="1"/><circle cx="10.7" cy="21.81" r="1"/><circle cx="4.15" cy="18.03" r="1"/><circle cx="2.85" cy="15.78" r="1"/><circle cx="2.85" cy="8.22" r="1"/><circle cx="4.15" cy="5.97" r="1"/></svg><span class="n">04</span><span class="tt"><b>Build one step</b><span>Small enough that I can actually check it.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p4">Build step 1 only, with real components, real tokens and real data.
+No lorem ipsum. Stop when it runs and tell me how to see it.</pre><button class="btn copy" type="button" data-copy="p4">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:4">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="0.667"/><circle cx="6" cy="11" r="0.667"/><circle cx="13" cy="4" r="0.667"/><circle cx="4.5" cy="9.5" r="0.667"/><circle cx="7.4" cy="9.6" r="0.667"/><circle cx="8.8" cy="8.2" r="0.667"/><circle cx="10.2" cy="6.8" r="0.667"/><circle cx="11.6" cy="5.4" r="0.667"/></svg><span class="n">05</span><span class="tt"><b>Check it</b><span>Proof, not "looks good."</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p5">Go through the spec's "done" list. Mark each item checked
+(say how you checked it) or unchecked. Don't say it works
+unless you ran it. Flag any number or source you didn't verify.</pre><button class="btn copy" type="button" data-copy="p5">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:5">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="3.75" r="1"/><circle cx="10.5" cy="20.25" r="1"/><circle cx="10.5" cy="3.75" r="1"/><circle cx="8" cy="6" r="1"/><circle cx="13.5" cy="20.25" r="1"/><circle cx="5.75" cy="15.75" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="5.75" cy="8.25" r="1"/><circle cx="16" cy="18" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="18.25" cy="8.25" r="1"/><circle cx="3.75" cy="13.25" r="1"/><circle cx="20.25" cy="10.75" r="1"/><circle cx="3.75" cy="10.75" r="1"/><circle cx="18.25" cy="15.75" r="1"/><circle cx="20.25" cy="13.25" r="1"/><path d="M12 7.5V12.5" class="red-stroke" fill="none" stroke-width="2" stroke-linecap="round"/><path d="M12 16.25V16.26" class="red-stroke" fill="none" stroke-width="2" stroke-linecap="round"/></svg><span class="n">06</span><span class="tt"><b>Unstick it</b><span>Three tries and no closer? The ask is the problem.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p6">We've tried this 3 times and it's not getting closer.
+Stop. Tell me what's unclear or wrong in my ask,
+then propose a better spec before trying again.</pre><button class="btn copy" type="button" data-copy="p6">Copy prompt</button></div>
+      </details>
+      <details class="fs a" style="--i:6">
+        <summary><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.76" cy="2.76" r="1"/><circle cx="10.24" cy="2.76" r="1"/><circle cx="12" cy="1" r="1"/><circle cx="12" cy="17.72" r="1" class="red"/><circle cx="12" cy="23" r="1" class="red"/><circle cx="10.9" cy="20.36" r="1" class="red"/><circle cx="13.32" cy="20.36" r="1" class="red"/><circle cx="9.8" cy="17.72" r="1" class="red"/><circle cx="14.2" cy="17.72" r="1" class="red"/><circle cx="15.52" cy="4.52" r="1"/><circle cx="8.48" cy="4.52" r="1"/><circle cx="15.52" cy="6.72" r="1"/><circle cx="8.48" cy="6.72" r="1"/><circle cx="15.52" cy="8.92" r="1"/><circle cx="15.52" cy="13.32" r="1"/><circle cx="15.52" cy="15.52" r="1"/><circle cx="8.48" cy="8.92" r="1"/><circle cx="8.48" cy="13.32" r="1"/><circle cx="15.52" cy="11.12" r="1"/><circle cx="8.48" cy="11.12" r="1"/><circle cx="5.84" cy="12.44" r="1"/><circle cx="18.16" cy="12.44" r="1"/><circle cx="4.08" cy="14.2" r="1"/><circle cx="19.92" cy="14.2" r="1"/><circle cx="8.48" cy="15.52" r="1"/><circle cx="10.9" cy="15.52" r="1"/><circle cx="13.32" cy="15.52" r="1"/></svg><span class="n">07</span><span class="tt"><b>Ship it, then retro</b><span>Every mistake becomes a rule.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p7">Retro on this session: what went wrong or took too long,
+and what one rule would have prevented it?
+Write each rule as one line I can add to CLAUDE.md.</pre><button class="btn copy" type="button" data-copy="p7">Copy prompt</button></div>
+      </details>
+    </div>
+
+    <div class="flow viz">
+      <p class="lbl a">Want the whole onboarding for your own new hire? It's free.</p>
+      <details class="fs a" style="--i:0">
+        <summary><svg class="ico " viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="2" r="0.667"/><circle cx="13" cy="4" r="0.667"/><circle cx="13" cy="7.33" r="0.667"/><circle cx="8" cy="14" r="0.667"/><circle cx="3" cy="7.33" r="0.667"/><circle cx="3" cy="4" r="0.667"/><circle cx="9.67" cy="2.67" r="0.667"/><circle cx="11.33" cy="3.33" r="0.667"/><circle cx="13" cy="5.67" r="0.667"/><circle cx="12.62" cy="9.5" r="0.667"/><circle cx="11.53" cy="11.41" r="0.667"/><circle cx="9.92" cy="12.91" r="0.667"/><circle cx="6.08" cy="12.91" r="0.667"/><circle cx="4.47" cy="11.41" r="0.667"/><circle cx="3.38" cy="9.5" r="0.667"/><circle cx="3" cy="5.67" r="0.667"/><circle cx="4.67" cy="3.33" r="0.667"/><circle cx="6.33" cy="2.67" r="0.667"/></svg><span class="n">+</span><span class="tt"><b>Copy my setup</b><span>One paste. The AI interviews you, builds your files and learns from every edit. About 10 minutes.</span></span><span class="plus">+</span></summary>
+        <div class="body"><pre id="p8">MY AI WORKING SETUP (free to copy and remix)
+A setup that gets smarter every time you use it. It learns from your edits, finds where you lose time, and never changes without your yes. Works in any AI tool that has project instructions or a rules file.
+
+QUICK SETUP (about 10 minutes)
+1. Pick one home: a project in your AI tool, or a rules file in your repo (like AGENTS.md). One home per area of work.
+2. Connect only what you'd otherwise paste from every week. Docs: share one folder, not your whole drive. Calendar: read only. Email: drafts only. Code or design files: read access first.
+3. Paste everything below into a new chat in that home, then paste this:
+
+   Set me up using the instructions below. Interview me one question
+   at a time, max 8 questions: my role and what I use AI for; my
+   sources of truth and where they live; 3 short samples of my writing;
+   words I never use; the 3 tasks I repeat most; what I'm OK connecting;
+   when I want the weekly retro; anything you must never do.
+   Then fill in every [bracket], create lessons.md, log.md and voice.md,
+   turn my most repeated task into my first skill, and set up the weekly
+   retro (or tell me the exact reminder to make). Don't connect anything
+   yourself. Show me everything before saving.
+
+4. Test it on one small real task. It should restate the spec, flag gaps, check its work and log one line. If not, say "reset" once.
+Start small: one skill, one week, one retro.
+
+---
+
+PART 1 · INSTRUCTIONS (paste once)
+
+Who I am
+I'm a [role]. I use you to [main uses].
+Sources of truth (use these, nothing else):
+- [Design system / components / code]: [link or file]
+- Facts and numbers: [one file]
+- My voice: voice.md
+
+Start of every session
+Read lessons.md before anything else. If a lesson conflicts with what I'm asking right now, tell me and follow me.
+
+How every task runs
+1. Spec: restate my ask as the problem, the limits and what "done" means. Skip this for quick tasks.
+2. Path: tell me if there's a faster path or a better order.
+3. Do the work.
+4. Check: test your output against "done" and the rules below before showing me. Say what you checked and how.
+
+Rules
+- System first. Use only the components, files and terms I've named. If something is missing, don't invent it. Write:
+  [GAP] Missing: ___ · Needed for: ___ · Proposed: ___ · Fallback: ___ · Which one?
+- No silent scope. Extra ideas go in one line under "Parking lot."
+- Mark every fact, number and "it works" claim as checked (say how) or unchecked. Never invent a source.
+- If 3 revisions aren't getting closer, stop and tell me what's unclear in my ask.
+- If something is better done by me (a taste call, a personal message, a decision only I can own), say so in one line.
+- Warn me if I paste passwords or private data. Never copy them into a file.
+- Drafts only. Never send, post, book, buy or publish for me.
+- Lead with the answer. No filler.
+
+Learn as we go (end of every real task)
+Add one line to log.md: date · task · what I corrected (before → after) · where time went (slow, repeated, or waiting on me) · the lesson it suggests.
+Skip one-off instructions and hypotheticals. Don't read preferences into my silence.
+If a session gets long, write a short handoff to log.md so a fresh chat can pick up cleanly.
+
+Short commands
+spec · gap · wrap (log now) · handoff · retro · reset (reread everything and tell me where you drifted)
+
+---
+
+PART 2 · THREE FILES
+
+lessons.md (read every session, max 30 lines)
+# Lessons
+Each lesson: the rule · why · date added · times it helped
+## Always
+## Never
+## Faster paths I've found
+
+log.md (raw notes, append only)
+# Log
+Date | Task | Correction (before → after) | Where time went | Suggested lesson
+
+voice.md (written from your samples, sharpened by every edit you make)
+# My voice
+How I sound: [3 traits]
+Words I like:
+Never use:
+Samples:
+
+---
+
+PART 3 · WEEKLY RETRO (or say "retro")
+Read log.md and lessons.md. Give me:
+1. Slowdowns: the 3 steps that cost me the most time, and why.
+2. Fixes: one each (a lesson, a template, a connection or a small skill), with the exact text.
+3. Repeats: any mistake that came back after we wrote a lesson. Propose a better lesson.
+4. Overrides: any lesson I keep ignoring. It might be the lesson that's wrong.
+5. Prune: merge or retire lessons so the file stays under 30 lines.
+6. Promote: any lesson used 3+ times that should become a skill.
+7. Score: is this setup saving me time this week? Yes or no, and why.
+Propose only. Nothing changes until I say yes.
+
+---
+
+PART 4 · SKILLS (small, one job each)
+Every skill uses the same shape, so each one gets better on its own:
+# [Skill name]
+Job: [one sentence]
+Done means: [one sentence]
+1. Read this skill's lessons (bottom of this file).
+2. Do the one job.
+3. Check the result against "done."
+4. Propose any new lesson for the bottom of this file.
+Lessons:
+
+Starter ideas: one brief per project · write like me (from voice.md) · check it against the ask (score 0 to 100, rank fixes) · find my time (suggest 3 slots, never book).
+
+by Julie Torrisi-Coffey · julietorrisi.com</pre><button class="btn copy" type="button" data-copy="p8">Copy prompt</button></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">02</span> · The receipts</span></p>
+    <h2 class="jtc" data-role="h2">Is any of this <em>real</em>?</h2>
+    <p class="jtc" data-role="body">Fair question. These charts pull from my public GitHub every morning, so I can't round up. Hover for exact numbers.</p>
+    <p class="jtc" data-role="body">They only count work since I started tracking in early October. That's why the early weeks look empty. Not a slow summer, just a tracker that didn't exist yet.</p>
+    <div class="duo">
+      <div data-jtc-viz="trend" data-src="data/stats.json"></div>
+      <div data-jtc-viz="share" data-src="data/stats.json"></div>
+    </div>
+    <div class="gap"></div>
+    <p class="jtc" data-role="body" data-viz-intro="blocks">When a prompt works twice, it becomes a file in the repo. Not a chat I'll never find again.</p>
+    <div data-jtc-viz="blocks" data-src="data/stats.json"></div>
+  </section>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">03</span> · Avoiding slop</span></p>
+    <h2 class="jtc" data-role="h2">How do you know it's not <em>slop</em>?</h2>
+    <p class="jtc" data-role="body">Honestly? Not by how it feels. In a 2025 study, experienced developers felt 20% faster with AI. The stopwatch said 19% slower.</p>
+    <div class="rows viz">
+      <div class="row"><div class="k a" style="--i:0"><span class="lbl">What they expected</span><b>24% faster</b></div><div class="bar dotfill f-dim" style="--i:0;width:min(100%,calc(var(--jtc-p) * 96))"></div></div>
+      <div class="row"><div class="k a" style="--i:1"><span class="lbl">What they felt</span><b>20% faster</b></div><div class="bar dotfill f-grey" style="--i:1;width:min(100%,calc(var(--jtc-p) * 80))"></div></div>
+      <div class="row"><div class="k a" style="--i:2"><span class="lbl">What happened</span><b style="color:var(--jtc-signal)">19% slower</b></div><div class="bar dotfill f-sig" style="--i:2;width:min(100%,calc(var(--jtc-p) * 76))"></div></div>
+    </div>
+    <p class="src lbl">Source: <a href="https://getdx.com/blog/metr-study-on-how-ai-affects-developer-productivity/" target="_blank" rel="noopener">METR trial, 16 developers, 246 real tasks, 2025</a></p>
+    <div class="gap"></div>
+    <p class="jtc" data-role="lead">So I don't trust the feeling. I trust four checks:</p>
+    <p class="jtc" data-role="body">• It follows the system. Break a token or a rule and it fails, no matter how good it looks.<br>• I check the real thing, on a real device. Screenshots lie.<br>• Every claim is labeled checked or unchecked, and I say how I checked it.<br>• Two or three prompts with no progress? I stop and fix the brief. Rewording the same ask is how slop happens.</p>
+  </section>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">04</span> · Proof</span></p>
+    <h2 class="jtc" data-role="h2">Did it <em>ship</em>?</h2>
+    <p class="jtc" data-role="body">That's my main metric. If you can't click it, it doesn't count. Then: Is it valuable? Is it reusable? How many rounds did it take, and did it hold up?</p>
+    <div data-jtc-viz="ledger" data-src="data/stats.json"></div>
+  </section>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">05</span> · Where this is going</span></p>
+    <h2 class="jtc" data-role="h2">Everyone's about to get <em>graded</em></h2>
+    <p class="jtc" data-role="body">Companies are starting to score people on how much AI they use. Respectfully: wrong number. Usage is easy to fake. Shipped work isn't.</p>
+    <div class="tl viz">
+      <div class="ev a" style="--i:0"><span class="d">Apr 2025</span><i class="o dotfill f-sig"></i><p>Shopify makes AI use part of performance reviews and hiring.<small><a href="https://www.digitalcommerce360.com/2025/04/08/internal-memo-shopify-ceo-declares-ai-non-optional/" target="_blank" rel="noopener">Digital Commerce 360</a></small></p></div>
+      <div class="ev a" style="--i:1"><span class="d">Nov 2025</span><i class="o dotfill f-sig"></i><p>Meta says "AI-driven impact" counts in reviews starting 2026.<small><a href="https://finance.yahoo.com/news/meta-start-grading-workers-ai-194500277.html" target="_blank" rel="noopener">Business Insider via Yahoo Finance</a></small></p></div>
+      <div class="ev a" style="--i:2"><span class="d">Mar 2026</span><i class="o dotfill f-sig"></i><p>Zapier publishes an AI fluency rubric it hires against.<small><a href="https://zapier.com/blog/raising-ai-fluency-bar-in-hiring/" target="_blank" rel="noopener">Zapier</a></small></p></div>
+      <div class="ev a" style="--i:3"><span class="d">May 2026</span><i class="o dotfill f-grey"></i><p>KPMG tracks how often about 10,000 staff use AI, against targets.<small><a href="https://www.uctoday.com/employee-engagement-recognition/kpmg-introduces-employee-ai-tracking-to-move-from-adoption-to-productivity/" target="_blank" rel="noopener">UC Today</a></small></p></div>
+      <div class="ev a" style="--i:4"><span class="d">Jul 2026</span><i class="o dotfill f-grey"></i><p>Reports say Salesforce tracks AI use and tokens by team. Salesforce says there's no company-wide leaderboard.<small><a href="https://www.salesforceben.com/salesforce-is-tracking-how-employees-use-ai-will-this-become-the-norm/" target="_blank" rel="noopener">Salesforce Ben</a></small></p></div>
+    </div>
+    <div class="gap"></div>
+    <p class="jtc" data-role="body">The real payoff is when a whole team writes its thinking down where AI can read it. Then AI scales the team's judgment, not just its output.</p>
+  </section>
+
+  <section>
+    <p class="kick"><span class="jtc" data-role="kicker" aria-hidden="true">&gt;</span><span><span class="px">06</span> · Next</span></p>
+    <h2 class="jtc" data-role="h2">So I'm building the <em>grader</em></h2>
+    <p class="jtc" data-role="body">Agents that grade how accurately a build applied the design system, because a design system should speed production up, not slow it down. They grade quality, not volume.</p>
+    <div data-jtc-viz="next" data-src="data/stats.json"></div>
+    <div class="gap"></div>
+    <p class="jtc" data-role="lead">Working on the same problem? I'd love to compare notes.</p>
+    <div class="cta">
+      <a class="btn" href="mailto:julietorrisi@gmail.com">Email</a>
+      <a class="btn" href="https://calendly.com/julietco" target="_blank" rel="noopener">Book time</a>
+      <a class="btn" href="https://www.linkedin.com/in/julietorrisi/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/julie-torrisi" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  function P() { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jtc-p')) || 4; }
+  function align() {
+    var p = P();
+    document.querySelectorAll('.dotfill').forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      el.style.backgroundPosition = (-((r.left + scrollX) % p)) + 'px ' + (-((r.top + scrollY) % p)) + 'px';
+    });
+  }
+  function ready() {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.viz').forEach(function (v) { io.observe(v); });
+    align();
+    addEventListener('resize', function () { setTimeout(align, 160); });
+    new ResizeObserver(align).observe(document.body);
+    document.querySelectorAll('[data-copy]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = document.getElementById(b.getAttribute('data-copy')).innerText;
+        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy prompt'; }, 1600); }, function () { b.textContent = 'Select and copy'; });
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
+  // When embedded on julietorrisi.com, report height so the frame grows to fit (no inner scrollbar).
+  if (window.parent !== window) {
+    var last = 0;
+    var post = function () { var h = document.documentElement.scrollHeight; if (Math.abs(h - last) > 2) { last = h; parent.postMessage({ jtcHeight: h }, '*'); } };
+    new ResizeObserver(post).observe(document.body);
+    addEventListener('load', post);
+    document.documentElement.classList.add('embedded');
+  }
+})();
+</script>
+<script>
+// pixel serif: draw .kick .px words at --px-grain cells per em, scaled up with hard edges
+(function(){
+  var words=[];
+  document.querySelectorAll('.kick .px').forEach(function(el){
+    var t=el.textContent; el.textContent='';
+    var sr=document.createElement('span'); sr.className='jtc-sr'; sr.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap'; sr.textContent=t;
+    var cv=document.createElement('canvas'); cv.setAttribute('aria-hidden','true');
+    el.append(sr,cv); words.push({el:el,t:t,cv:cv});
+  });
+  // hard pixel edges come from an SVG alpha filter at display time, so nothing reads the canvas back
+  // (privacy extensions often block canvas readback, which used to blank the numbers)
+  if(!document.getElementById('px-hard')){var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.setAttribute('aria-hidden','true');svg.style.position='absolute';svg.innerHTML='<filter id="px-hard"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1 1"/></feComponentTransfer></filter>';document.body.appendChild(svg);}
+  var ctx=document.createElement('canvas').getContext('2d');
+  function draw(){
+    var grain=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--px-grain'))||30;
+    words.forEach(function(o){
+      var cs=getComputedStyle(o.el), size=parseFloat(cs.fontSize), k=size/grain;
+      var font=cs.fontWeight+' '+grain+'px '+cs.fontFamily; ctx.font=font; var m=ctx.measureText(o.t);
+      var asc=Math.ceil(m.fontBoundingBoxAscent), desc=Math.ceil(m.fontBoundingBoxDescent);
+      var cv=o.cv, x=cv.getContext('2d');
+      cv.width=Math.ceil(m.width)+1; cv.height=asc+desc; x.font=font; x.fillStyle=cs.color; x.fillText(o.t,0,asc);
+      cv.style.width=(cv.width*k)+'px'; cv.style.height=(cv.height*k)+'px'; cv.style.verticalAlign=(-desc*k)+'px';
+    });
+  }
+  // draw now, again when the serif has loaded, and again after jtc-dots.js has set the colour variables
+  draw();
+  (document.fonts?document.fonts.load('400 1em "Instrument Serif"'):Promise.resolve()).then(draw,draw);
+  addEventListener('load',draw);
+  var raf, lastW=innerWidth; addEventListener('resize',function(){ if(innerWidth===lastW)return; lastW=innerWidth; cancelAnimationFrame(raf); raf=requestAnimationFrame(draw); });
+})();
+</script>
+<script>
+/*!
+ * JTC Dots: Julie Torrisi-Coffey's dot-screen type for the web.
+ * The whole page is one dot screen (like the deck). Text is drawn by lighting
+ * dots on that same grid, so every letter lines up with the background.
+ *
+ *   <h1 class="jtc" data-role="hero" data-cursor>Julie<br>Torrisi-Coffey</h1>
+ *   <h2 class="jtc" data-role="h2">How I <em>measure</em> output</h2>
+ *   <p  class="jtc" data-role="body">A sentence that runs full width.</p>
+ *   <p  class="jtc" data-role="kicker">&gt; Workflow</p>
+ *
+ * Roles: hero (flips, scales to fit, up to 3x) · h2 (flips, 2x) · body (types on, 1x, keeps case)
+ *        statement (a sentence-length hero: flips, 2x, scales down to fit, fills the width)
+ *        kicker (types on, 1x, grey, caps). data-ink="ink|grey|signal" overrides colour.
+ * <em> = signal red. <br> = line break. Text wraps full width and never leaves one word alone
+ * on the last line. Animates once when scrolled into view. Real text stays for screen readers.
+ */
+(function () {
+  var G = {"0":"4ahhha400","1":"4ck444v00","2":"eh168gv00","3":"v1261he00","4":"26aiv2200","5":"vgmp1he00","6":"68gmphe00","7":"v12248800","8":"ehhehhe00","9":"ehjd12c00"," ":"000000000","!":"444440400","\"":"aaa000000","#":"aavavaa00","$":"4eke5e400","%":"9la4ali00","&":"8kk8lid00","'":"444000000","(":"248884200",")":"842224800","*":"0havah000","+":"044v44000",",":"00000c480","-":"000v00000",".":"00000cc00","/":"11248gg00",":":"0cc00cc00",";":"0cc00c480","<":"124842100","=":"00v0v0000",">":"842124800","?":"eh2440400","@":"ehjlmge00","A":"4ahhvhh00","B":"u99e99u00","C":"ehggghe00","D":"u99999u00","E":"vgguggv00","F":"vgguggg00","G":"ehggjhe00","H":"hhhvhhh00","I":"e44444e00","J":"72222ic00","K":"hikokih00","L":"ggggggv00","M":"hhrlhhh00","N":"hhpljhh00","O":"ehhhhhe00","P":"uhhuggg00","Q":"ehhhhle10","R":"uhhukih00","S":"ehge1he00","T":"v44444400","U":"hhhhhhe00","V":"hhhaaa400","W":"hhhllrh00","X":"hha4ahh00","Y":"hha444400","Z":"v1248gv00","[":"e88888e00","\\":"gg8421100","]":"e22222e00","^":"4ah000000","_":"0000000v0","a":"00e1fhf00","b":"ggmphpm00","c":"00ehghe00","d":"11djhjd00","e":"00ehvge00","f":"698u88800","g":"00fhhf1he","h":"ggmphhh00","i":"40c444e00","j":"103111996","k":"gghisih00","l":"c44444e00","m":"00qlllh00","n":"00mphhh00","o":"00ehhhe00","p":"00mphpmgg","q":"00djhjd11","r":"00mpggg00","s":"00ege1u00","t":"88u889600","u":"00hhhjd00","v":"00hhaa400","w":"00hhlla00","x":"00ha4ah00","y":"00hhjd1he","z":"00v248v00","{":"342c24300","|":"444444400","}":"c24342c00","~":"9li000000","’":"624000000","‘":"246000000","“":"9ir000000","”":"r9i000000","·":"000cc0000","•":"006ff6000","–":"000v00000","—":"000v00000","…":"000000l00","↑":"04c444400","↓":"044444400","×":"00ha4ah00","÷":"040v04000","°":"4a4000000","©":"ehlplhe00","®":"ehtpphe00","€":"69s8s9600","£":"698s89m00","→":"042v24000","←":"048v84000","`":"840000000","é":"24ehvge00"};
+  var FILL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var STEP = 78, KMIN = 6, KMAX = 12, LINE_DELAY = 120, CHAR_DELAY = 34, BLINK = 530;
+  var ROLES = {
+    hero:   { s: 3, min: 1, fit: true, upper: true,  flip: true,  ink: 'ink',  lead: 11 },
+    h2:     { s: 2, min: 1,            upper: true,  flip: true,  ink: 'ink',  lead: 11 },
+    statement: { s: 2, min: 1, fit: true, upper: true, flip: true, ink: 'ink', lead: 11 },
+    h3:     { s: 1, min: 1,            upper: true,  flip: true,  ink: 'ink',  lead: 11 },
+    body:   { s: 1, min: 1,            upper: false, flip: false, ink: 'grey', lead: 12 },
+    lead:   { s: 1, min: 1,            upper: false, flip: false, ink: 'ink',  lead: 12 },
+    kicker: { s: 1, min: 1,            upper: true,  flip: false, ink: 'grey', lead: 11 }
+  };
+  var COLORS = { bg: '#0b0c0c', unlit: '#161918', dim: '#30353a', grey: '#9da3a1', ink: '#f7f8f8', signal: '#ff5a60' };
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var P = 4;
+
+  function pitchFor(w) { return w >= 1280 ? 5 : w >= 860 ? 4 : 3; }
+  function setPitch() {
+    P = pitchFor(window.innerWidth);
+    document.documentElement.style.setProperty('--jtc-p', P + 'px');
+  }
+
+  var css = document.createElement('style');
+  var c = COLORS;
+  css.textContent =
+    ':root{--jtc-bg:' + c.bg + ';--jtc-unlit:' + c.unlit + ';--jtc-dim:' + c.dim + ';--jtc-grey:' + c.grey + ';--jtc-ink:' + c.ink + ';--jtc-signal:' + c.signal + ';--jtc-p:4px;color-scheme:dark}' +
+    'html{background-color:var(--jtc-bg);background-image:radial-gradient(circle at center,var(--jtc-unlit) calc(var(--jtc-p) * .4),transparent calc(var(--jtc-p) * .4 + .6px));background-size:var(--jtc-p) var(--jtc-p);background-position:0 0;overflow-x:hidden}' +
+    'body{background:transparent;margin:0}' +
+'html,body{cursor:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2738%27 shape-rendering=%27crispEdges%27%3E%3Crect x=%270%27 y=%270%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%274%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%274%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%274%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%276%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%276%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%276%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%276%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%278%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%278%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%278%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%278%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%278%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2710%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2712%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2714%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2716%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2718%27 y=%2718%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2718%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2720%27 y=%2720%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2710%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2716%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2718%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2720%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2722%27 y=%2722%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%278%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2710%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2724%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%276%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%278%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2710%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2726%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%274%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%278%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2710%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2712%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2728%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%272%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2710%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2712%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2714%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2730%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%270%27 y=%2732%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2712%27 y=%2732%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2714%27 y=%2732%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2732%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2718%27 y=%2732%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2712%27 y=%2734%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2714%27 y=%2734%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2716%27 y=%2734%27 width=%272%27 height=%272%27 fill=%27%23f7f8f8%27/%3E%3Crect x=%2718%27 y=%2734%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2714%27 y=%2736%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3Crect x=%2716%27 y=%2736%27 width=%272%27 height=%272%27 fill=%27%230b0c0c%27/%3E%3C/svg%3E") 0 0,default}' +
+    'a,button,summary,label,[role=button],.jv canvas,.btn{cursor:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2728%27%20height=%2734%27%20shape-rendering=%27crispEdges%27%3E%3Crect%20x=%270%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%270%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%270%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%270%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%270%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%272%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%272%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%274%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%274%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%274%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%274%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%276%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%276%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%276%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%270%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%272%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%274%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%276%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%278%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%278%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2710%27%20y=%270%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2710%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2712%27%20y=%270%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2712%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%270%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%272%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%274%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%276%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%278%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2714%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2716%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2716%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2718%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2718%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2720%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2720%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2720%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2720%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2720%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2722%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2722%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2724%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2724%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2724%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2724%27%20y=%2732%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%2726%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%230b0c0c%27/%3E%3Crect%20x=%272%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%272%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%272%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%274%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%274%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%274%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%276%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%276%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%276%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%276%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%276%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%278%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%272%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%274%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%276%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%278%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2710%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%272%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%274%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%276%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%278%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2710%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2712%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2714%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2716%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2712%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2718%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2720%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2728%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2722%27%20y=%2730%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2714%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2716%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2718%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2720%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2722%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2724%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3Crect%20x=%2724%27%20y=%2726%27%20width=%272%27%20height=%272%27%20fill=%27%23ff5a60%27/%3E%3C/svg%3E") 12 0,pointer}' +
+    '.jtc{margin:0;line-height:0;position:relative}.jtc canvas{display:block;width:100%}' +
+    '.jtc-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}';
+  document.head.appendChild(css);
+  setPitch();
+
+  var cache = {};
+  function glyph(ch) {
+    if (cache[ch] !== undefined) return cache[ch];
+    var s = G[ch];
+    if (!s) { cache[ch] = null; return null; }
+    var r = [];
+    for (var i = 0; i < 9; i++) r.push(parseInt(s[i], 32));
+    return (cache[ch] = r);
+  }
+  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  var MAP = { '’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-', '…': '...' };
+
+  function parse(el, upper) {
+    var out = [];
+    (function walk(node, ink) {
+      node.childNodes.forEach(function (n) {
+        if (n.nodeType === 3) {
+          var t = n.textContent.replace(/\s+/g, ' ');
+          if (upper) t = t.toUpperCase();
+          t.split('').forEach(function (ch) {
+            ch = MAP[ch] || ch;
+            ch.split('').forEach(function (x) { out.push({ ch: x, ink: ink }); });
+          });
+        } else if (n.nodeType === 1 && n.tagName === 'BR') out.push({ ch: '\n', ink: ink });
+        else if (n.nodeType === 1) walk(n, /^(EM|STRONG|MARK)$/.test(n.tagName) ? 'signal' : ink);
+      });
+    })(el, null);
+    // trim spaces around breaks and ends
+    out = out.filter(function (c, i, a) {
+      return !(c.ch === ' ' && ((a[i - 1] && a[i - 1].ch === '\n') || (a[i + 1] && a[i + 1].ch === '\n')));
+    });
+    while (out.length && out[0].ch === ' ') out.shift();
+    while (out.length && out[out.length - 1].ch === ' ') out.pop();
+    return out;
+  }
+
+  // words: arrays of chars; 'BR' marks forced breaks. Long words split after hyphens, then hard.
+  function words(chars, perLine) {
+    var ws = [], cur = [];
+    chars.forEach(function (c) {
+      if (c.ch === ' ' || c.ch === '\n') { if (cur.length) ws.push(cur); cur = []; if (c.ch === '\n') ws.push('BR'); }
+      else cur.push(c);
+    });
+    if (cur.length) ws.push(cur);
+    var out = [];
+    ws.forEach(function (w) {
+      if (w === 'BR' || w.length <= perLine) { out.push(w); return; }
+      var piece = [];
+      w.forEach(function (c, i) {
+        piece.push(c);
+        var atHyphen = c.ch === '-' && piece.length <= perLine;
+        if (atHyphen || piece.length === perLine) { piece.glue = true; out.push(piece); piece = []; }
+      });
+      if (piece.length) out.push(piece); else out[out.length - 1].glue = false;
+    });
+    return out;
+  }
+
+  function wrap(chars, perLine) {
+    var ws = words(chars, perLine);
+    var paras = [[]];
+    ws.forEach(function (w) { if (w === 'BR') paras.push([]); else paras[paras.length - 1].push(w); });
+    var lines = [];
+    paras.forEach(function (p) {
+      var pl = [[]], prevGlue = false;
+      p.forEach(function (w) {
+        var L = pl[pl.length - 1], sep = L.length && !prevGlue ? 1 : 0;
+        if (L.length && L.len + sep + w.length > perLine) { pl.push([]); L = pl[pl.length - 1]; sep = 0; }
+        L.len = (L.len || 0) + sep + w.length;
+        L.push({ w: w, sep: sep });
+        prevGlue = !!w.glue;
+      });
+      // No widows: if the last line holds one word, pull words down from the line above.
+      for (var guard = 0; guard < 4 && pl.length > 1; guard++) {
+        var last = pl[pl.length - 1], prev = pl[pl.length - 2];
+        if (last.length !== 1 || prev.length < 2) break;
+        var moved = prev.pop();
+        var newLen = moved.w.length + 1 + last.len;
+        if (newLen > perLine) { prev.push(moved); break; }
+        prev.len -= moved.w.length + moved.sep;
+        last[0].sep = 1; moved.sep = 0;
+        last.unshift(moved); last.len = newLen;
+      }
+      pl.forEach(function (L) {
+        var line = [];
+        L.forEach(function (it) { if (it.sep) line.push({ ch: ' ' }); it.w.forEach(function (c) { line.push(c); }); });
+        lines.push(line);
+      });
+    });
+    return lines;
+  }
+
+  function hasWidow(lines) {
+    if (lines.length < 2) return false;
+    var last = lines[lines.length - 1].map(function (c) { return c.ch; }).join('').trim();
+    return last.indexOf(' ') < 0;
+  }
+
+  function Text(el) {
+    this.el = el;
+    var role = el.dataset.role || (el.dataset.size === 'hero' ? 'hero' : 'h2');
+    this.r = ROLES[role] || ROLES.body;
+    this.role = role;
+    this.ink = el.dataset.ink || this.r.ink;
+    this.cursor = el.hasAttribute('data-cursor');
+    this.chars = parse(el, this.r.upper);
+    var sr = document.createElement('span');
+    sr.className = 'jtc-sr';
+    while (el.firstChild) sr.appendChild(el.firstChild);
+    el.appendChild(sr);
+    this.canvas = document.createElement('canvas');
+    this.canvas.setAttribute('aria-hidden', 'true');
+    el.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext('2d');
+    this.played = false; this.start = null; this.raf = 0;
+  }
+
+  Text.prototype.layout = function () {
+    var w = this.el.clientWidth;
+    this.cols = Math.max(6, Math.floor(w / P) - 1);
+    var segs = [], seg = 0, longest = 0, run = 0;
+    this.chars.forEach(function (c) {
+      if (c.ch === '\n') { segs.push(seg); seg = 0; } else seg++;
+      run = (c.ch === ' ' || c.ch === '\n') ? 0 : run + 1; longest = Math.max(longest, run);
+    });
+    segs.push(seg);
+    var extra = this.cursor ? 2 : 0;
+    var s = this.r.s;
+    if (this.r.fit) {
+      var widest = Math.max.apply(null, segs) + extra;
+      s = Math.min(this.r.s, Math.max(this.r.min, Math.floor(this.cols / (widest * 6))));
+      if (s < 2 && this.r.s >= 2) {
+        // allow breaking after hyphens ("Torrisi-" / "Coffey") to stay large on phones
+        var piece = 0, maxPiece = 0;
+        this.chars.forEach(function (c) {
+          if (c.ch === ' ' || c.ch === '\n') { piece = 0; return; }
+          piece++; maxPiece = Math.max(maxPiece, piece);
+          if (c.ch === '-') piece = 0;
+        });
+        for (var t = this.r.s; t > s; t--) {
+          if (Math.floor((this.cols + t) / (6 * t)) - extra >= maxPiece) { s = t; break; }
+        }
+      }
+    } else {
+      while (s > this.r.min && Math.floor(this.cols / (6 * s)) < longest + extra) s--;
+    }
+    var perLine, lines;
+    for (;;) {
+      perLine = Math.max(1, Math.floor((this.cols + s) / (6 * s)) - extra);
+      lines = wrap(this.chars, perLine);
+      if (this.role === 'hero' || s <= this.r.min || !hasWidow(lines)) break;
+      s--;
+    }
+    this.s = s;
+    this.lines = lines;
+    this.lineH = this.r.lead * s;
+    this.rows = this.lines.length * this.lineH - (this.r.lead - 9) * s + 1;
+    var dpr = window.devicePixelRatio || 1;
+    this.dpr = dpr;
+    this.cw = w; this.ch = (this.rows + 1) * P;
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(this.ch * dpr);
+    this.canvas.style.height = this.ch + 'px';
+
+    var self = this;
+    this.cells = [];
+    var k = 0, n = 0;
+    this.lines.forEach(function (line, li) {
+      line.forEach(function (c, ci) {
+        if (c.ch === ' ') return;
+        var seq = [];
+        if (self.r.flip && /[A-Z0-9]/.test(c.ch)) for (var q = rnd(KMIN, KMAX); q > 0; q--) seq.push(FILL[rnd(0, FILL.length - 1)]);
+        seq.push(c.ch);
+        self.cells.push({ x: ci * 6 * s, y: li * self.lineH, ink: c.ink || self.ink, seq: seq, idx: n++, li: li, ci: ci });
+      });
+    });
+    var total = this.cells.length;
+    var typeStep = Math.min(14, 1100 / Math.max(1, total));
+    this.cells.forEach(function (c) {
+      c.t0 = self.r.flip ? c.li * LINE_DELAY + c.ci * CHAR_DELAY : c.idx * typeStep;
+      c.dur = self.r.flip ? c.seq.length * STEP : 1;
+    });
+    var last = this.lines[this.lines.length - 1];
+    this.cursorAt = { x: (last.length + 1) * 6 * s, y: (this.lines.length - 1) * this.lineH };
+    this.end = this.cells.reduce(function (m, c) { return Math.max(m, c.t0 + c.dur); }, 0);
+    this.draw(this.played ? Infinity : -1);
+  };
+
+  Text.prototype.origin = function () {
+    var r = this.canvas.getBoundingClientRect();
+    var px = r.left + window.scrollX, py = r.top + window.scrollY;
+    return { x: ((P - (px % P)) % P), y: ((P - (py % P)) % P) };
+  };
+
+  Text.prototype.block = function (o, gx, gy, rows, color, sy) {
+    var s = this.s, d = this.dpr, ctx = this.ctx, rad = P * 0.4 * d;
+    ctx.fillStyle = color; ctx.beginPath();
+    for (var y = 0; y < rows.length; y++) for (var x = 0; x < 5; x++) {
+      if (!(rows[y] & (1 << (4 - x)))) continue;
+      for (var a = 0; a < s; a++) for (var b = 0; b < s; b++) {
+        var cx = (o.x + (gx + x * s + b) * P + P / 2) * d;
+        var cy = (o.y + (gy + y * s + a) * P + P / 2) * d;
+        if (cx > this.canvas.width) continue;
+        ctx.moveTo(cx + rad, cy);
+        ctx.ellipse(cx, cy, rad, Math.max(0.01, rad * sy), 0, 0, Math.PI * 2);
+      }
+    }
+    ctx.fill();
+  };
+
+  Text.prototype.draw = function (t) {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (t < 0) return false;
+    var o = this.origin(), self = this, moving = false;
+    this.cells.forEach(function (c) {
+      var col = COLORS[c.ink] || COLORS.ink, dt = t - c.t0;
+      if (dt < 0) { moving = true; return; }
+      if (!self.r.flip || dt >= c.dur) { var g = glyph(c.seq[c.seq.length - 1]); if (g) self.block(o, c.x, c.y, g, col, 1); return; }
+      moving = true;
+      var i = Math.floor(dt / STEP), ph = (dt - i * STEP) / STEP;
+      var ch = ph < 0.5 ? (i === 0 ? null : c.seq[i - 1]) : c.seq[i];
+      var g2 = ch && glyph(ch);
+      if (g2) self.block(o, c.x, c.y, g2, col, ph < 0.5 ? 1 - 2 * ph : 2 * ph - 1);
+    });
+    if (this.cursor && t >= this.end) {
+      var on = !isFinite(t) || Math.floor((t - this.end) / BLINK) % 2 === 0;
+      if (on) this.block(o, this.cursorAt.x, this.cursorAt.y, [31, 31, 31, 31, 31, 31, 31], COLORS.ink, 1);
+      moving = isFinite(t);
+    }
+    return moving;
+  };
+
+  Text.prototype.play = function () {
+    if (this.played) return;
+    this.played = true;
+    if (reduced) { this.done = true; this.draw(Infinity); return; }
+    var self = this;
+    this.start = null;
+    var tick = function (now) {
+      if (self.start === null) self.start = now;
+      if (self.draw(now - self.start)) self.raf = requestAnimationFrame(tick); else self.done = true;
+    };
+    this.raf = requestAnimationFrame(tick);
+  };
+
+  var items = [];
+  function relayout() {
+    setPitch();
+    items.forEach(function (t) {
+      cancelAnimationFrame(t.raf);
+      t.layout();
+      if (t.played) t.done = true;
+      if (t.played && t.cursor && !reduced) {
+        var t0 = null;
+        var tick = function (now) { if (t0 === null) t0 = now; t.draw(t.end + (now - t0)); t.raf = requestAnimationFrame(tick); };
+        t.raf = requestAnimationFrame(tick);
+      }
+    });
+  }
+  function init() {
+    items = [].slice.call(document.querySelectorAll('.jtc, .jtc-headline')).map(function (el) { return new Text(el); });
+    items.forEach(function (t) { t.layout(); });
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var t = items.find(function (x) { return x.el === e.target; });
+        if (t) { t.play(); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.2 });
+    items.forEach(function (t) { io.observe(t.el); });
+    var lastW = window.innerWidth, timer;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      clearTimeout(timer); timer = setTimeout(relayout, 120);
+    });
+    // Re-align static text if anything above it changes height (fonts, live data loading).
+    var lastH = document.body.scrollHeight;
+    new ResizeObserver(function () {
+      var h = document.body.scrollHeight;
+      if (h === lastH) return;
+      lastH = h;
+      items.forEach(function (t) { if (t.done) t.draw(Infinity); });
+    }).observe(document.body);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  window.JTCDots = { items: function () { return items; }, relayout: relayout, colors: COLORS };
+})();
+
+</script>
+<script>window.JTC_STATS = {
+  "updated": "2026-10-20T18:15:24.523Z",
+  "sample": true,
+  "offline": true,
+  "owner": "julie-torrisi",
+  "repos_tracked": 0,
+  "activity": {
+    "weeks": 12,
+    "grid": [
+      [
+        {
+          "date": "2026-08-03",
+          "commits": 3,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-04",
+          "commits": 1,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-05",
+          "commits": 2,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-06",
+          "commits": 7,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-07",
+          "commits": 4,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-08",
+          "commits": 5,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-09",
+          "commits": 2,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-10",
+          "commits": 9,
+          "ai": 8,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-11",
+          "commits": 6,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-12",
+          "commits": 8,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-13",
+          "commits": 8,
+          "ai": 7,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-14",
+          "commits": 8,
+          "ai": 8,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-16",
+          "commits": 4,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-17",
+          "commits": 5,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-18",
+          "commits": 7,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-19",
+          "commits": 1,
+          "ai": 1,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-20",
+          "commits": 6,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-21",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-22",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-23",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-24",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-25",
+          "commits": 7,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-26",
+          "commits": 2,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-27",
+          "commits": 6,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-28",
+          "commits": 8,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-29",
+          "commits": 3,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-08-30",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-08-31",
+          "commits": 1,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-01",
+          "commits": 2,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-02",
+          "commits": 3,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-03",
+          "commits": 4,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-04",
+          "commits": 7,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-05",
+          "commits": 6,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-06",
+          "commits": 4,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-07",
+          "commits": 6,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-08",
+          "commits": 3,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-10",
+          "commits": 8,
+          "ai": 4,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-11",
+          "commits": 8,
+          "ai": 7,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-12",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-13",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-14",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-16",
+          "commits": 5,
+          "ai": 4,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-17",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-18",
+          "commits": 6,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-19",
+          "commits": 3,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-20",
+          "commits": 1,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-21",
+          "commits": 3,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-22",
+          "commits": 9,
+          "ai": 7,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-23",
+          "commits": 2,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-24",
+          "commits": 9,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-25",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-26",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-27",
+          "commits": 8,
+          "ai": 7,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-09-28",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-29",
+          "commits": 6,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-09-30",
+          "commits": 4,
+          "ai": 4,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "commits": 6,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-02",
+          "commits": 5,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-03",
+          "commits": 5,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-04",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-05",
+          "commits": 5,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-06",
+          "commits": 3,
+          "ai": 2,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-07",
+          "commits": 5,
+          "ai": 3,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-08",
+          "commits": 9,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-10",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-11",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-12",
+          "commits": 8,
+          "ai": 7,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-13",
+          "commits": 8,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-14",
+          "commits": 4,
+          "ai": 1,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-15",
+          "commits": 7,
+          "ai": 3,
+          "ship": "Cadence website",
+          "future": false
+        },
+        {
+          "date": "2026-10-16",
+          "commits": 7,
+          "ai": 6,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-17",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-18",
+          "commits": 6,
+          "ai": 4,
+          "ship": null,
+          "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-10-19",
+          "commits": 7,
+          "ai": 5,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-20",
+          "commits": 1,
+          "ai": 1,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-10-21",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-22",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-23",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-24",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-10-25",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        }
+      ]
+    ],
+    "active_days": 59,
+    "commits": 306,
+    "ai_commits": 221,
+    "ai_share": 72
+  },
+  "funnel": {
+    "exploring": 0,
+    "building": 3,
+    "shipped": 1,
+    "stopped": 0,
+    "started": 3
+  },
+  "system": {
+    "Skills": 6,
+    "Rules files": 9,
+    "Prompts": 14,
+    "Evals": 3
+  },
+  "speed": {
+    "items": [
+      {
+        "name": "Cadence website",
+        "days": 14
+      }
+    ],
+    "median_days": 14,
+    "stopped": 0
+  },
+  "ledger": [
+    {
+      "id": "cadence",
+      "name": "Cadence",
+      "what": "Teaches AI your design system, then decides how and when your product should say something.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-09-01",
+      "shipped": null,
+      "ship_on_release": "julie-torrisi/cadence",
+      "proof": [
+        {
+          "label": "Cadence page",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        }
+      ],
+      "stage": "Submitting to Figma for plugin review"
+    },
+    {
+      "id": "cadence-site",
+      "name": "Cadence website",
+      "what": "The launch site for Cadence, built with Claude Code and versioned on GitHub.",
+      "status": "shipped",
+      "visibility": "public",
+      "started": "2026-10-01",
+      "shipped": "2026-10-15",
+      "proof": [
+        {
+          "label": "Live",
+          "url": "https://www.julietorrisi.com/about-jf3b8"
+        },
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    },
+    {
+      "id": "design-ai-page",
+      "name": "This page",
+      "what": "Dot-screen type and live charts that update themselves from GitHub every morning.",
+      "status": "building",
+      "visibility": "public",
+      "started": "2026-10-20",
+      "shipped": null,
+      "proof": [
+        {
+          "label": "Code",
+          "url": "https://github.com/julie-torrisi/cadence-site"
+        }
+      ]
+    }
+  ],
+  "next": {
+    "id": "output-agent",
+    "name": "AI output grader",
+    "what": "An agent that grades AI-made design against the design system it was supposed to follow.",
+    "status": "building",
+    "visibility": "public",
+    "started": "2026-10-20",
+    "shipped": null,
+    "next": true,
+    "milestones": [
+      {
+        "label": "Define what it grades",
+        "done": false
+      },
+      {
+        "label": "Golden set and rubric",
+        "done": false
+      },
+      {
+        "label": "Test it on Cadence output",
+        "done": false
+      },
+      {
+        "label": "Public repo",
+        "done": false
+      },
+      {
+        "label": "Ship it",
+        "done": false
+      }
+    ],
+    "proof": []
+  }
+};</script>
+<script>
+/*!
+ * JTC Visuals: live charts drawn on the page's dot grid.
+ * Reads data/stats.json (rebuilt every morning by a GitHub Action).
+ *
+ *   <div data-jtc-viz="trend"></div>   line chart: commits per week, and how many had AI as co-author
+ *   <div data-jtc-viz="share"></div>   donut: share of commits co-authored with AI
+ *   <div data-jtc-viz="blocks"></div>  bar chart: reusable skills, rules, prompts, evals in my repos
+ *   <div data-jtc-viz="ledger"></div>  public builds with links
+ *   <div data-jtc-viz="next"></div>    milestones for what's next
+ * Optional data-src="path/to/stats.json". Needs jtc-dots.js (grid + colours).
+ */
+(function () {
+  var C = { bg: '#0b0c0c', unlit: '#161918', dim: '#30353a', grey: '#9da3a1', ink: '#f7f8f8', signal: '#ff5a60' };
+  var ICONS = {"settings": {"size": 24, "r": 1, "dots": [[13.25, 9.83], [14.5, 12], [13.25, 14.17], [10.75, 14.17], [9.5, 12], [10.75, 9.83], [12, 4.8], [14.46, 5.23], [16.63, 6.48], [18.24, 8.4], [19.09, 10.75], [19.09, 13.25], [18.24, 15.6], [16.63, 17.52], [14.46, 18.77], [12, 19.2], [9.54, 18.77], [7.37, 17.52], [5.76, 15.6], [4.91, 13.25], [4.91, 10.75], [5.76, 8.4], [7.37, 6.48], [9.54, 5.23], [10.7, 2.19], [13.3, 2.19], [19.85, 5.97], [21.15, 8.22], [21.15, 15.78], [19.85, 18.03], [13.3, 21.81], [10.7, 21.81], [4.15, 18.03], [2.85, 15.78], [2.85, 8.22], [4.15, 5.97]]}, "rocket": {"size": 24, "r": 1, "dots": [[13.76, 2.76], [10.24, 2.76], [12, 1], [12, 17.72, 1], [12, 23, 1], [10.9, 20.36, 1], [13.32, 20.36, 1], [9.8, 17.72, 1], [14.2, 17.72, 1], [15.52, 4.52], [8.48, 4.52], [15.52, 6.72], [8.48, 6.72], [15.52, 8.92], [15.52, 13.32], [15.52, 15.52], [8.48, 8.92], [8.48, 13.32], [15.52, 11.12], [8.48, 11.12], [5.84, 12.44], [18.16, 12.44], [4.08, 14.2], [19.92, 14.2], [8.48, 15.52], [10.9, 15.52], [13.32, 15.52]]}, "error": {"size": 24, "r": 1, "dots": [[13.5, 3.75], [10.5, 20.25], [10.5, 3.75], [8, 6], [13.5, 20.25], [5.75, 15.75], [16, 6], [5.75, 8.25], [16, 18], [8, 18], [18.25, 8.25], [3.75, 13.25], [20.25, 10.75], [3.75, 10.75], [18.25, 15.75], [20.25, 13.25]], "strokes": ["M12 7.5V12.5", "M12 16.25V16.26"]}, "edit": {"size": 24, "r": 1, "dots": [[3.31, 20.66], [5.92, 20.66], [8.86, 20.34], [10.82, 18.37], [12.78, 16.41], [14.75, 14.45], [16.77, 12.56], [20.69, 8.63], [18.73, 10.59], [3.31, 18.05], [3.63, 15.11], [5.59, 13.14], [7.55, 11.18], [9.52, 9.22], [11.48, 7.26], [15.4, 3.34], [13.44, 5.3], [13.24, 9.03], [17.16, 5.1], [15.01, 10.79], [18.93, 6.87]]}, "compose": {"size": 16, "r": 0.667, "dots": [[5.33, 10.67], [5.33, 8.67], [6.67, 7.33], [8, 6], [9.33, 4.67], [10.67, 3.33], [12, 2], [7.33, 10.67], [8.67, 9.33], [10, 8], [11.33, 6.67], [12.67, 5.33], [14, 4], [14, 2], [5.33, 3.33], [3.33, 3.33], [2, 5.33], [2, 7.15], [2, 8.97], [2, 10.79], [2, 12.61], [3, 14], [4.83, 14], [6.67, 14], [8.5, 14], [10.33, 14], [12.17, 14], [13.33, 12.67], [13.33, 10.67]]}, "bell": {"size": 16, "r": 0.667, "dots": [[5.92, 3.67], [10.08, 3.67], [4.92, 5.67], [11.08, 5.67], [4.58, 7.67], [11.42, 7.67], [3.92, 9.67], [12.08, 9.67], [2.58, 11.67], [13.42, 11.67], [6.92, 11.67], [9.08, 11.67], [7.92, 13.67], [7.92, 2.33], [4.75, 11.67], [11.25, 11.67]]}, "frame": {"size": 16, "r": 0.667, "dots": [[2.0, 2.0], [4.0, 2.0], [6.0, 2.0], [8.0, 2.0], [10.0, 2.0], [12.0, 2.0], [14.0, 2.0], [2.0, 4.0], [8.0, 4.0], [14.0, 4.0], [2.0, 6.0], [8.0, 6.0], [14.0, 6.0], [2.0, 8.0], [4.0, 8.0], [6.0, 8.0], [8.0, 8.0], [10.0, 8.0], [12.0, 8.0], [14.0, 8.0], [2.0, 10.0], [8.0, 10.0], [14.0, 10.0], [2.0, 12.0], [8.0, 12.0], [14.0, 12.0], [2.0, 14.0], [4.0, 14.0], [6.0, 14.0], [8.0, 14.0], [10.0, 14.0], [12.0, 14.0], [14.0, 14.0]]}, "clock": {"size": 16, "r": 0.667, "dots": [[14, 8], [8, 14], [2, 8], [8, 2], [8, 4.33], [8, 8], [9.59, 8.91], [13.71, 9.85], [12.85, 11.53], [11.53, 12.85], [9.85, 13.71], [6.15, 13.71], [4.47, 12.85], [3.15, 11.53], [2.29, 9.85], [2.29, 6.15], [3.15, 4.47], [4.47, 3.15], [6.15, 2.29], [9.85, 2.29], [11.53, 3.15], [12.85, 4.47], [13.71, 6.15], [8, 6.17]]}, "check": {"size": 16, "r": 0.667, "dots": [[3, 8], [6, 11], [13, 4], [4.5, 9.5], [7.4, 9.6], [8.8, 8.2], [10.2, 6.8], [11.6, 5.4]]}, "image": {"size": 16, "r": 0.667, "dots": [[3.33, 3], [12.67, 3], [14, 4.33], [14, 11.67], [12.67, 13], [3.33, 13], [2, 11.67], [2, 4.33], [4.83, 5.33], [6, 8], [9.33, 11], [11, 9.33], [5.2, 3], [7.07, 3], [8.93, 3], [10.8, 3], [14, 6.17], [14, 8], [14, 9.83], [10.8, 13], [8.93, 13], [7.07, 13], [5.2, 13], [2, 9.83], [2, 8], [2, 6.17], [4.17, 9.67], [7.67, 9.5], [12.33, 10.5]]}, "shield": {"size": 16, "r": 0.667, "dots": [[8, 2], [13, 4], [13, 7.33], [8, 14], [3, 7.33], [3, 4], [9.67, 2.67], [11.33, 3.33], [13, 5.67], [12.62, 9.5], [11.53, 11.41], [9.92, 12.91], [6.08, 12.91], [4.47, 11.41], [3.38, 9.5], [3, 5.67], [4.67, 3.33], [6.33, 2.67]]}};
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var css = document.createElement('style');
+  css.textContent = [
+    '.jv{position:relative;margin-top:calc(var(--jtc-p) * 10);color:' + C.ink + ';font:700 16px/1.5 Doto,"JetBrains Mono",monospace}',
+    '.jv canvas{display:block;width:100%;touch-action:pan-y}',
+    '.jv .lbl{font:800 14px/1.4 Doto,monospace;letter-spacing:.06em;text-transform:uppercase;color:' + C.grey + '}',
+    '.jv .axis{display:flex;justify-content:space-between;margin-top:8px}',
+    '.jv .key{display:flex;flex-wrap:wrap;gap:6px 20px;margin-bottom:calc(var(--jtc-p) * 4)}',
+    '.jv .key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}',
+    '.jv .tip{position:absolute;pointer-events:none;z-index:5;min-width:160px;max-width:260px;padding:10px 12px;background:' + C.bg + ';border:1px dashed ' + C.grey + ';border-radius:8px;font:800 14px/1.45 Doto,monospace;letter-spacing:.03em;opacity:0;transition:opacity .12s}',
+    '.jv .tip.on{opacity:1}',
+    '.jv .tip b{display:block;font-weight:900;text-transform:uppercase;color:' + C.grey + ';margin-bottom:2px}',
+    '.jv .tip .s{color:' + C.signal + '}',
+    '.jv .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}',
+    '.jv .center b{font:900 clamp(34px,4.6vw,58px)/1 Doto,monospace}',
+    '.jv .barlbl{position:absolute;bottom:0;transform:translateX(-50%);text-align:center;white-space:nowrap}',
+    '.jv .empty{color:' + C.grey + '}',
+    '.jv .ico{width:24px;height:24px;flex:none}.jv .ico circle{fill:currentColor}.jv .ico .red{fill:' + C.signal + '}',
+    '.jv .ico .red-stroke{stroke:' + C.signal + '}',
+    '.jv .led{display:grid;border-top:1px dashed ' + C.dim + '}',
+    '.jv .it{display:grid;grid-template-columns:28px 1fr;gap:16px;padding:22px 0;border-bottom:1px dashed ' + C.dim + '}',
+    '.jv .it h4{margin:0;font:900 22px/1.25 Doto,monospace;text-transform:uppercase;letter-spacing:.04em}',
+    '.jv .it p{margin:4px 0 10px;color:' + C.grey + ';text-wrap:pretty}',
+    '.jv .it .meta{color:' + C.grey + '} .jv .it .meta .s{color:' + C.signal + '}',
+    '.jv .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}',
+    '.jv .links a{font:900 13px Doto,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:' + C.bg + ';background:' + C.ink + ';padding:6px 12px;border-radius:99px}',
+    '.jv .links a:hover{background:' + C.signal + ';color:#fff}',
+    '.jv .links a:focus-visible{outline:2px solid ' + C.signal + ';outline-offset:2px}',
+    '.jv .steps{display:grid;gap:4px}',
+    '.jv .st{display:flex;gap:14px;align-items:center;padding:8px 0;color:' + C.grey + '}',
+    '.jv .st.now{color:' + C.ink + '}',
+    '.jv .row{opacity:0;transform:translateY(10px);transition:opacity .45s,transform .45s;transition-delay:calc(var(--i) * 110ms)}',
+    '.jv.in .row{opacity:1;transform:none}',
+    '@media (prefers-reduced-motion:reduce){.jv .row{opacity:1;transform:none;transition:none}}'
+  ].join('');
+  document.head.appendChild(css);
+
+  function P() { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jtc-p')) || 4; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmt(d, opt) { var x = new Date(d + 'T12:00:00'); return x.toLocaleDateString('en-US', opt || { month: 'short', day: 'numeric', year: 'numeric' }); }
+  function safe(u) { return /^https:\/\//.test(u || '') ? u : null; }
+  function icon(name, cls) {
+    var ic = ICONS[name]; if (!ic) return '';
+    var h = '<svg class="ico ' + (cls || '') + '" viewBox="0 0 ' + ic.size + ' ' + ic.size + '" aria-hidden="true">';
+    ic.dots.forEach(function (d) { h += '<circle cx="' + d[0] + '" cy="' + d[1] + '" r="' + ic.r + '"' + (d[2] ? ' class="red"' : '') + '/>'; });
+    (ic.strokes || []).forEach(function (s) { h += '<path d="' + s + '" class="red-stroke" fill="none" stroke-width="2" stroke-linecap="round"/>'; });
+    return h + '</svg>';
+  }
+  var ease = function (t) { return 1 - Math.pow(1 - t, 3); };
+
+  var cache = {};
+  function load(src) {
+    if (window.JTC_STATS) return Promise.resolve(window.JTC_STATS);
+    if (!cache[src]) cache[src] = fetch(src + '?t=' + Math.floor(Date.now() / 36e5), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    return cache[src];
+  }
+
+  /* ---------- dot canvas: everything snaps to the page grid ---------- */
+  function Dots(host, rowsFn) {
+    this.host = host; this.rowsFn = rowsFn;
+    this.c = document.createElement('canvas');
+    this.c.setAttribute('aria-hidden', 'true');
+    host.appendChild(this.c);
+    this.x = this.c.getContext('2d');
+  }
+  Dots.prototype.size = function () {
+    this.p = P(); this.dpr = window.devicePixelRatio || 1;
+    var w = this.host.clientWidth;
+    this.cols = Math.floor(w / this.p) - 1;
+    this.rows = this.rowsFn(this.cols);
+    this.c.width = Math.round(w * this.dpr);
+    this.c.height = Math.round((this.rows + 1) * this.p * this.dpr);
+    this.c.style.height = (this.rows + 1) * this.p + 'px';
+  };
+  Dots.prototype.begin = function () {
+    var r = this.c.getBoundingClientRect(), p = this.p;
+    this.ox = (p - ((r.left + scrollX) % p)) % p;
+    this.oy = (p - ((r.top + scrollY) % p)) % p;
+    this.x.clearRect(0, 0, this.c.width, this.c.height);
+    this.batch = {};
+  };
+  Dots.prototype.dot = function (col, row, color) {
+    if (col < 0 || row < 0 || col > this.cols || row > this.rows) return;
+    (this.batch[color] = this.batch[color] || []).push(col, row);
+  };
+  Dots.prototype.end = function () {
+    var p = this.p, d = this.dpr, rad = p * 0.4 * d, x = this.x;
+    for (var color in this.batch) {
+      var a = this.batch[color]; x.fillStyle = color; x.beginPath();
+      for (var i = 0; i < a.length; i += 2) {
+        var cx = (this.ox + a[i] * p + p / 2) * d, cy = (this.oy + a[i + 1] * p + p / 2) * d;
+        x.moveTo(cx + rad, cy); x.arc(cx, cy, rad, 0, Math.PI * 2);
+      }
+      x.fill();
+    }
+  };
+  Dots.prototype.cell = function (ev) {
+    var r = this.c.getBoundingClientRect();
+    return { col: (ev.clientX - r.left - this.ox) / this.p, row: (ev.clientY - r.top - this.oy) / this.p, px: ev.clientX - r.left, py: ev.clientY - r.top };
+  };
+
+  function hostXY(host, ev) { var r = host.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+  function tipper(host) {
+    var t = document.createElement('div'); t.className = 'tip'; t.setAttribute('role', 'status'); host.appendChild(t);
+    return {
+      show: function (html, x, y) {
+        t.innerHTML = html; t.classList.add('on');
+        var w = t.offsetWidth, hw = host.clientWidth;
+        t.style.left = Math.max(0, Math.min(hw - w, x + 14)) + 'px';
+        t.style.top = Math.max(0, y - t.offsetHeight - 12) + 'px';
+      },
+      hide: function () { t.classList.remove('on'); }
+    };
+  }
+
+  function animate(chart) {
+    var start = null;
+    function tick(now) {
+      if (start === null) start = now;
+      var t = Math.min(1, (now - start) / 1300);
+      chart.progress = ease(t); chart.draw();
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    if (reduced) { chart.progress = 1; chart.draw(); } else requestAnimationFrame(tick);
+  }
+
+  /* ---------- line chart ---------- */
+  function trend(host, s) {
+    var a = s.activity;
+    if (!a.commits && !s.sample) { host.innerHTML = '<p class="empty">This chart fills in after the first daily update from GitHub.</p>'; return null; }
+    // Daily points, shown as running totals so every day is a point you can hover.
+    var days = [];
+    a.grid.forEach(function (col) { col.forEach(function (d) { if (!d.future) days.push(d); }); });
+    var first = days.findIndex(function (d) { return d.commits > 0; });
+    if (first < 0) first = 0;
+    first = Math.max(0, Math.min(first, days.length - 21));
+    days = days.slice(first);
+    var cc = 0, ca = 0;
+    var weeks = days.map(function (d) { cc += d.commits; ca += d.ai; return { from: d.date, day: d.commits, dayAi: d.ai, c: cc, ai: ca, ship: d.ship ? [d.ship] : [] }; });
+    var max = cc || 1;
+    host.innerHTML = '<div class="key lbl"><span><i style="background:' + C.ink + '"></i>Commits, running total</span><span><i style="background:' + C.signal + '"></i>With AI as co-author</span><span>' + weeks.length + ' days</span></div>';
+    var d = new Dots(host, function (cols) { return Math.max(34, Math.min(70, Math.round(cols * 0.28))); });
+    host.insertAdjacentHTML('beforeend', '<div class="axis lbl"><span>' + fmt(weeks[0].from, { month: 'short', day: 'numeric' }) + '</span><span>Today</span></div>');
+    var tip = tipper(host), hover = -1;
+    var chart = { progress: 0 };
+    function geo() {
+      var n = weeks.length, top = 3, base = d.rows - 1, span = base - top;
+      return { n: n, top: top, base: base, xs: weeks.map(function (_, i) { return Math.round(i * d.cols / (n - 1)); }),
+        y: function (v) { return base - (v / max) * span; } };
+    }
+    function series(g, key) {
+      var pts = [];
+      for (var col = 0; col <= d.cols; col++) {
+        var f = col / d.cols * (g.n - 1), i = Math.min(g.n - 2, Math.floor(f)), t = f - i;
+        pts.push(g.y(weeks[i][key] * (1 - t) + weeks[i + 1][key] * t));
+      }
+      return pts;
+    }
+    chart.draw = function () {
+      d.begin();
+      var g = geo(), lim = Math.round(chart.progress * d.cols), all = series(g, 'c'), ai = series(g, 'ai');
+      for (var col = 0; col <= d.cols; col++) d.dot(col, g.base + 1, C.dim);
+      if (hover >= 0) for (var r = g.top; r <= g.base; r += 2) d.dot(g.xs[hover], r, C.dim);
+      for (col = 0; col <= lim; col++) {
+        var y = Math.round(all[col]), ya = Math.round(ai[col]);
+        for (var r2 = y + 2; r2 <= g.base; r2++) if ((r2 + col) % 2 === 0) d.dot(col, r2, C.dim);
+        d.dot(col, y, C.ink); d.dot(col, y + 1, C.ink);
+        d.dot(col, ya, C.signal); d.dot(col, ya + 1, C.signal);
+      }
+      weeks.forEach(function (w, i) {
+        var x = g.xs[i]; if (x > lim) return;
+        var yy = Math.round(g.y(w.c));
+        if (w.day || i === hover) for (var a1 = -1; a1 <= 1; a1++) for (var b1 = -1; b1 <= 1; b1++) d.dot(x + a1, yy + b1, i === hover ? C.signal : C.ink);
+        if (w.ship.length) for (var k = 0; k < 3; k++) d.dot(x, g.top - 3 + k, C.signal);
+      });
+      d.end();
+    };
+    function move(ev) {
+      var c = d.cell(ev), g = geo(), best = 0;
+      g.xs.forEach(function (x, i) { if (Math.abs(x - c.col) < Math.abs(g.xs[best] - c.col)) best = i; });
+      hover = best; chart.draw();
+      var w = weeks[best];
+      tip.show('<b>' + esc(fmt(w.from)) + '</b>' + w.day + ' commit' + (w.day === 1 ? '' : 's') + ' that day' + (w.day ? '<br><span class="s">' + w.dayAi + ' with AI</span>' : '') + '<br>Running total: ' + w.c + ' (' + (w.c ? Math.round(w.ai / w.c * 100) : 0) + '% with AI)' +
+        (w.ship.length ? '<br>Shipped: ' + esc(w.ship.join(', ')) : ''), hostXY(host, ev)[0], hostXY(host, ev)[1]);
+    }
+    d.c.addEventListener('pointermove', move); d.c.addEventListener('pointerdown', move);
+    d.c.addEventListener('pointerleave', function () { hover = -1; tip.hide(); chart.draw(); });
+    chart.layout = function () { d.size(); chart.draw(); };
+    return chart;
+  }
+
+  /* ---------- donut ---------- */
+  function share(host, s) {
+    var a = s.activity;
+    if (!a.commits && !s.sample) { host.innerHTML = '<p class="empty">Fills in after the first daily update.</p>'; return null; }
+    var f = a.ai_commits / a.commits;
+    host.innerHTML = '<div class="key lbl"><span><i style="background:' + C.signal + '"></i>With AI</span><span><i style="background:' + C.grey + '"></i>Without</span></div>';
+    var wrap = document.createElement('div'); wrap.style.position = 'relative'; host.appendChild(wrap);
+    var d = new Dots(wrap, function (cols) { return Math.min(cols, 64); });
+    wrap.insertAdjacentHTML('beforeend', '<div class="center"><b>' + Math.round(f * 100) + '%</b><span class="lbl">with AI</span></div>');
+    var tip = tipper(host), hover = null, chart = { progress: 0 };
+    function geo() { var R = Math.floor(Math.min(d.cols, d.rows) / 2) - 1; return { cx: Math.floor(d.cols / 2), cy: Math.floor(d.rows / 2), R: R, r: Math.round(R * 0.58) }; }
+    function frac(dx, dy) { var t = Math.atan2(dx, -dy); return (t < 0 ? t + 2 * Math.PI : t) / (2 * Math.PI); }
+    chart.draw = function () {
+      d.begin(); var g = geo();
+      for (var y = -g.R; y <= g.R; y++) for (var x = -g.R; x <= g.R; x++) {
+        var dist = Math.sqrt(x * x + y * y); if (dist > g.R || dist < g.r) continue;
+        var q = frac(x, y);
+        if (q > chart.progress) { d.dot(g.cx + x, g.cy + y, C.dim); continue; }
+        var isAI = q < f, hot = hover === (isAI ? 'ai' : 'no');
+        d.dot(g.cx + x, g.cy + y, isAI ? C.signal : (hot ? C.ink : C.grey));
+      }
+      d.end();
+    };
+    function move(ev) {
+      var c = d.cell(ev), g = geo(), dx = c.col - g.cx, dy = c.row - g.cy, dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > g.R + 1 || dist < g.r - 1) { hover = null; tip.hide(); chart.draw(); return; }
+      hover = frac(dx, dy) < f ? 'ai' : 'no'; chart.draw();
+      tip.show(hover === 'ai' ? '<b>Co-authored with AI</b><span class="s">' + a.ai_commits + ' commits (' + Math.round(f * 100) + '%)</span>'
+        : '<b>Without AI</b>' + (a.commits - a.ai_commits) + ' commits (' + (100 - Math.round(f * 100)) + '%)', hostXY(host, ev)[0], hostXY(host, ev)[1]);
+    }
+    d.c.addEventListener('pointermove', move); d.c.addEventListener('pointerdown', move);
+    d.c.addEventListener('pointerleave', function () { hover = null; tip.hide(); chart.draw(); });
+    chart.layout = function () { d.size(); chart.draw(); };
+    return chart;
+  }
+
+  /* ---------- bar chart ---------- */
+  var BLOCK_NOTES = { 'Skills': 'Reusable how-tos a model loads on demand', 'Rules files': 'CLAUDE.md, DESIGN.md and Cursor rules', 'Prompts': 'Saved prompts that worked', 'Evals': 'Tests that score AI output' };
+  function blocks(host, s) {
+    var sys = s.system, keys = Object.keys(sys), total = keys.reduce(function (t, k) { return t + sys[k]; }, 0);
+    if (total < 3 && !s.sample) {
+      // Too little public to chart yet: hide the chart and the sentence that introduces it.
+      host.style.display = 'none';
+      var intro = document.querySelector('[data-viz-intro="blocks"]'); if (intro) intro.style.display = 'none';
+      return null;
+    }
+    var max = Math.max(10, Math.max.apply(null, keys.map(function (k) { return sys[k]; })));
+    var wrap = document.createElement('div'); wrap.style.position = 'relative'; wrap.style.paddingBottom = '30px'; host.appendChild(wrap);
+    var d = new Dots(wrap, function (cols) { return Math.max(30, Math.min(56, Math.round(cols * 0.22))); });
+    var labels = keys.map(function (k) { var e = document.createElement('span'); e.className = 'barlbl lbl'; e.textContent = k; wrap.appendChild(e); return e; });
+    var tip = tipper(host), hover = -1, chart = { progress: 0 };
+    function geo() {
+      var n = keys.length, gap = Math.max(4, Math.round(d.cols * 0.06)), bw = Math.floor((d.cols - gap * (n - 1)) / n);
+      return { n: n, bw: bw, gap: gap, base: d.rows - 1, x: function (i) { return i * (bw + gap); } };
+    }
+    chart.draw = function () {
+      d.begin(); var g = geo();
+      for (var col = 0; col <= d.cols; col++) d.dot(col, g.base + 1, C.dim);
+      keys.forEach(function (k, i) {
+        var h = Math.round((sys[k] / max) * (g.base - 4) * chart.progress), x0 = g.x(i);
+        for (var r = 0; r < h; r++) for (var c2 = 0; c2 < g.bw; c2++) d.dot(x0 + c2, g.base - r, r === h - 1 ? C.signal : (hover === i ? C.ink : C.grey));
+        labels[i].style.left = (d.ox + (x0 + g.bw / 2) * d.p) + 'px';
+      });
+      d.end();
+    };
+    function move(ev) {
+      var c = d.cell(ev), g = geo(), i = Math.floor(c.col / (g.bw + g.gap));
+      if (i < 0 || i >= g.n || c.col - g.x(i) > g.bw) { hover = -1; tip.hide(); chart.draw(); return; }
+      hover = i; chart.draw();
+      tip.show('<b>' + esc(keys[i]) + '</b><span class="s">' + sys[keys[i]] + ' files</span><br>' + esc(BLOCK_NOTES[keys[i]] || ''), hostXY(host, ev)[0], hostXY(host, ev)[1]);
+    }
+    d.c.addEventListener('pointermove', move); d.c.addEventListener('pointerdown', move);
+    d.c.addEventListener('pointerleave', function () { hover = -1; tip.hide(); chart.draw(); });
+    chart.layout = function () { d.size(); chart.draw(); };
+    return chart;
+  }
+
+  /* ---------- ledger + next (HTML, Cadence Kit icons) ---------- */
+  function ledger(host, s) {
+    var items = s.ledger.filter(function (i) { return i.visibility === 'public' && (i.proof || []).some(function (p) { return safe(p.url); }); });
+    var rank = function (x) { return x.status !== 'shipped' && (x.stage || x.target) ? 0 : x.status === 'shipped' ? 1 : 2; };
+    items.sort(function (a, b) { return rank(a) - rank(b) || String(b.shipped || b.started).localeCompare(String(a.shipped || a.started)); });
+    host.innerHTML = '<div class="led">' + items.map(function (it, n) {
+      var meta;
+      if (it.status === 'shipped') meta = '<span class="s">Shipped ' + esc(fmt(it.shipped)) + '</span>' + (it.auto_shipped ? ' · verified by a GitHub release' : '');
+      else if (it.stage) meta = '<span class="s">' + esc(it.stage) + '</span>';
+      else if (it.target) { var dd = Math.ceil((new Date(it.target + 'T12:00:00') - new Date()) / 864e5); meta = '<span class="s">' + (dd > 0 ? 'Launches in ' + dd + ' day' + (dd === 1 ? '' : 's') : 'Launching now') + '</span>'; }
+      else meta = 'In progress';
+      var ic = it.status === 'shipped' ? icon('rocket') : icon('clock');
+      return '<div class="it row" style="--i:' + n + '">' + ic + '<div><h4>' + esc(it.name) + '</h4><p>' + esc(it.what) + '</p><div class="meta lbl">' + meta + '</div>' +
+        '<div class="links">' + it.proof.filter(function (p) { return safe(p.url); }).map(function (p) { return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.label) + ' ↗</a>'; }).join('') + '</div></div></div>';
+    }).join('') + '</div>';
+    return null;
+  }
+  function next(host, s) {
+    var n = s.next; if (!n) return null;
+    var ms = n.milestones || [], cur = ms.findIndex(function (m) { return !m.done; });
+    host.innerHTML = '<div class="steps">' + ms.map(function (m, i) {
+      return '<div class="st row' + (i === cur ? ' now' : '') + '" style="--i:' + i + '">' + icon(m.done ? 'check' : (m.icon || 'clock')) + '<span class="lbl" style="color:inherit">' + esc(m.label) + (i === cur ? ' · now' : '') + '</span></div>';
+    }).join('') + '</div>';
+    return null;
+  }
+
+  var R = { trend: trend, share: share, blocks: blocks, ledger: ledger, next: next };
+  var charts = [];
+  function mount(el) {
+    var type = el.getAttribute('data-jtc-viz');
+    if (!R[type]) return;
+    el.classList.add('jv');
+    load(el.getAttribute('data-src') || 'data/stats.json').then(function (s) {
+      var chart = R[type](el, s);
+      if (chart) { charts.push(chart); chart.layout(); }
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (!e.isIntersecting) return; el.classList.add('in'); if (chart) animate(chart); io.disconnect(); });
+      }, { threshold: 0.3 });
+      io.observe(el);
+    }).catch(function () { el.innerHTML = '<p class="empty lbl">Live numbers are updating. Check back soon.</p>'; });
+  }
+  function init() {
+    [].forEach.call(document.querySelectorAll('[data-jtc-viz]'), mount);
+    var lw = innerWidth, tm;
+    addEventListener('resize', function () { if (innerWidth === lw) return; lw = innerWidth; clearTimeout(tm); tm = setTimeout(function () { charts.forEach(function (c) { c.layout(); }); }, 160); });
+    new ResizeObserver(function () { charts.forEach(function (c) { c.draw(); }); }).observe(document.body);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  window.JTCVisuals = { icon: icon, icons: ICONS };
+})();
+
+</script>
+</body>
+</html>
