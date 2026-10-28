@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T15:53:04.711Z",
+  "updated": "2026-10-28T16:37:48.997Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
@@ -588,7 +588,7 @@
           "commits": 0,
           "ai": 0,
           "ship": null,
-          "future": true
+          "future": false
         },
         {
           "date": "2026-10-29",
