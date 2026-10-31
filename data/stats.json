@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-31T15:43:49.584Z",
+  "updated": "2026-10-31T20:53:27.328Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
-  "repos_tracked": 12,
+  "repos_tracked": 13,
   "activity": {
     "weeks": 12,
     "grid": [
@@ -536,7 +536,7 @@
           "date": "2026-10-21",
           "commits": 36,
           "ai": 35,
-          "ship": null,
+          "ship": "This page",
           "future": false
         },
         {
@@ -606,8 +606,8 @@
         },
         {
           "date": "2026-10-31",
-          "commits": 2,
-          "ai": 2,
+          "commits": 6,
+          "ai": 6,
           "ship": null,
           "future": false
         },
@@ -621,14 +621,14 @@
       ]
     ],
     "active_days": 10,
-    "commits": 153,
-    "ai_commits": 135,
-    "ai_share": 88
+    "commits": 157,
+    "ai_commits": 139,
+    "ai_share": 89
   },
   "funnel": {
     "exploring": 0,
-    "building": 3,
-    "shipped": 1,
+    "building": 2,
+    "shipped": 2,
     "stopped": 0,
     "started": 3
   },
@@ -641,11 +641,15 @@
   "speed": {
     "items": [
       {
+        "name": "This page",
+        "days": 1
+      },
+      {
         "name": "Cadence website",
         "days": 14
       }
     ],
-    "median_days": 14,
+    "median_days": 1,
     "stopped": 0
   },
   "ledger": [
@@ -663,7 +667,7 @@
           "url": "https://www.julietorrisi.com/about-jf3b8"
         }
       ],
-      "stage": "Submitting to Figma for plugin review"
+      "stage": "In Figma review"
     },
     {
       "id": "cadence-site",
@@ -688,11 +692,15 @@
       "id": "design-ai-page",
       "name": "This page",
       "what": "Dot-screen type and live charts that update themselves from GitHub every morning.",
-      "status": "building",
+      "status": "shipped",
       "visibility": "public",
       "started": "2026-10-20",
-      "shipped": null,
+      "shipped": "2026-10-21",
       "proof": [
+        {
+          "label": "Live",
+          "url": "https://www.julietorrisi.com/home/design-ai"
+        },
         {
           "label": "Code",
           "url": "https://github.com/julie-torrisi/cadence-site"
