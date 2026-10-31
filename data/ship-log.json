@@ -16,7 +16,7 @@
           "url": "https://www.julietorrisi.com/about-jf3b8"
         }
       ],
-      "stage": "Submitting to Figma for plugin review"
+      "stage": "In Figma review"
     },
     {
       "id": "cadence-site",
@@ -41,11 +41,15 @@
       "id": "design-ai-page",
       "name": "This page",
       "what": "Dot-screen type and live charts that update themselves from GitHub every morning.",
-      "status": "building",
+      "status": "shipped",
       "visibility": "public",
       "started": "2026-10-20",
-      "shipped": null,
+      "shipped": "2026-10-21",
       "proof": [
+        {
+          "label": "Live",
+          "url": "https://www.julietorrisi.com/home/design-ai"
+        },
         {
           "label": "Code",
           "url": "https://github.com/julie-torrisi/cadence-site"
