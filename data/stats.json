@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-08T16:39:43.579Z",
+  "updated": "2026-11-09T20:43:46.514Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
@@ -7,57 +7,6 @@
   "activity": {
     "weeks": 12,
     "grid": [
-      [
-        {
-          "date": "2026-08-17",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-18",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-19",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-20",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-21",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-22",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        },
-        {
-          "date": "2026-08-23",
-          "commits": 0,
-          "ai": 0,
-          "ship": null,
-          "future": false
-        }
-      ],
       [
         {
           "date": "2026-08-24",
@@ -617,6 +566,57 @@
           "ai": 0,
           "ship": null,
           "future": false
+        }
+      ],
+      [
+        {
+          "date": "2026-11-09",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": false
+        },
+        {
+          "date": "2026-11-10",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-11-11",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-11-12",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-11-13",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-11-14",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
+        },
+        {
+          "date": "2026-11-15",
+          "commits": 0,
+          "ai": 0,
+          "ship": null,
+          "future": true
         }
       ]
     ],
