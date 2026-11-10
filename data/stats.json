@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09T20:43:46.514Z",
+  "updated": "2026-11-10T17:49:02.192Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
@@ -571,8 +571,8 @@
       [
         {
           "date": "2026-11-09",
-          "commits": 0,
-          "ai": 0,
+          "commits": 2,
+          "ai": 2,
           "ship": null,
           "future": false
         },
@@ -581,7 +581,7 @@
           "commits": 0,
           "ai": 0,
           "ship": null,
-          "future": true
+          "future": false
         },
         {
           "date": "2026-11-11",
@@ -620,9 +620,9 @@
         }
       ]
     ],
-    "active_days": 13,
-    "commits": 172,
-    "ai_commits": 154,
+    "active_days": 14,
+    "commits": 174,
+    "ai_commits": 156,
     "ai_share": 90
   },
   "funnel": {
