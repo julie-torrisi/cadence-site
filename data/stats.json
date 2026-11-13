@@ -1,9 +1,9 @@
 {
-  "updated": "2026-11-12T18:18:51.583Z",
+  "updated": "2026-11-13T17:43:49.127Z",
   "sample": false,
   "offline": false,
   "owner": "julie-torrisi",
-  "repos_tracked": 15,
+  "repos_tracked": 9,
   "activity": {
     "weeks": 12,
     "grid": [
@@ -425,22 +425,22 @@
         },
         {
           "date": "2026-10-20",
-          "commits": 39,
-          "ai": 39,
+          "commits": 8,
+          "ai": 8,
           "ship": null,
           "future": false
         },
         {
           "date": "2026-10-21",
-          "commits": 36,
-          "ai": 35,
+          "commits": 10,
+          "ai": 10,
           "ship": "This page",
           "future": false
         },
         {
           "date": "2026-10-22",
-          "commits": 28,
-          "ai": 28,
+          "commits": 5,
+          "ai": 5,
           "ship": null,
           "future": false
         },
@@ -602,7 +602,7 @@
           "commits": 0,
           "ai": 0,
           "ship": null,
-          "future": true
+          "future": false
         },
         {
           "date": "2026-11-14",
@@ -621,9 +621,9 @@
       ]
     ],
     "active_days": 17,
-    "commits": 235,
-    "ai_commits": 216,
-    "ai_share": 92
+    "commits": 155,
+    "ai_commits": 137,
+    "ai_share": 88
   },
   "funnel": {
     "exploring": 0,
